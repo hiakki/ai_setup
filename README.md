@@ -71,6 +71,15 @@ The installer preserves unrelated configuration. It refuses conflicting existing
 
 Rerun the same command after a failed download; installed component state is retained. Review a reported collision before relocating that specific old file. Do not delete your entire client configuration. Backups are under `~/.local/state/ai-setup/backups/`.
 
+Browser downloads use a five-minute socket timeout instead of Playwright's 30-second default. This applies to Playwright MCP, blog/Patchright and gstack through their shared installer environment. An explicit `PLAYWRIGHT_DOWNLOAD_CONNECTION_TIMEOUT` value is preserved. To recover an older checkout from a browser download timeout, rerun from PowerShell with:
+
+```powershell
+$env:PLAYWRIGHT_DOWNLOAD_CONNECTION_TIMEOUT = '300000'
+powershell -ExecutionPolicy Bypass -File .\install.ps1
+```
+
+Keep the original `-HomeDirectory` argument if you used one. Completed browser downloads are reused; an incomplete archive may need to download again. This timeout controls inactivity during download, not the maximum total download duration. See [Playwright's download configuration](https://playwright.dev/docs/browsers#install-behind-a-firewall-or-a-proxy).
+
 ## Preview, verify, and selective recovery
 
 ```bash

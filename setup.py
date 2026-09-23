@@ -125,6 +125,8 @@ class Installer:
         self.state = json.loads(self.state_file.read_text(encoding='utf-8')) if self.state_file.exists() else {
             'files': {}, 'sources': {}, 'completed': []}
         self.env = dict(os.environ)
+        # Browser archives can stall on slow links; retain an operator's override.
+        self.env.setdefault('PLAYWRIGHT_DOWNLOAD_CONNECTION_TIMEOUT', '300000')
         # Child installers use this explicitly selected home, never the operator's configs.
         for key in ('CODEX_HOME', 'CLAUDE_CONFIG_DIR', 'XDG_CONFIG_HOME', 'XDG_CACHE_HOME',
                     'XDG_DATA_HOME', 'XDG_STATE_HOME', 'BUN_INSTALL', 'NPM_CONFIG_PREFIX'):

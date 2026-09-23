@@ -41,6 +41,8 @@ The final provenance pass moved four unchanged instruction bodies from local cop
 
 ## Limits
 
+Browser-download timeout follow-up: the shared installer environment now defaults `PLAYWRIGHT_DOWNLOAD_CONNECTION_TIMEOUT` to 300000 ms, preserving explicit overrides. The new child-process regression failed at the old 30000 ms default before the fix; afterward, 27 tests passed with one Windows-only skip. Using the pinned Playwright MCP dependency and this environment, the real provider CLI downloaded and extracted `win64/chrome-win64.zip` on macOS. A repeat install reused that completed browser download. This verifies archive retrieval, not Windows execution or the user's network; their Windows rerun remains pending.
+
 - Native Windows x64 implementation is prepared; full Windows execution is pending. Windows ARM64 is rejected by the launcher.
 - Intel/x86-64 installations have not been exercised here.
 - Model login/inference, Figma OAuth/design operations, private MCP services, Laya authenticated predictions and optional paid blog integrations were not exercised. They need the destination account's credentials and capabilities.

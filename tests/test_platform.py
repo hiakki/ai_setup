@@ -22,6 +22,30 @@ class PlatformTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn('Components:', result.stdout)
 
+    def test_browser_download_child_gets_longer_timeout_without_changing_parent(self):
+        from unittest.mock import patch
+        from setup import Installer, capture
+        with tempfile.TemporaryDirectory(dir=ROOT / '.work') as temp:
+            with patch.dict(os.environ):
+                os.environ.pop('PLAYWRIGHT_DOWNLOAD_CONNECTION_TIMEOUT', None)
+                installer = Installer(Path(temp), {})
+                received = capture([sys.executable, '-c',
+                    "import os; print(os.environ.get('PLAYWRIGHT_DOWNLOAD_CONNECTION_TIMEOUT', '30000'))"],
+                    env=installer.env)
+                self.assertGreaterEqual(int(received), 300000)
+                self.assertNotIn('PLAYWRIGHT_DOWNLOAD_CONNECTION_TIMEOUT', os.environ)
+
+    def test_browser_download_respects_operator_timeout(self):
+        from unittest.mock import patch
+        from setup import Installer, capture
+        with tempfile.TemporaryDirectory(dir=ROOT / '.work') as temp:
+            with patch.dict(os.environ, {'PLAYWRIGHT_DOWNLOAD_CONNECTION_TIMEOUT': '600000'}):
+                installer = Installer(Path(temp), {})
+                received = capture([sys.executable, '-c',
+                    "import os; print(os.environ['PLAYWRIGHT_DOWNLOAD_CONNECTION_TIMEOUT'])"],
+                    env=installer.env)
+                self.assertEqual(received, '600000')
+
     def test_windows_browser_cache_matches_fresh_terminal_and_isolates_test_home(self):
         from types import SimpleNamespace
         from unittest.mock import patch
