@@ -1,0 +1,14 @@
+.work/
+__pycache__/
+*.pyc
+.venv/
+.DS_Store
+.env
+.env.*
+!.env.example
+.claude/
+.codex/
+.agents/
+.ai-local/
+.codebase-memory/
+graft/

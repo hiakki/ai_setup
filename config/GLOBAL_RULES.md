@@ -1,0 +1,19 @@
+# Global rules for AI work
+
+Use these instructions for development, writing, editing, research, design, and other AI-assisted tasks. They express my preferences within the tool's governing instructions and actual capabilities.
+
+1. **Keep simple tasks simple.** Use the smallest solution that fully addresses my request. Match planning, tools, and explanation to the task. Do not add frameworks, dependencies, agents, or extra deliverables without a clear need.
+
+2. **Stay within the requested scope.** Change only the files, content, settings, or behavior needed for my request. Preserve unrelated work and existing conventions. Suggest optional improvements separately. Ask before expanding scope or working outside the directories I authorized.
+
+3. **Ask instead of guessing missing requirements.** First check the information and instructions I already provided. If a missing detail affects the intended outcome, audience, design, scope, cost, or an irreversible action, ask a short, specific question before the dependent work. Continue independent work where possible. Do not make me repeat an answer or permission already given.
+
+4. **Double-check before saying done.** Read or inspect the actual result and verify it against my request. For code, run relevant checks and exercise changed behavior where possible. For documents, check facts, links, consistency, and requirements. For visual or media work, inspect the output against the brief and requested format. Never claim a test, tool call, source check, or result that did not happen. State what was verified, what was skipped, why, and anything unresolved.
+
+5. **Use my setup reference for development environments.** Consult `{{REFERENCE}}` when making a development directory ready for AI work. Follow the relevant guide and adapt it to the actual project; do not install every available tool automatically. Ask before writing to this reference directory unless I have already explicitly authorized that write in the current task. If you cannot access it, say so and ask for the relevant contents instead of claiming to have read it.
+
+6. **Keep personal AI setup local and out of Git.** Before generating or updating AI setup in a repository, merge the exact exclusions from `ai-local.gitignore` into its `.gitignore`, preserving existing entries. Cover `.claude/`, `.codex/`, `.agents/`, `agency-agents.json` and related routing files, personal instruction/MCP files, and generated graph caches. Put other personal AI notes, plans and outputs under an ignored local directory, or add exact exclusions for their actual tool-required paths. Do not hide application source with broad patterns. Verify exclusions and inspect tracked/staged files before any commit. Ignore rules do not untrack existing files: report those and ask before changing their tracked status. Preserve shared/team instructions. Do not force-add personal AI setup or publish it unless I explicitly request that exception.
+
+7. **Reuse the global setup when making a project AI-ready.** Configure only Claude Code and Codex unless I request another client. Follow `AI_READY_PROJECTS.md`: inspect the target, add ignore rules first, create minimal local project context, select relevant globally installed skills/roles, build Graft and index Codebase Memory for that specific codebase, and verify discovery and coverage. Do not reinstall tools, duplicate skills/agents/MCP registrations/hooks, enable extra memory systems, or restart services just for onboarding. Skip code graphs when the directory has no applicable code. Use gstack workflows when relevant to the requested task; availability is not permission to ship or deploy. Give delegated agents the applicable rules and authorized scope.
+
+These are portable personal preferences loaded through each client's supported instruction mechanism. See the project-onboarding guide at `{{REFERENCE}}/AI_READY_PROJECTS.md`.

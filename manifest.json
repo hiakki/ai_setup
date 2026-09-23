@@ -1,0 +1,342 @@
+{
+  "schema": 1,
+  "recorded": "2026-09-23",
+  "sources": [
+    {
+      "id": "emil",
+      "url": "https://github.com/emilkowalski/skills.git",
+      "revision": "d23d7f88a2e21c9e4b1418c7abe420f5c1052ba7",
+      "skills": [
+        {
+          "path": "skills/animate",
+          "name": "animate"
+        },
+        {
+          "path": "skills/animate-expo",
+          "name": "animate-expo"
+        },
+        {
+          "path": "skills/animation-vocabulary",
+          "name": "animation-vocabulary"
+        },
+        {
+          "path": "skills/apple-design",
+          "name": "apple-design"
+        },
+        {
+          "path": "skills/ask-sonner",
+          "name": "ask-sonner"
+        },
+        {
+          "path": "skills/emil-design-eng",
+          "name": "emil-design-eng"
+        },
+        {
+          "path": "skills/find-animation-opportunities",
+          "name": "find-animation-opportunities"
+        },
+        {
+          "path": "skills/improve-animations",
+          "name": "improve-animations"
+        },
+        {
+          "path": "skills/pick-ui-library",
+          "name": "pick-ui-library"
+        },
+        {
+          "path": "skills/prototype",
+          "name": "prototype"
+        },
+        {
+          "path": "skills/review-animations",
+          "name": "review-animations"
+        },
+        {
+          "path": "skills/write-swift",
+          "name": "write-swift"
+        }
+      ]
+    },
+    {
+      "id": "taste",
+      "url": "https://github.com/leonxlnx/taste-skill.git",
+      "revision": "ccbc15639c97057cbfcf32ecebc38ef716e4bb37",
+      "skills": [
+        {
+          "path": "skills/brandkit",
+          "name": "brandkit"
+        },
+        {
+          "path": "skills/brutalist-skill",
+          "name": "industrial-brutalist-ui"
+        },
+        {
+          "path": "skills/gpt-tasteskill",
+          "name": "gpt-taste"
+        },
+        {
+          "path": "skills/image-to-code-skill",
+          "name": "image-to-code"
+        },
+        {
+          "path": "skills/imagegen-frontend-mobile",
+          "name": "imagegen-frontend-mobile"
+        },
+        {
+          "path": "skills/imagegen-frontend-web",
+          "name": "imagegen-frontend-web"
+        },
+        {
+          "path": "skills/minimalist-skill",
+          "name": "minimalist-ui"
+        },
+        {
+          "path": "skills/output-skill",
+          "name": "full-output-enforcement"
+        },
+        {
+          "path": "skills/redesign-skill",
+          "name": "redesign-existing-projects"
+        },
+        {
+          "path": "skills/soft-skill",
+          "name": "high-end-visual-design"
+        },
+        {
+          "path": "skills/stitch-skill",
+          "name": "stitch-design-taste"
+        },
+        {
+          "path": "skills/taste-skill",
+          "name": "design-taste-frontend"
+        },
+        {
+          "path": "skills/taste-skill-v1",
+          "name": "design-taste-frontend-v1"
+        }
+      ]
+    },
+    {
+      "id": "impeccable",
+      "url": "https://github.com/pbakaus/impeccable.git",
+      "revision": "2149fcce39a90bb409df5f16515f316a76dc6199",
+      "skills": [
+        {
+          "path": ".agents/skills/impeccable",
+          "name": "impeccable"
+        }
+      ]
+    },
+    {
+      "id": "typesafe",
+      "url": "https://github.com/typesafe-ai/skills.git",
+      "revision": "65a39f393687675ce170e6094757de20370365b9",
+      "skills": [
+        {
+          "path": "skills/typesafe-ai",
+          "name": "typesafe-ai"
+        }
+      ]
+    },
+    {
+      "id": "addy-frontend",
+      "url": "https://github.com/addyosmani/agent-skills.git",
+      "revision": "91d4d07522de9577caf5d213e5bf1acc38fa3df2",
+      "sparse": ["skills/frontend-ui-engineering", "references"],
+      "skills": [{
+        "path": "skills/frontend-ui-engineering",
+        "name": "frontend-ui-engineering",
+        "extra_files": {"references/accessibility-checklist.md": "references/accessibility-checklist.md"},
+        "link_rewrites": {"../../references/accessibility-checklist.md": "references/accessibility-checklist.md"}
+      }]
+    },
+    {
+      "id": "addy-engineering",
+      "url": "https://github.com/addyosmani/agent-skills.git",
+      "revision": "cda4542ade0f3c532494b9a48837eb01d39925f1",
+      "sparse": ["skills/security-and-hardening", "skills/browser-testing-with-devtools", "references"],
+      "skills": [{
+        "path": "skills/security-and-hardening",
+        "name": "security-and-hardening",
+        "extra_files": {"references/security-checklist.md": "references/security-checklist.md"},
+        "link_rewrites": {"../../references/security-checklist.md": "references/security-checklist.md"}
+      }, {
+        "path": "skills/browser-testing-with-devtools",
+        "name": "browser-testing-with-devtools"
+      }]
+    },
+    {
+      "id": "anthropic-engineering",
+      "url": "https://github.com/anthropics/knowledge-work-plugins.git",
+      "revision": "1bd42820da111e5f0206e570bf5228a1c35839c7",
+      "sparse": ["engineering"],
+      "skills": [{
+        "path": "engineering/skills/incident-response",
+        "name": "incident-response",
+        "extra_files": {"engineering/CONNECTORS.md": "references/CONNECTORS.md"},
+        "link_rewrites": {"../../CONNECTORS.md": "references/CONNECTORS.md"}
+      }]
+    },
+    {
+      "id": "claude-blog",
+      "url": "https://github.com/AgriciDaniel/claude-blog.git",
+      "revision": "2500d4c765034864cede2bf215d00ccd4d7d6fb8"
+    },
+    {
+      "id": "gstack",
+      "url": "https://github.com/garrytan/gstack.git",
+      "revision": "71f6048e8ada25180e61438abc1d98cb151fe9a7"
+    },
+    {
+      "id": "agency",
+      "url": "https://github.com/msitarzewski/agency-agents.git",
+      "revision": "647c8baa42b6842afb4a97bf2c0950d45ba88e8b",
+      "agents": [
+        "design/design-image-prompt-engineer.md",
+        "design/design-persona-walkthrough.md",
+        "design/design-ui-designer.md",
+        "design/design-ui-finish-gate-reviewer.md",
+        "design/design-ux-architect.md",
+        "design/design-ux-researcher.md",
+        "engineering/engineering-api-platform-engineer.md",
+        "engineering/engineering-autonomous-optimization-architect.md",
+        "engineering/engineering-backend-architect.md",
+        "engineering/engineering-code-reviewer.md",
+        "engineering/engineering-codebase-onboarding-engineer.md",
+        "engineering/engineering-database-optimizer.md",
+        "engineering/engineering-desktop-app-engineer.md",
+        "engineering/engineering-developer-tooling-engineer.md",
+        "engineering/engineering-devops-automator.md",
+        "engineering/engineering-frontend-developer.md",
+        "engineering/engineering-git-workflow-master.md",
+        "engineering/engineering-identity-access-engineer.md",
+        "engineering/engineering-mobile-app-builder.md",
+        "engineering/engineering-mobile-release-engineer.md",
+        "engineering/engineering-software-architect.md",
+        "engineering/engineering-sre.md",
+        "marketing/marketing-short-video-editing-coach.md",
+        "marketing/marketing-video-optimization-specialist.md",
+        "product/product-manager.md",
+        "project-management/project-manager-senior.md",
+        "security/security-appsec-engineer.md",
+        "testing/testing-accessibility-auditor.md",
+        "testing/testing-api-tester.md",
+        "testing/testing-performance-benchmarker.md",
+        "testing/testing-reality-checker.md",
+        "testing/testing-test-automation-engineer.md"
+      ]
+    },
+    {
+      "id": "codebase-memory",
+      "url": "https://github.com/DeusData/codebase-memory-mcp.git",
+      "revision": "46ae198fc11cda80e817acbc5f5908d7c2de7032"
+    },
+    {
+      "id": "find-skills",
+      "url": "https://github.com/vercel-labs/skills.git",
+      "revision": "7407f3893ad4dceab546ac002c3ef806e4000c73",
+      "skills": [
+        {
+          "name": "find-skills",
+          "path": "skills/find-skills"
+        }
+      ]
+    },
+    {
+      "id": "marketing",
+      "url": "https://github.com/coreyhaines31/marketingskills.git",
+      "revision": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
+      "skills": [
+        {
+          "name": "video",
+          "path": "skills/video"
+        },
+        {
+          "name": "social",
+          "path": "skills/social"
+        },
+        {
+          "name": "analytics",
+          "path": "skills/analytics"
+        }
+      ]
+    },
+    {
+      "id": "ecc",
+      "url": "https://github.com/affaan-m/ECC.git",
+      "revision": "bf70150eb2df8070024e5bdf08e4aa08959e2735",
+      "skills": [
+        {
+          "name": "video-editing",
+          "path": "skills/video-editing"
+        }
+      ]
+    },
+    {
+      "id": "trends",
+      "url": "https://github.com/ScrapeCreators/social-media-research-skills.git",
+      "revision": "64ba7b4dea71e130d2712ffb6c1c1024b3b7c4b2",
+      "skills": [
+        {
+          "name": "trend-discovery",
+          "path": "skills/trend-discovery"
+        }
+      ]
+    },
+    {
+      "id": "superpowers",
+      "url": "https://github.com/obra/superpowers.git",
+      "revision": "5bf4e78011075bcfc0dc295f0724994cd123ee71",
+      "skills": [
+        {
+          "name": "systematic-debugging",
+          "path": "skills/systematic-debugging"
+        },
+        {
+          "name": "test-driven-development",
+          "path": "skills/test-driven-development"
+        },
+        {
+          "name": "verification-before-completion",
+          "path": "skills/verification-before-completion"
+        }
+      ]
+    },
+    {
+      "id": "openai-skills",
+      "url": "https://github.com/openai/skills.git",
+      "revision": "49f948faa9258a0c61caceaf225e179651397431",
+      "skills": [
+        {
+          "name": "pdf",
+          "path": "skills/.curated/pdf"
+        },
+        {
+          "name": "playwright",
+          "path": "skills/.curated/playwright"
+        },
+        {
+          "name": "security-best-practices",
+          "path": "skills/.curated/security-best-practices"
+        }
+      ]
+    }
+  ],
+  "node": "24.20.0",
+  "graft_node": "20.20.2",
+  "npm": {
+    "@openai/codex": "0.155.0",
+    "@anthropic-ai/claude-code": "2.1.83",
+    "@nanonets/graft": "0.18.0",
+    "skills": "1.5.26",
+    "@playwright/mcp": "0.0.80",
+    "bun": "1.4.2"
+  },
+  "codebase_memory_version": "0.10.8",
+  "codebase_memory_installer_sha256": "2fdd4d6563fc8e540bb32e233c5fdef22ecf05d7ebd5a80657cd4fec953b3475",
+  "figma": {
+    "repository": "openai/plugins",
+    "revision": "1dc195897af4161d039b80d8471ec0a10c9bbc89",
+    "plugin": "figma@openai-api-curated"
+  }
+}

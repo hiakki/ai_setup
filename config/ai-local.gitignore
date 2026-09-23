@@ -1,0 +1,21 @@
+# BEGIN local AI setup
+# Personal agent setup stays out of source control.
+.claude/
+.codex/
+.agents/
+.agency-agents/
+.claude.json
+.mcp.json
+.mcp.local.json
+AGENTS.md
+AGENTS.override.md
+CLAUDE.md
+CLAUDE.local.md
+agency-agents*.json
+agent-routing.local.json
+.gstack/
+.graft/
+/graft/
+.codebase-memory/
+.ai-local/
+# END local AI setup
