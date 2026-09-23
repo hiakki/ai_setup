@@ -21,7 +21,7 @@ This authorizes onboarding the chosen directory. It does not authorize changing 
 | Codebase Memory MCP | Binary, MCP registration and machine-local graph storage | Index the exact project root and verify coverage |
 | Product context | General preferences in the global rules | Actual project purpose, boundaries, commands and verification flow |
 
-Inspect the global skill and role directories listed above to confirm discovery. For installation repair, use the ai_setup repository's README and `bash install.sh verify`. Do not rerun global installers as ordinary project onboarding.
+Inspect the global skill and role directories listed above to confirm discovery. On native Windows, `~` denotes the Windows user profile; consult [the Windows command reference](WINDOWS.md) for PowerShell equivalents. For installation repair, use the ai_setup repository's README and `bash install.sh verify` (Unix) or `.\install.ps1 -Action verify` (Windows). Do not rerun global installers as ordinary project onboarding.
 
 ## 1. Inspect the intended directory
 

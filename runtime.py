@@ -37,15 +37,15 @@ def merge_config(i, path, incoming):
     i.backup(path)
     if path.suffix == '.toml':
         import tomlkit
-        old = tomlkit.parse(path.read_text()) if path.exists() else tomlkit.document()
+        old = tomlkit.parse(path.read_text(encoding='utf-8')) if path.exists() else tomlkit.document()
         content = tomlkit.dumps(merge(old, incoming))
     else:
-        old = json.loads(path.read_text()) if path.exists() else {}
+        old = json.loads(path.read_text(encoding='utf-8')) if path.exists() else {}
         content = json.dumps(merge(old, incoming), indent=2) + '\n'
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(content)
+    path.write_text(content, encoding='utf-8')
     path.chmod(0o600)
-    key = str(path.relative_to(i.home))
+    key = path.relative_to(i.home).as_posix()
     previous = i.state.setdefault('configuration', {}).get(key, {})
     i.state['configuration'][key] = merge(previous, incoming)
     i.save()
@@ -68,7 +68,7 @@ def ensure_node(i, version, system, arch):
             base = f'https://nodejs.org/dist/v{version}/'
             download(base + name, tmp / name)
             download(base + 'SHASUMS256.txt', tmp / 'checksums')
-            entries = [line.split()[0] for line in (tmp / 'checksums').read_text().splitlines()
+            entries = [line.split()[0] for line in (tmp / 'checksums').read_text(encoding='utf-8').splitlines()
                        if line.split()[-1] == name]
             if len(entries) != 1 or hashlib.sha256((tmp / name).read_bytes()).hexdigest() != entries[0]:
                 raise ValueError('Node archive checksum mismatch')
@@ -129,7 +129,7 @@ def runtime(i):
         env = dict(i.env, CBM_DOWNLOAD_URL=f'https://github.com/DeusData/codebase-memory-mcp/releases/download/v{expected}')
         run(['bash', installer, '--skip-config', '--dir=' + str(i.bin)], env=env)
         i.remember(binary)
-    elif str(binary.relative_to(i.home)) not in i.state['files']:
+    elif binary.relative_to(i.home).as_posix() not in i.state['files']:
         raise ValueError(f'Preserving existing Codebase Memory binary: {binary}')
     if expected not in capture([binary, '--version'], env=i.env):
         raise ValueError('Codebase Memory version mismatch')
@@ -145,7 +145,7 @@ def gstack(i):
     claude = i.home / '.claude/skills/gstack'
     for folder in (i.home / '.claude/skills', i.home / '.codex/skills', i.home / '.agents/skills'):
         for path in folder.glob('gstack*'):
-            if str(path.relative_to(i.home)) not in i.state['files']:
+            if path.relative_to(i.home).as_posix() not in i.state['files']:
                 raise ValueError(f'Preserving pre-existing gstack installation: {path}')
     i.link(claude, source)
     env = dict(i.env, GSTACK_SKIP_COREUTILS='1', GSTACK_SKIP_GBRAIN_REGEN='1',
@@ -163,7 +163,7 @@ def gstack(i):
         i.link(target, path.resolve())
         path.unlink()
     router = source / '.agents/skills/gstack/SKILL.md'
-    i.write(i.home / '.agents/skills/gstack/SKILL.md', router.read_text())
+    i.write(i.home / '.agents/skills/gstack/SKILL.md', router.read_text(encoding='utf-8'))
     # Keep the runtime adapter, but do not expose a second Codex router/skill tree.
     adapter = i.home / '.codex/skills/gstack'
     if adapter.exists():
@@ -183,7 +183,7 @@ def gstack_adapter(i, source):
     i.owned(adapter)
     backup = i.state_dir / ('gstack-runtime-adapter-' + str(time.time_ns()))
     adapter.rename(backup)
-    prefix = str(adapter.relative_to(i.home))
+    prefix = adapter.relative_to(i.home).as_posix()
     for key in list(i.state['files']):
         if key == prefix or key.startswith(prefix + '/'):
             del i.state['files'][key]
@@ -229,19 +229,19 @@ def integrations(i):
                     continue
                 if any(part in ('logs', 'sessions', '.git') for part in rel.parts):
                     continue
-                text = path.read_text().replace(str(stage), str(i.home))
+                text = path.read_text(encoding='utf-8').replace(str(stage), str(i.home))
                 dest = i.home / rel
                 if path.name in ('AGENTS.md', 'CLAUDE.md'):
                     i.merge_text(dest, text, 'provider-instructions')
                 else:
                     i.write(dest, text, path.stat().st_mode & 0o777)
         codex_path = stage / '.codex/config.toml'
-        codex = tomllib.loads(codex_path.read_text().replace(str(stage), str(i.home))) if codex_path.exists() else {}
+        codex = tomllib.loads(codex_path.read_text(encoding='utf-8').replace(str(stage), str(i.home))) if codex_path.exists() else {}
         if 'graft' in codex.get('mcp_servers', {}):
             codex['mcp_servers']['graft']['command'] = str(i.bin / 'graft')
         hook_file = stage / '.codex/hooks.json'
         if hook_file.exists():
-            hooks = json.loads(hook_file.read_text().replace(str(stage), str(i.home)))
+            hooks = json.loads(hook_file.read_text(encoding='utf-8').replace(str(stage), str(i.home)))
             codex = merge(codex, hooks)
         # One Codex hook representation. Existing hooks.json stays active and must be reviewed.
         if (i.home / '.codex/hooks.json').exists():
@@ -250,7 +250,7 @@ def integrations(i):
         settings = stage / '.claude/settings.json'
         if settings.exists():
             merge_config(i, i.home / '.claude/settings.json',
-                         json.loads(settings.read_text().replace(str(stage), str(i.home))))
+                         json.loads(settings.read_text(encoding='utf-8').replace(str(stage), str(i.home))))
     if not i.state.get('cbm_configured'):
         for key, value in [('auto_index', 'false'), ('auto_watch', 'true'), ('ui_enabled', 'true'), ('ui_port', '9749')]:
             run([i.bin / 'codebase-memory-mcp', 'config', 'set', key, value], env=i.env)

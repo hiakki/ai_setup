@@ -3,6 +3,7 @@ import argparse
 import json
 import os
 from pathlib import Path
+import subprocess
 import sys
 import time
 import urllib.error
@@ -13,6 +14,53 @@ import urllib.request
 class NoRedirect(urllib.request.HTTPRedirectHandler):
     def redirect_request(self, *args, **kwargs):
         return None
+
+
+def windows_acl(path):
+    """Read SID-based DACL metadata; Windows chmod bits do not describe privacy.
+
+    Provider reference: https://learn.microsoft.com/powershell/module/microsoft.powershell.security/get-acl
+    The config path is passed as environment data, never interpolated into code.
+    """
+    script = '''
+$ErrorActionPreference = 'Stop'
+[Console]::OutputEncoding = [System.Text.UTF8Encoding]::new($false)
+$acl = Get-Acl -LiteralPath $env:LAYA_ACL_CONFIG
+$sidType = [System.Security.Principal.SecurityIdentifier]
+$allow = @($acl.GetAccessRules($true, $true, $sidType) |
+    Where-Object { $_.AccessControlType -eq 'Allow' } |
+    ForEach-Object { $_.IdentityReference.Value })
+@{
+    user = [System.Security.Principal.WindowsIdentity]::GetCurrent().User.Value
+    owner = $acl.GetOwner($sidType).Value
+    allow = $allow
+} | ConvertTo-Json -Compress
+'''
+    system_root = os.environ.get('SystemRoot', r'C:\Windows')
+    powershell = Path(system_root) / 'System32/WindowsPowerShell/v1.0/powershell.exe'
+    try:
+        result = subprocess.run([str(powershell), '-NoProfile', '-NonInteractive', '-Command', script],
+                                env=dict(os.environ, SystemRoot=system_root, LAYA_ACL_CONFIG=str(path)),
+                                check=True, capture_output=True, text=True, encoding='utf-8', timeout=15)
+        return json.loads(result.stdout.lstrip('\ufeff'))
+    except (OSError, subprocess.SubprocessError, UnicodeError, json.JSONDecodeError):
+        raise ValueError('Could not verify the Windows config ACL; use LAYA_ENDPOINT and LAYA_API_TOKEN without a config file.') from None
+
+
+def require_private_config(path, *, windows=None):
+    windows = os.name == 'nt' if windows is None else windows
+    if not windows:
+        if path.stat().st_mode & 0o077:
+            raise ValueError('Private config requires mode 0600; run chmod 600 on the config file.')
+        return
+    acl = windows_acl(path)
+    if not isinstance(acl, dict) or not isinstance(acl.get('user'), str) or not acl['user'].startswith('S-1-'):
+        raise ValueError('Could not verify the Windows config ACL.')
+    allowed = {acl['user'], 'S-1-5-18', 'S-1-5-32-544'}  # Current user, SYSTEM, Administrators.
+    grants = acl.get('allow')
+    if acl.get('owner') not in allowed or not isinstance(grants, list) or not grants or \
+            any(not isinstance(sid, str) or sid not in allowed for sid in grants):
+        raise ValueError('Private config ACL must grant access only to the current user, SYSTEM, or Administrators; remove other permissions in Windows file security settings.')
 
 
 def validate_request(payload):
@@ -45,9 +93,8 @@ def main(argv=None):
             raise ValueError('Timeout must be between 1 and 120 seconds.')
         config = {}
         if args.config.exists():
-            if args.config.stat().st_mode & 0o077:
-                raise ValueError('Private config requires mode 0600; run chmod 600 on the config file.')
-            config = json.loads(args.config.read_text())
+            require_private_config(args.config)
+            config = json.loads(args.config.read_text(encoding='utf-8-sig'))
         if not isinstance(config, dict):
             raise ValueError('Config must be a JSON object.')
         endpoint = os.environ.get('LAYA_ENDPOINT') or config.get('endpoint', '')
@@ -60,7 +107,7 @@ def main(argv=None):
         if url.scheme != 'https' or not url.hostname or url.username or url.password or url.fragment or url.query:
             raise ValueError('Endpoint must be an HTTPS URL without credentials, query, or fragment.')
         try:
-            payload = json.loads(args.input.read_text() if args.input else sys.stdin.read())
+            payload = json.loads(args.input.read_text(encoding='utf-8-sig') if args.input else sys.stdin.read())
         except json.JSONDecodeError:
             raise ValueError('Input must be valid JSON.') from None
         validate_request(payload)

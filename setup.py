@@ -2,7 +2,6 @@
 """Install the documented Claude/Codex environment from original providers."""
 import argparse
 import contextlib
-import fcntl
 import hashlib
 import json
 import os
@@ -19,16 +18,75 @@ ROOT = Path(__file__).resolve().parent
 COMPONENTS = ('runtime', 'skills', 'agents', 'custom', 'blog', 'gstack', 'integrations', 'rules', 'figma')
 
 
+def command_args(args, *, windows=None, env=None):
+    """Resolve native executables; quote batch fallbacks without implicit shell input."""
+    args = list(map(str, args))
+    windows = os.name == 'nt' if windows is None else windows
+    if windows:
+        environment = os.environ if env is None else env
+        found = shutil.which(args[0], path=environment.get('PATH'))
+        if found:
+            args[0] = found
+        if Path(args[0]).suffix.lower() in ('.cmd', '.bat'):
+            # Runtime integrations use node.exe + JS entry points directly. This
+            # fallback is for simple terminal shims, not arbitrary shell code.
+            if any(any(c in arg for c in ('%', '"', '\r', '\n', '\0')) for arg in args):
+                raise ValueError('Unsafe batch argument; use the native executable or Node entry point')
+            command = ' '.join('"' + arg + '"' for arg in args)
+            return [environment.get('COMSPEC', 'cmd.exe'), '/d', '/s', '/c', '"' + command + '"']
+    return args
+
+
 def run(args, **kwargs):
     print('+ ' + ' '.join(map(str, args)), flush=True)
-    return subprocess.run(list(map(str, args)), check=True, **kwargs)
+    return subprocess.run(command_args(args, env=kwargs.get('env')), check=True, **kwargs)
 
 
 def capture(args, **kwargs):
-    return subprocess.check_output(list(map(str, args)), text=True, **kwargs).strip()
+    return subprocess.check_output(command_args(args, env=kwargs.get('env')),
+                                   text=True, encoding='utf-8', **kwargs).strip()
+
+
+def venv_python(root):
+    return Path(root) / ('Scripts/python.exe' if os.name == 'nt' else 'bin/python')
+
+
+def is_link(path):
+    return path.is_symlink() or getattr(path, 'is_junction', lambda: False)()
+
+
+@contextlib.contextmanager
+def install_lock(path):
+    if is_link(path):
+        raise ValueError('Refusing linked installation lock: ' + str(path))
+    with path.open('a+b') as lock:
+        if os.name == 'nt':
+            import msvcrt
+            if lock.seek(0, os.SEEK_END) == 0:
+                lock.write(b'\0')
+                lock.flush()
+            lock.seek(0)
+            try:
+                msvcrt.locking(lock.fileno(), msvcrt.LK_NBLCK, 1)
+            except OSError as exc:
+                raise ValueError('Another installation is running for this home') from exc
+            try:
+                yield
+            finally:
+                lock.seek(0)
+                msvcrt.locking(lock.fileno(), msvcrt.LK_UNLCK, 1)
+        else:
+            import fcntl
+            fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            try:
+                yield
+            finally:
+                fcntl.flock(lock, fcntl.LOCK_UN)
 
 
 def fingerprint(path):
+    if getattr(path, 'is_junction', lambda: False)():
+        return 'junction:' + str(path.resolve())
     if path.is_symlink():
         return 'link:' + os.readlink(path)
     if path.is_file():
@@ -44,7 +102,7 @@ def fingerprint(path):
 
 def metadata(path):
     import yaml
-    text = path.read_text()
+    text = path.read_text(encoding='utf-8')
     match = re.match(r'^---\s*\n(.*?)\n---\s*\n', text, re.S)
     if not match:
         raise ValueError(f'Missing frontmatter: {path}')
@@ -57,13 +115,14 @@ def slug(name):
 
 class Installer:
     def __init__(self, home, manifest):
+        self.windows = os.name == 'nt'
         self.home = home.resolve()
         self.manifest = manifest
         self.state_dir = self.home / '.local/state/ai-setup'
         self.state_file = self.state_dir / 'state.json'
         self.sources = self.home / '.agents/skills/.sources'
         self.bin = self.home / '.local/bin'
-        self.state = json.loads(self.state_file.read_text()) if self.state_file.exists() else {
+        self.state = json.loads(self.state_file.read_text(encoding='utf-8')) if self.state_file.exists() else {
             'files': {}, 'sources': {}, 'completed': []}
         self.env = dict(os.environ)
         # Child installers use this explicitly selected home, never the operator's configs.
@@ -78,6 +137,21 @@ class Installer:
                         PLAYWRIGHT_BROWSERS_PATH=str(self.home / '.cache/ms-playwright'),
                         PATH=str(self.bin) + os.pathsep + os.environ.get('PATH', ''),
                         GIT_TERMINAL_PROMPT='0', DISABLE_TELEMETRY='1')
+        self.env['PYTHONUTF8'] = '1'
+        if self.windows:
+            self.env.update(USERPROFILE=str(self.home),
+                            APPDATA=str(self.home / 'AppData/Roaming'),
+                            LOCALAPPDATA=str(self.home / 'AppData/Local'))
+            real_profile = os.environ.get('USERPROFILE')
+            if real_profile and self.home == Path(real_profile).resolve():
+                for key in ('APPDATA', 'LOCALAPPDATA'):
+                    if os.environ.get(key):
+                        self.env[key] = os.environ[key]
+                browser_cache = os.environ.get('PLAYWRIGHT_BROWSERS_PATH')
+            else:
+                browser_cache = None
+            # Match the providers' defaults in fresh terminals; isolate test homes.
+            self.env['PLAYWRIGHT_BROWSERS_PATH'] = browser_cache or str(Path(self.env['LOCALAPPDATA']) / 'ms-playwright')
 
     def safe(self, path):
         path = Path(path)
@@ -89,19 +163,19 @@ class Installer:
         self.safe(self.state_file)
         self.state_dir.mkdir(parents=True, exist_ok=True, mode=0o700)
         tmp = self.state_file.with_suffix('.tmp')
-        tmp.write_text(json.dumps(self.state, indent=2) + '\n')
+        tmp.write_text(json.dumps(self.state, indent=2) + '\n', encoding='utf-8')
         tmp.chmod(0o600)
         tmp.replace(self.state_file)
 
     def owned(self, path):
         self.safe(path)
         actual = fingerprint(path)
-        previous = self.state['files'].get(str(path.relative_to(self.home)))
+        previous = self.state['files'].get(path.relative_to(self.home).as_posix())
         if actual is not None and actual != previous:
             raise ValueError(f'Preserving unmanaged or locally edited path: {path}')
 
     def remember(self, path):
-        self.state['files'][str(path.relative_to(self.home))] = fingerprint(path)
+        self.state['files'][path.relative_to(self.home).as_posix()] = fingerprint(path)
         self.save()
 
     def write(self, path, text, mode=None):
@@ -109,7 +183,7 @@ class Installer:
         self.owned(path)
         path.parent.mkdir(parents=True, exist_ok=True)
         temporary = path.with_name(path.name + '.ai-setup-tmp')
-        temporary.write_text(text)
+        temporary.write_text(text, encoding='utf-8')
         if mode:
             temporary.chmod(mode)
         temporary.replace(path)
@@ -117,14 +191,25 @@ class Installer:
 
     def link(self, target, source):
         self.safe(target)
-        if target.is_symlink() and target.resolve() == source.resolve():
+        if is_link(target) and target.resolve() == source.resolve():
             self.remember(target)
             return
         self.owned(target)
         target.parent.mkdir(parents=True, exist_ok=True)
-        if target.is_symlink():
-            target.unlink()
-        target.symlink_to(source)
+        if is_link(target):
+            if getattr(target, 'is_junction', lambda: False)():
+                target.rmdir()
+            else:
+                target.unlink()
+        if self.windows:
+            if source.is_dir():
+                # Junctions need neither elevation nor Windows Developer Mode.
+                import _winapi
+                _winapi.CreateJunction(str(source.resolve()), str(target))
+            else:
+                shutil.copy2(source, target)
+        else:
+            target.symlink_to(source)
         self.remember(target)
 
     def copy_tree(self, source, target, transform=None):
@@ -136,7 +221,7 @@ class Installer:
                 raise ValueError(f'Provider link escapes source: {p}')
         with tempfile.TemporaryDirectory(dir=target.parent) as tmp:
             staged = Path(tmp) / 'payload'
-            shutil.copytree(source, staged, ignore=shutil.ignore_patterns('__pycache__', '*.pyc', '.DS_Store'))
+            shutil.copytree(source, staged, ignore=shutil.ignore_patterns('.git', '__pycache__', '*.pyc', '.DS_Store'))
             if transform:
                 transform(staged)
             if target.exists():
@@ -148,9 +233,9 @@ class Installer:
 
     def merge_text(self, path, body, marker='rules'):
         self.safe(path)
-        if path.is_symlink():
+        if is_link(path):
             raise ValueError(f'Refusing config symlink: {path}')
-        old = path.read_text() if path.exists() else ''
+        old = path.read_text(encoding='utf-8') if path.exists() else ''
         start, end = f'<!-- ai-setup:{marker}:start -->', f'<!-- ai-setup:{marker}:end -->'
         block = start + '\n' + body.rstrip() + '\n' + end
         if start in old or end in old:
@@ -158,23 +243,23 @@ class Installer:
                 raise ValueError(f'Malformed managed block: {path}')
             current = old[old.index(start):old.index(end) + len(end)]
             if current != block:
-                key = str(path.relative_to(self.home)) + ':' + marker
+                key = path.relative_to(self.home).as_posix() + ':' + marker
                 if current != self.state.get('blocks', {}).get(key):
                     raise ValueError(f'Preserving changed managed block: {path}')
                 self.backup(path)
-                path.write_text(old.replace(current, block, 1))
+                path.write_text(old.replace(current, block, 1), encoding='utf-8')
                 self.state['blocks'][key] = block
                 self.save()
             return
         self.backup(path)
         path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(old.rstrip() + ('\n\n' if old else '') + block + '\n')
-        self.state.setdefault('blocks', {})[str(path.relative_to(self.home)) + ':' + marker] = block
+        path.write_text(old.rstrip() + ('\n\n' if old else '') + block + '\n', encoding='utf-8')
+        self.state.setdefault('blocks', {})[path.relative_to(self.home).as_posix() + ':' + marker] = block
         self.save()
 
     def backup(self, path):
         self.safe(path)
-        if path.is_symlink():
+        if is_link(path):
             raise ValueError(f'Refusing config symlink: {path}')
         if path.exists():
             dest = self.state_dir / 'backups' / str(time.time_ns()) / path.relative_to(self.home)
@@ -205,6 +290,8 @@ class Installer:
             with tempfile.TemporaryDirectory(dir=source.parent) as tmp:
                 checkout = Path(tmp) / 'checkout'
                 run(['git', 'init', '-q', checkout], env=self.env)
+                if self.windows:
+                    run(['git', '-C', checkout, 'config', 'core.longpaths', 'true'], env=self.env)
                 run(['git', '-C', checkout, 'remote', 'add', 'origin', spec['url']], env=self.env)
                 if spec.get('sparse'):
                     run(['git', '-C', checkout, 'sparse-checkout', 'init', '--cone'], env=self.env)
@@ -242,17 +329,17 @@ class Installer:
                 shutil.copy2(original, destination)
             if entry.get('link_rewrites'):
                 p = staged / 'SKILL.md'
-                text = p.read_text()
+                text = p.read_text(encoding='utf-8')
                 for old, new in entry['link_rewrites'].items():
                     if old not in text:
                         raise ValueError(f'Expected provider reference missing in {name}: {old}')
                     text = text.replace(old, new)
-                p.write_text(text)
+                p.write_text(text, encoding='utf-8')
             if blog:
                 p = staged / 'SKILL.md'
-                text = p.read_text()
+                text = p.read_text(encoding='utf-8')
                 end = text.index('\n---', 3) + 4
-                p.write_text(text[:end] + '\n\n' + self.blog_note(source) + text[end:])
+                p.write_text(text[:end] + '\n\n' + self.blog_note(source) + text[end:], encoding='utf-8')
                 if name == 'blog':
                     shutil.copytree(source / 'data', staged / 'data', dirs_exist_ok=True)
         self.copy_tree(folder, target, adapt)
@@ -271,7 +358,7 @@ class Installer:
         name = meta['name']
         filename = slug(name)
         for other in (self.home / '.codex/agents').glob('*.toml'):
-            if other.name != filename + '.toml' and tomllib.loads(other.read_text()).get('name') == name:
+            if other.name != filename + '.toml' and tomllib.loads(other.read_text(encoding='utf-8')).get('name') == name:
                 raise ValueError(f'Duplicate existing role name: {name} in {other}')
         role = {'name': name, 'description': str(meta['description']).strip(),
                 'developer_instructions': note + body}
@@ -296,7 +383,7 @@ class Installer:
     def blog_note(self, source):
         return (f'## Portable local adapter\n\nCanonical skills: `{self.home}/.agents/skills`. '
                 f'Resolve root scripts/, agents/, data/ against `{source}`; execute Python helpers '
-                f'with `{source}/.venv/bin/python`. Never use a project script with the same name. '
+                f'with `{venv_python(source / ".venv")}`. Never use a project script with the same name. '
                 'Claude uses /blog-*; Codex uses $blog-*. Map Claude tools to the available host tools. '
                 'Preserve host restrictions. User/project rules take precedence over approval prompts '
                 'and marketing footers; omit community marketing footers. Paid calls and publishing '
@@ -310,23 +397,24 @@ class Installer:
             self.install_skill(source, {'name': meta['name'], 'path': str(path.parent.relative_to(source))}, True)
         for path in sorted((source / 'agents').glob('*.md')):
             self.agent(path, self.blog_note(source))
-        if not (source / '.venv/bin/python').exists():
+        python = venv_python(source / '.venv')
+        if not python.exists():
             run([sys.executable, '-m', 'venv', source / '.venv'], env=self.env)
-        run([source / '.venv/bin/python', '-m', 'pip', 'install', str(source) + '[core,presentation]', 'PyYAML==6.0.3'], env=self.env)
-        run([source / '.venv/bin/python', '-m', 'patchright', 'install', 'chromium'], env=self.env)
+        run([python, '-m', 'pip', 'install', str(source) + '[core,presentation]', 'PyYAML==6.0.3'], env=self.env)
+        run([python, '-m', 'patchright', 'install', 'chromium'], env=self.env)
 
     def rules(self):
         dest = self.home / '.local/share/ai-setup/reference'
         for path in (ROOT / 'config').iterdir():
             if path.is_file():
-                self.write(dest / path.name, path.read_text().replace('{{REFERENCE}}', str(dest)))
-        body = (dest / 'GLOBAL_RULES.md').read_text().replace('{{REFERENCE}}', str(dest))
+                self.write(dest / path.name, path.read_text(encoding='utf-8').replace('{{REFERENCE}}', str(dest)))
+        body = (dest / 'GLOBAL_RULES.md').read_text(encoding='utf-8').replace('{{REFERENCE}}', str(dest))
         self.merge_text(self.home / '.codex/AGENTS.md', body)
         self.merge_text(self.home / '.claude/CLAUDE.md', body)
         workflow = dest / 'WORKFLOW_RULES.md'
         if workflow.exists():
             for path in (self.home / '.codex/AGENTS.md', self.home / '.claude/CLAUDE.md'):
-                self.merge_text(path, workflow.read_text(), 'workflow')
+                self.merge_text(path, workflow.read_text(encoding='utf-8'), 'workflow')
         ignore = self.home / '.config/git/ignore'
         # Respect a user's custom global excludes file; leave it untouched and report it.
         current = subprocess.run(['git', 'config', '--global', '--get', 'core.excludesFile'],
@@ -336,25 +424,29 @@ class Installer:
         elif current.returncode not in (0, 1):
             raise ValueError('Cannot read global Git exclusions: ' + current.stderr.strip())
         self.safe(ignore)
-        old = ignore.read_text() if ignore.exists() else ''
-        block = (dest / 'ai-local.gitignore').read_text().strip()
+        old = ignore.read_text(encoding='utf-8') if ignore.exists() else ''
+        block = (dest / 'ai-local.gitignore').read_text(encoding='utf-8').strip()
         if block not in old:
             if '# BEGIN local AI setup' in old:
                 raise ValueError(f'Preserving different local AI ignore block: {ignore}')
             self.backup(ignore)
             ignore.parent.mkdir(parents=True, exist_ok=True)
-            ignore.write_text(old.rstrip() + '\n\n' + block + '\n')
+            ignore.write_text(old.rstrip() + '\n\n' + block + '\n', encoding='utf-8')
         if not current.stdout.strip():
             run(['git', 'config', '--global', 'core.excludesFile', ignore], env=self.env)
+        if self.windows:
+            # install.ps1 manages the invoking Windows user's PATH. Do not write
+            # POSIX shell profiles into native Windows user homes.
+            return
         # Activate user-level executable discovery in normal login/interactive shells.
         line = 'export PATH="$HOME/.local/bin:$PATH"'
         for filename in ('.profile', '.bashrc', '.zshrc'):
             p = self.home / filename
             self.safe(p)
-            old = p.read_text() if p.exists() else ''
+            old = p.read_text(encoding='utf-8') if p.exists() else ''
             if line not in old:
                 self.backup(p)
-                p.write_text(old.rstrip() + '\n\n# ai_setup tools\n' + line + '\n')
+                p.write_text(old.rstrip() + '\n\n# ai_setup tools\n' + line + '\n', encoding='utf-8')
 
     def verify(self):
         if not self.state_file.exists():
@@ -362,21 +454,21 @@ class Installer:
         errors = []
         for name, expected in self.state['files'].items():
             p = self.home / name
-            if fingerprint(p) != expected or (p.is_symlink() and not p.exists()):
+            if fingerprint(p) != expected or (is_link(p) and not p.exists()):
                 errors.append('Missing or modified: ' + name)
         for key, block in self.state.get('blocks', {}).items():
             p = self.home / key.rsplit(':', 1)[0]
-            if not p.exists() or block not in p.read_text():
+            if not p.exists() or block not in p.read_text(encoding='utf-8'):
                 errors.append('Missing/modified instruction block: ' + str(p))
         for p in (self.home / '.codex/agents').glob('*.toml'):
-            tomllib.loads(p.read_text())
+            tomllib.loads(p.read_text(encoding='utf-8'))
         from runtime import merge
         for name, expected in self.state.get('configuration', {}).items():
             p = self.home / name
             if not p.exists():
                 errors.append('Missing configuration: ' + name)
                 continue
-            actual = tomllib.loads(p.read_text()) if p.suffix == '.toml' else json.loads(p.read_text())
+            actual = tomllib.loads(p.read_text(encoding='utf-8')) if p.suffix == '.toml' else json.loads(p.read_text(encoding='utf-8'))
             try:
                 if merge(actual, expected) != actual:
                     errors.append('Missing configuration entries: ' + name)
@@ -399,7 +491,7 @@ def main():
     selected = args.only.split(',')
     if set(selected) - set(COMPONENTS):
         parser.error('Unknown component: ' + ', '.join(sorted(set(selected) - set(COMPONENTS))))
-    manifest = json.loads(args.manifest.read_text())
+    manifest = json.loads(args.manifest.read_text(encoding='utf-8'))
     if manifest.get('schema') != 1:
         parser.error('Unsupported manifest schema')
     installer = Installer(args.home, manifest)
@@ -413,11 +505,13 @@ def main():
         return
     installer.safe(installer.state_dir / 'install.lock')
     installer.state_dir.mkdir(parents=True, exist_ok=True, mode=0o700)
-    with (installer.state_dir / 'install.lock').open('w') as lock:
-        fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    with install_lock(installer.state_dir / 'install.lock'):
         actions = {}
         if set(selected) & {'runtime', 'gstack', 'integrations', 'figma'}:
-            from runtime import runtime, gstack, integrations, figma
+            if installer.windows:
+                from windows_runtime import runtime, gstack, integrations, figma
+            else:
+                from runtime import runtime, gstack, integrations, figma
             actions = {'runtime': runtime, 'gstack': gstack, 'integrations': integrations, 'figma': figma}
         for component in COMPONENTS:
             if component not in selected:

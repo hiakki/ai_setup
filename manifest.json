@@ -3,6 +3,23 @@
   "recorded": "2026-09-23",
   "sources": [
     {
+      "id": "powershell-cli",
+      "url": "https://github.com/UncertaintyDeterminesYou4ndMe/powershell-windows-cli-agent-skill.git",
+      "revision": "90a59539db1d7b4406a32cd7b337e76bbe7d6a3c",
+      "sparse": ["references", "scripts"],
+      "skills": [{"path": ".", "name": "powershell-windows-cli"}]
+    },
+    {
+      "id": "voltagent-powershell",
+      "url": "https://github.com/VoltAgent/awesome-claude-code-subagents.git",
+      "revision": "82b73821baa7a911d5b14cfb6da238b7f0db6b42",
+      "sparse": ["categories/02-language-specialists"],
+      "agents": [
+        "categories/02-language-specialists/powershell-5.1-expert.md",
+        "categories/02-language-specialists/powershell-7-expert.md"
+      ]
+    },
+    {
       "id": "emil",
       "url": "https://github.com/emilkowalski/skills.git",
       "revision": "d23d7f88a2e21c9e4b1418c7abe420f5c1052ba7",
@@ -334,6 +351,11 @@
   },
   "codebase_memory_version": "0.10.8",
   "codebase_memory_installer_sha256": "2fdd4d6563fc8e540bb32e233c5fdef22ecf05d7ebd5a80657cd4fec953b3475",
+  "codebase_memory_windows_installer_sha256": "4fa23417504db92845f33086569f8906259a07f0168d0d07b4c29555593a7607",
+  "windows_ffmpeg": {
+    "version": "8.1.2",
+    "sha256": "db580001caa24ac104c8cb856cd113a87b0a443f7bdf47d8c12b1d740584a2ec"
+  },
   "figma": {
     "repository": "openai/plugins",
     "revision": "1dc195897af4161d039b80d8471ec0a10c9bbc89",

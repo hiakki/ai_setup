@@ -23,6 +23,8 @@ The follow-up read of local skill-lock metadata and role names confirmed 35 CLI-
 | `AgriciDaniel/claude-blog` | 32 skills, five roles, core/presentation extras; portable path/host adapter |
 | `garrytan/gstack` | Recorded suite with native per-host generation |
 | `msitarzewski/agency-agents` | Actual 32-role local selection, broader than just web/mobile manifests |
+| `VoltAgent/awesome-claude-code-subagents` | PowerShell 5.1 and 7 expert roles added for native Windows development |
+| `UncertaintyDeterminesYou4ndMe/powershell-windows-cli-agent-skill` | PowerShell/CMD community skill, references and helper scripts; added for native Windows |
 | `DeusData/codebase-memory-mcp` | Release binary/checksums and generated native integration |
 | `trailhq/Graft` | Published `@nanonets/graft` package, generated integration |
 | `microsoft/playwright-mcp` | Pinned npm package, isolated headless Chromium |
@@ -34,7 +36,10 @@ Four initially unattributed skills were resolved through provider history. Addy 
 
 ## Intentional portability changes
 
+The Windows additions are new provider selections, not part of the original Mac inventory. Their pinned original repositories are fetched at install time. The PowerShell skill supplies quoting, UTF-8, error handling and environment guidance; the VoltAgent roles provide separate Windows PowerShell 5.1 and PowerShell 7 review checklists. These are community sources, not Microsoft-authored instructions. Agency Developer Tooling Engineer, DevOps Automator and Test Automation Engineer roles were also used during implementation and remain in the existing selection.
+
 - Replace Mac-specific paths with the chosen destination home.
+- Use native Windows executables, PowerShell bootstrapping, directory junctions and Windows ACL checks; retain Git Bash for upstream shell scripts.
 - Activate documented global preferences in both clients; Claude previously had no personal CLAUDE.md.
 - Preserve additional workflow/release evidence rules from Codex's personal AGENTS.md.
 - Generate provider hooks in an isolated home, importing only Claude/Codex configuration. Do not configure the other clients an upstream auto-detector happens to find.

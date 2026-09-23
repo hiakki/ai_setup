@@ -3,8 +3,10 @@
 import argparse
 from collections import Counter
 import contextlib
+import hashlib
 import http.server
 import json
+import os
 from pathlib import Path
 import queue
 import subprocess
@@ -16,23 +18,42 @@ import tomllib
 from setup import Installer, ROOT, run, capture
 
 
+def tool_command(installer, name):
+    if installer.windows:
+        from windows_runtime import command
+        return command(installer, name)
+    return [installer.bin / name]
+
+
 class RPC:
     def __init__(self, command, env, cwd, codex=False):
-        self.log = (cwd / ('mcp-' + Path(command[0]).name + '.log')).open('w')
-        self.process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                                        stderr=self.log, text=True, env=env, cwd=cwd)
+        from setup import command_args
+        command = list(map(str, command))
+        identity = hashlib.sha256(json.dumps(command).encode()).hexdigest()[:8]
+        self.log = (cwd / ('mcp-' + Path(command[0]).name + '-' + identity + '.log')).open('w', encoding='utf-8')
+        try:
+            self.process = subprocess.Popen(command_args(command, env=env), stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                                            stderr=self.log, text=True, encoding='utf-8', env=env, cwd=cwd)
+        except BaseException:
+            self.log.close()
+            raise
         self.queue = queue.Queue()
         self.counter = 0
         def read():
             for line in self.process.stdout:
                 self.queue.put(line)
-        threading.Thread(target=read, daemon=True).start()
+        self.reader = threading.Thread(target=read, daemon=True)
+        self.reader.start()
         params = {'capabilities': {'experimentalApi': True} if codex else {},
                   'clientInfo': {'name': 'ai-setup-smoke', 'version': '1'}}
         if not codex:
             params['protocolVersion'] = '2024-11-05'
-        self.call('initialize', params)
-        self.send({'jsonrpc': '2.0', 'method': 'initialized' if codex else 'notifications/initialized'})
+        try:
+            self.call('initialize', params)
+            self.send({'jsonrpc': '2.0', 'method': 'initialized' if codex else 'notifications/initialized'})
+        except BaseException:
+            self.close()
+            raise
 
     def send(self, payload):
         self.process.stdin.write(json.dumps(payload) + '\n')
@@ -60,12 +81,17 @@ class RPC:
         raise RuntimeError(f'MCP timed out: {method}')
 
     def close(self):
-        self.process.terminate()
+        if self.process.poll() is None:
+            self.process.terminate()
         try:
             self.process.wait(timeout=10)
         except subprocess.TimeoutExpired:
             self.process.kill()
             self.process.wait()
+        self.reader.join(timeout=10)
+        self.process.stdin.close()
+        if not self.reader.is_alive():
+            self.process.stdout.close()
         self.log.close()
 
 
@@ -73,18 +99,32 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--home', type=Path, default=Path.home())
     args = parser.parse_args()
-    i = Installer(args.home, json.loads((ROOT / 'manifest.json').read_text()))
+    i = Installer(args.home, json.loads((ROOT / 'manifest.json').read_text(encoding='utf-8')))
+    report_file = i.state_dir / 'smoke-report.json'
+    # A failed rerun must never leave a previous passing report behind.
+    if report_file.exists():
+        report_file.unlink()
+    try:
+        check_runtime(i, report_file)
+    except Exception as error:
+        i.state_dir.mkdir(parents=True, exist_ok=True)
+        report_file.write_text(json.dumps({'status': 'failed', 'platform': sys.platform,
+                                          'error': str(error)}, indent=2) + '\n', encoding='utf-8')
+        raise
+
+
+def check_runtime(i, report_file):
     i.verify()
     fixture = i.state_dir / 'smoke-fixture'
     fixture.mkdir(parents=True, exist_ok=True)
-    (fixture / 'example.py').write_text('def greet(name):\n    return "Hello " + name\n\ndef main():\n    return greet("world")\n')
-    (fixture / 'index.html').write_text('<!doctype html><title>Setup test</title><button onclick="document.querySelector(\'p\').textContent=\'Verified\'">Check</button><p>Ready</p>')
+    (fixture / 'example.py').write_text('def greet(name):\n    return "Hello " + name\n\ndef main():\n    return greet("world")\n', encoding='utf-8')
+    (fixture / 'index.html').write_text('<!doctype html><title>Setup test</title><button onclick="document.querySelector(\'p\').textContent=\'Verified\'">Check</button><p>Ready</p>', encoding='utf-8')
     run(['git', 'init', '-q', fixture], env=i.env)
     for tool in ('codex', 'claude', 'graft', 'codebase-memory-mcp', 'bun', 'skills'):
-        run([i.bin / tool, '--version'], env=i.env)
-    run([i.bin / 'graft', 'build', '--no-ignore'], cwd=fixture, env=i.env)
-    run([i.bin / 'graft', 'check'], cwd=fixture, env=i.env)
-    with contextlib.closing(RPC([str(i.bin / 'codex'), 'app-server', '--listen', 'stdio://'],
+        run([*tool_command(i, tool), '--version'], env=i.env)
+    run([*tool_command(i, 'graft'), 'build', '--no-ignore'], cwd=fixture, env=i.env)
+    run([*tool_command(i, 'graft'), 'check'], cwd=fixture, env=i.env)
+    with contextlib.closing(RPC([*tool_command(i, 'codex'), 'app-server', '--listen', 'stdio://'],
                                i.env, fixture, codex=True)) as rpc:
         skills = rpc.call('skills/list', {'cwds': [str(fixture)], 'forceReload': True})['data'][0]
         counts = Counter(s['name'] for s in skills['skills'])
@@ -95,25 +135,28 @@ def main():
             raise RuntimeError('Missing Codex skills: ' + str(required - counts.keys()))
         hooks = rpc.call('hooks/list', {'cwds': [str(fixture)]})['data'][0]
         planned = i.state['configuration']['.codex/config.toml']['hooks']
-        commands = {h['command'] for entries in planned.values() if isinstance(entries, list)
+        commands = {h.get('command_windows', h['command']) if i.windows else h['command']
+                    for entries in planned.values() if isinstance(entries, list)
                     for entry in entries for h in entry.get('hooks', []) if 'command' in h}
-        owned = [h for h in hooks['hooks'] if h['sourcePath'] == str(i.home / '.codex/config.toml')
+        owned = [h for h in hooks['hooks'] if os.path.normcase(h['sourcePath']) == os.path.normcase(str(i.home / '.codex/config.toml'))
                  and h.get('command') in commands]
         if hooks['errors'] or len(owned) < 6 or any(h['trustStatus'] != 'trusted' or not h['enabled'] for h in owned):
             raise RuntimeError('Generated Codex hooks are not loaded, enabled and trusted')
         print(f'PASS: {len(counts)} Codex skills; {len(owned)} enabled and trusted hooks')
     blog = i.sources / 'claude-blog'
     post = fixture / 'setup-check.md'
-    post.write_text('---\ntitle: Setup check\ndescription: Local rendering test\ndate: 2026-09-23\nauthor: Setup verifier\n---\n\nThe blog rendering runtime works.\n')
+    post.write_text('---\ntitle: Setup check\ndescription: Local rendering test\ndate: 2026-09-23\nauthor: Setup verifier\n---\n\nThe blog rendering runtime works.\n', encoding='utf-8')
     rendered = fixture / 'rendered'
-    run([blog / '.venv/bin/python', blog / 'scripts/blog_render.py', '--md', post,
+    from setup import venv_python
+    run([venv_python(blog / '.venv'), blog / 'scripts/blog_render.py', '--md', post,
          '--out-dir', rendered, '--pdf-engine', 'playwright', '--json'], env=i.env)
     if not any(p.read_bytes().startswith(b'%PDF') for p in rendered.glob('*.pdf')):
         raise RuntimeError('Blog renderer did not produce a PDF')
-    config = tomllib.loads((i.home / '.codex/config.toml').read_text())
+    config = tomllib.loads((i.home / '.codex/config.toml').read_text(encoding='utf-8'))
     for name in ('codebase-memory-mcp', 'graft', 'playwright'):
         spec = config['mcp_servers'][name]
-        with contextlib.closing(RPC([spec['command'], *spec.get('args', [])], i.env, fixture)) as rpc:
+        server_env = dict(i.env, **spec.get('env', {}))
+        with contextlib.closing(RPC([spec['command'], *spec.get('args', [])], server_env, fixture)) as rpc:
             listed = rpc.call('tools/list', {})
             if not listed.get('tools'):
                 raise RuntimeError(f'{name}: empty tools list')
@@ -141,7 +184,7 @@ def main():
                         result = rpc.call('tools/call', {'name': 'browser_snapshot', 'arguments': {}})
                         if 'Verified' not in json.dumps(result):
                             raise RuntimeError('Browser button did not change the visible result')
-                        browse = i.sources / 'gstack/browse/dist/browse'
+                        browse = i.sources / ('gstack/browse/dist/browse.exe' if i.windows else 'gstack/browse/dist/browse')
                         browser_env = dict(i.env, BROWSE_STATE_FILE=str(fixture / 'gstack-browser.json'))
                         try:
                             run([browse, 'goto', f'http://127.0.0.1:{server.server_port}/index.html'],
@@ -155,11 +198,11 @@ def main():
                     finally:
                         server.shutdown()
             print(f'PASS: {name} real MCP flow')
-    agents = capture([i.bin / 'claude', 'agents', '--setting-sources', 'user'], env=i.env)
+    agents = capture([*tool_command(i, 'claude'), 'agents', '--setting-sources', 'user'], env=i.env)
     for path in (i.home / '.claude/agents').glob('*.md'):
         if path.stem not in agents:
             raise RuntimeError('Claude did not list role: ' + path.stem)
-    plugins = json.loads(capture([i.bin / 'codex', 'plugin', 'list', '--json'], env=i.env))
+    plugins = json.loads(capture([*tool_command(i, 'codex'), 'plugin', 'list', '--json'], env=i.env))
     if not any(p.get('pluginId') == 'figma@ai-setup-providers' and p.get('enabled')
                for p in plugins.get('installed', [])):
         raise RuntimeError('Official Figma plugin is not installed and enabled')
@@ -172,7 +215,8 @@ def main():
                              'Laya authenticated predictions']}
     report['checks'] += ['Codex skill discovery and trusted hooks', 'Blog HTML/PDF render',
                          'gstack browser navigate/snapshot', 'Laya offline regressions']
-    (i.state_dir / 'smoke-report.json').write_text(json.dumps(report, indent=2) + '\n')
+    report['platform'] = sys.platform
+    report_file.write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8')
     print('PASS: local runtime smoke checks. Report: ' + str(i.state_dir / 'smoke-report.json'))
 
 

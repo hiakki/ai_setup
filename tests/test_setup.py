@@ -1,4 +1,5 @@
 import json
+import os
 import subprocess
 import sys
 import tempfile
@@ -118,11 +119,16 @@ class InstallerTests(unittest.TestCase):
         self.run_setup('install', '--only', 'skills', ok=False)
         self.assertFalse((self.home / '.agents/skills/example').exists())
 
-    def test_parent_symlink_cannot_escape_home(self):
+    def test_parent_directory_link_cannot_escape_home(self):
         outside = self.root / 'outside'
         outside.mkdir()
         self.home.mkdir()
-        (self.home / '.agents').symlink_to(outside, target_is_directory=True)
+        target = self.home / '.agents'
+        if os.name == 'nt':
+            import _winapi
+            _winapi.CreateJunction(str(outside), str(target))
+        else:
+            target.symlink_to(outside, target_is_directory=True)
         self.run_setup('install', '--only', 'skills', ok=False)
         self.assertEqual(list(outside.iterdir()), [])
 

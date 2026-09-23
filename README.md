@@ -12,7 +12,7 @@ cd ai_setup
 bash install.sh
 ```
 
-After this repository has been published, the single-command entry point is:
+The single-command entry point is:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/hiakki/ai_setup/main/bootstrap.sh | bash
@@ -20,29 +20,29 @@ curl -fsSL https://raw.githubusercontent.com/hiakki/ai_setup/main/bootstrap.sh |
 
 Allow at least **12 GiB free disk space** for packages, builds, caches and browsers. Linux asks for sudo only for OS packages. The AI environment is installed for the invoking user, not globally for every server account. macOS needs Homebrew and its command-line tools first. Start a new shell/client after installation so PATH, skills, roles, and hooks reload.
 
-On **Windows**, run `install.ps1` in PowerShell. It installs the environment inside your Ubuntu WSL2 distribution. Native Windows Claude/Codex installations are separate and are not modified. If WSL2 is missing, first run `wsl --install -d Ubuntu` in Administrator PowerShell, reboot if requested, and create the Linux user. Then:
+On **native Windows x64 (Windows 10/11 or Server 2022+)**, run `install.ps1` from the checkout in PowerShell 5.1 or 7. **No Ubuntu or WSL is required.** Tools, skills, roles and configuration install into your Windows user profile:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\install.ps1
-# For an existing Debian WSL distribution:
-powershell -ExecutionPolicy Bypass -File .\install.ps1 -Distribution Debian
 ```
 
-Windows without an initialized WSL distribution cannot complete unattended through a required OS reboot or initial account creation.
+Allow **20 GiB free disk space** for a fresh Windows setup. The launcher installs Python 3.12 and Git for Windows if needed, then native Node, clients, graph tools, FFmpeg and browsers. Git Bash supplies the shell needed by some provider scripts. Graft's native parser requires Microsoft C++ Build Tools; if missing, the installer downloads Microsoft's signed installer and Windows asks for elevation. If Windows requests a reboot, reboot and rerun the same command. Windows ARM64 is not currently supported by this launcher.
 
-After publishing this repository, the Windows download-and-run command is:
+After pushing this native-Windows change, the download-and-run command is:
 
 ```powershell
 & ([scriptblock]::Create((Invoke-WebRequest -UseBasicParsing 'https://raw.githubusercontent.com/hiakki/ai_setup/main/install.ps1').Content))
 ```
+
+Start a fresh terminal after installation to load the user PATH. Existing WSL installations remain separate; run `install.sh` inside a chosen WSL distribution if that is your intended environment. Actual Windows execution is pending. The included GitHub workflow exercises Windows PowerShell 5.1 and PowerShell 7 after you push.
 
 ## What gets installed
 
 | Component | Contents / source |
 | --- | --- |
 | Clients and runtimes | Pinned Codex, Claude Code, Node, Bun, Skills CLI, Graft, Playwright MCP; OS FFmpeg |
-| Shared provider skills | Emil, Taste, Impeccable, Addy Osmani engineering, Anthropic incident response, marketing, ECC video editing, ScrapeCreators, Superpowers, TypeSafe, Vercel discovery, OpenAI utility skills |
-| Specialist roles | 32 selected roles fetched from `msitarzewski/agency-agents`; three Codebase Memory roles; five blog roles |
+| Shared provider skills | Emil, Taste, Impeccable, Addy Osmani engineering, Anthropic incident response, marketing, ECC video editing, ScrapeCreators, Superpowers, TypeSafe, Vercel discovery, OpenAI utilities, PowerShell Windows CLI |
+| Specialist roles | 32 selected roles fetched from `msitarzewski/agency-agents`; two VoltAgent PowerShell roles; three Codebase Memory roles; five blog roles |
 | Blog | All 32 upstream skills, both clients' role adapters, isolated Python runtime and Chromium rendering |
 | gstack | Pinned official suite, built tools, prefixed Claude/Codex skills, shared source checkout; no optional learning or automatic upgrades |
 | Graph integration | Codebase Memory and Graft, provider-generated hooks and guidance, registered once per client |
@@ -82,6 +82,19 @@ bash install.sh install --only skills,agents,custom,rules
 
 Available components: `runtime,skills,agents,custom,blog,gstack,integrations,rules,figma`. Install `runtime` before runtime-dependent components. The complete default installs all components. `--home /absolute/path` selects a separate installation home; it is useful for testing, not a way to install into another user's account with the wrong ownership.
 
+Windows equivalents, from the checkout:
+
+```powershell
+.\install.ps1 -Action plan
+.\install.ps1 -Action verify
+.\install.ps1 -Only 'skills,agents,custom,rules'
+# Isolated installation (does not persist that home's PATH in your user profile):
+.\install.ps1 -HomeDirectory 'C:\AI setup test'
+& "$HOME/.local/share/ai-setup/venv/Scripts/python.exe" smoke.py
+```
+
+`plan` needs an existing Python 3.12–3.13 on Windows and makes no downloads. Directory junctions share Windows skill folders without requiring Developer Mode. Native MCP registrations use executables directly; terminal commands have Windows and Git Bash launchers.
+
 The installer pins top-level npm versions and Git commits. OS packages and upstream Python dependency ranges remain platform/resolver dependent; this is not a byte-identical OS image. Review and change pins deliberately. Do not run a generic `skills update` over the separately managed blog/gstack adapters. Replacing an existing source revision is intentionally not an automatic destructive operation.
 
 Graft uses a separate Node 20 runtime because its pinned native parser failed to build with Node 24 on Linux ARM. Other tools use Node 24. The installer trusts only the exact provider hooks it installs, using hashes reported by Codex itself. It does not enable optional gstack learning, desktop-browser integration or automatic upgrades.
@@ -94,11 +107,17 @@ Installation does not transfer authentication, authorize spending, or copy secre
 
 Client model choices and permission policies remain account-specific. The observed local choices were Codex `gpt-6-astra` with medium reasoning and Claude `opus[1m]`; choose available models after login. Existing choices are preserved.
 
-For Laya, provide `LAYA_ENDPOINT` and `LAYA_API_TOKEN` through your private environment, or provision `~/.config/laya/config.json` with mode `0600` containing `endpoint` and `token`. Then run the bundled synthetic check:
+For Laya, provide `LAYA_ENDPOINT` and `LAYA_API_TOKEN` through your private environment, or provision `~/.config/laya/config.json` containing `endpoint` and `token`. Use mode `0600` on Unix; on Windows the file must belong to your current user and grant access only to that user, SYSTEM and Administrators. Then run the bundled synthetic check:
 
 ```bash
 python3 ~/.agents/skills/laya-decisions/scripts/predict.py \
   --input ~/.agents/skills/laya-decisions/assets/smoke-request.json
+```
+
+In PowerShell, use the installed interpreter:
+
+```powershell
+& "$HOME/.local/share/ai-setup/venv/Scripts/python.exe" "$HOME/.agents/skills/laya-decisions/scripts/predict.py" --input "$HOME/.agents/skills/laya-decisions/assets/smoke-request.json"
 ```
 
 TypeSafe and ScrapeCreators need their own credentials before live use. Private HyperDX, Servinoza and Stripe integrations are account/project-specific; they are not silently pointed at the original workstation's services. See [connections](docs/CONNECTIONS.md). No model weights, benchmark environments, paid services, production endpoints or authentication caches are replicated.
@@ -111,7 +130,7 @@ python3 -m venv .work/venv
 .work/venv/bin/python -m unittest discover -s tests -v
 python3 custom/skills/laya-decisions/scripts/test_predict.py
 bash -n bootstrap.sh install.sh
-# Optional, with PowerShell installed: native argument/error handling using simulated WSL
+# Optional, with PowerShell installed: simulated native bootstrap/process boundaries
 python3 tests/check_windows_launcher.py --pwsh /absolute/path/to/pwsh
 ```
 

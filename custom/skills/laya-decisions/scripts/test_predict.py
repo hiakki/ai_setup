@@ -4,6 +4,7 @@ import importlib.util
 import io
 import json
 import os
+import subprocess
 from pathlib import Path
 import tempfile
 import unittest
@@ -26,7 +27,31 @@ class PredictTests(unittest.TestCase):
         self.addCleanup(self.tmp.cleanup)
         self.config = Path(self.tmp.name) / 'config.json'
         self.config.write_text(json.dumps({'endpoint': 'https://example.invalid/predict', 'token': TOKEN}))
-        self.config.chmod(0o600)
+        if os.name == 'nt':
+            self.set_windows_acl(public=False)
+        else:
+            self.config.chmod(0o600)
+
+    def set_windows_acl(self, public):
+        # Exercise the real filesystem DACL on Windows; fixture paths never enter PowerShell source.
+        script = '''
+$ErrorActionPreference = 'Stop'
+$path = $env:LAYA_TEST_CONFIG
+$sid = [System.Security.Principal.WindowsIdentity]::GetCurrent().User
+$acl = [System.Security.AccessControl.FileSecurity]::new()
+$acl.SetOwner($sid)
+$acl.SetAccessRuleProtection($true, $false)
+$acl.AddAccessRule([System.Security.AccessControl.FileSystemAccessRule]::new($sid, 'FullControl', 'Allow'))
+if ($env:LAYA_TEST_PUBLIC -eq '1') {
+    $everyone = [System.Security.Principal.SecurityIdentifier]::new('S-1-1-0')
+    $acl.AddAccessRule([System.Security.AccessControl.FileSystemAccessRule]::new($everyone, 'Read', 'Allow'))
+}
+Set-Acl -LiteralPath $path -AclObject $acl
+'''
+        subprocess.run(['powershell.exe', '-NoProfile', '-NonInteractive', '-Command', script],
+                       env=dict(os.environ, LAYA_TEST_CONFIG=str(self.config),
+                                LAYA_TEST_PUBLIC='1' if public else '0'), check=True,
+                       capture_output=True)
 
     def run_cli(self, data=REQUEST, response=RESPONSE, failure=None):
         out, err = io.StringIO(), io.StringIO()
@@ -88,10 +113,26 @@ class PredictTests(unittest.TestCase):
             status, _, _, transport = self.run_cli()
             self.assertEqual(status, 1)
             transport.assert_not_called()
-        self.config.chmod(0o644)
+        self.config.write_text(json.dumps({'endpoint': 'https://example.invalid/predict', 'token': TOKEN}))
+        if os.name == 'nt':
+            self.set_windows_acl(public=True)
+        else:
+            self.config.chmod(0o644)
         status, _, _, transport = self.run_cli()
         self.assertEqual(status, 1)
         transport.assert_not_called()
+
+    def test_windows_acl_metadata_rejects_other_principals_and_unverifiable_acl(self):
+        owner = 'S-1-5-21-123-456-789-1001'
+        private = {'user': owner, 'owner': owner, 'allow': [owner, 'S-1-5-18', 'S-1-5-32-544']}
+        with patch.object(client, 'windows_acl', return_value=private):
+            client.require_private_config(self.config, windows=True)
+        for metadata in [dict(private, allow=[owner, 'S-1-1-0']),
+                         dict(private, owner='S-1-5-21-999-999-999-1001'),
+                         {}, dict(private, allow=None)]:
+            with self.subTest(metadata=metadata), patch.object(client, 'windows_acl', return_value=metadata):
+                with self.assertRaises(ValueError):
+                    client.require_private_config(self.config, windows=True)
 
     def test_redirect_handler_never_forwards_credentials(self):
         handler = client.NoRedirect()

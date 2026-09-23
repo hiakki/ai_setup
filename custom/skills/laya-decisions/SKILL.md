@@ -22,12 +22,21 @@ Run from any project:
 python3 ~/.agents/skills/laya-decisions/scripts/predict.py --input /path/to/request.json
 ```
 
+On native Windows, use PowerShell and the setup's Python interpreter:
+
+```powershell
+& "$HOME/.local/share/ai-setup/venv/Scripts/python.exe" "$HOME/.agents/skills/laya-decisions/scripts/predict.py" --input 'C:\path\to\request.json'
+```
+
 Or pipe JSON to that command without `--input`. The helper emits the server JSON
 on stdout and elapsed milliseconds on stderr. It exits nonzero on errors and
 does not retry or switch providers automatically. Default timeout is 30 seconds;
 `--timeout 60` allows a slower cold request.
 
-Credentials and the endpoint are in `~/.config/laya/config.json`, mode `0600`.
+Credentials and the endpoint are in `~/.config/laya/config.json`, mode `0600` on Unix.
+On Windows, the file must be owned by the current user and its access-control list
+must grant access only to that user, SYSTEM and Administrators. The helper checks
+the actual ACL and rejects public or inherited access granted to other identities.
 Alternatively set `LAYA_ENDPOINT` and `LAYA_API_TOKEN` in the calling environment;
 no config file is needed when both are set. Environment values override the file.
 The helper reads credentials itself. Do not read that file into chat, copy the token into
