@@ -208,10 +208,39 @@ def install_ffmpeg(i):
     run([i.bin / 'ffmpeg.exe', '-version'], env=i.env)
 
 
+def blog_renderer_adapter(i, source):
+    """Adapt the pinned renderer's POSIX-only open while retaining link refusal."""
+    path = source / 'scripts/blog_render.py'
+    original = '        fd = os.open(str(path), os.O_RDONLY | os.O_NOFOLLOW)'
+    replacement = '''        # ai-setup: Windows has no O_NOFOLLOW. Check the opened file identity.
+        before = os.lstat(path)
+        if (not stat.S_ISREG(before.st_mode) or
+                getattr(before, "st_file_attributes", 0) & getattr(stat, "FILE_ATTRIBUTE_REPARSE_POINT", 0)):
+            raise ValueError(f"refusing link or non-regular file: {path}")
+        fd = os.open(str(path), os.O_RDONLY | getattr(os, "O_BINARY", 0) | getattr(os, "O_NOFOLLOW", 0))
+        try:
+            if not os.path.samestat(before, os.fstat(fd)):
+                raise ValueError(f"source changed while opening: {path}")
+        except BaseException:
+            os.close(fd)
+            raise'''
+    text = path.read_text(encoding='utf-8')
+    if replacement not in text:
+        if text.count(original) != 1:
+            raise ValueError('Pinned blog renderer changed; review its Windows read adapter')
+        # fetch() has already checked the provider revision and any recorded diff.
+        i.safe(path)
+        path.write_text(text.replace(original, replacement, 1), encoding='utf-8')
+    i.remember(path)
+    i.state.setdefault('generated_sources', {})['claude-blog'] = capture(['git', '-C', source, 'diff', 'HEAD'])
+    i.save()
+
+
 def gstack(i):
     source = i.fetch(i.spec('gstack'))
     if 'gstack' in i.state['completed']:
         i.verify()
+        gstack_skill_names(i)
         return
     for folder in (i.home / '.claude/skills', i.home / '.codex/skills', i.home / '.agents/skills'):
         for path in folder.glob('gstack*'):
@@ -240,6 +269,7 @@ def gstack(i):
         i.write(i.home / '.agents/skills/gstack/SKILL.md', (source / '.agents/skills/gstack/SKILL.md').read_text(encoding='utf-8'))
         # The Codex runtime must expose binaries/assets without a second skill tree.
         runtime_adapter(i, source)
+        gstack_skill_names(i)
     finally:
         # Remember only directories checked for ownership before provider setup.
         # A provider interruption remains resumable, without adopting unrelated files.
@@ -248,6 +278,22 @@ def gstack(i):
                 i.remember(path)
         i.state.setdefault('generated_sources', {})['gstack'] = capture(['git', '-C', source, 'diff', 'HEAD'])
         i.save()
+
+
+def gstack_skill_names(i):
+    """Windows provider copies need the same names as their prefixed folders."""
+    for folder in sorted((i.home / '.agents/skills').glob('gstack-*')):
+        if folder.relative_to(i.home).as_posix() not in i.state['files']:
+            continue
+        i.owned(folder)
+        path = folder / 'SKILL.md'
+        text = path.read_text(encoding='utf-8')
+        updated, count = re.subn(r'(?m)^name:.*$', 'name: ' + folder.name, text, count=1)
+        if count != 1:
+            raise ValueError(f'Missing gstack skill name: {path}')
+        if updated != text:
+            path.write_text(updated, encoding='utf-8')
+            i.remember(folder)
 
 
 def runtime_adapter(i, source):
@@ -334,22 +380,54 @@ def integrations(i):
             run([*command(i, 'codebase-memory-mcp'), 'config', 'set', key, value], env=i.env)
         i.state['cbm_configured'] = True
         i.save()
-    node = command(i, 'node')[0]
-    playwright = i.home / '.local/share/ai-setup/npm/node_modules/@playwright/mcp'
-    run([node, playwright / 'node_modules/playwright/cli.js', 'install', 'chromium'], env=i.env)
-    browser = capture([node, '-e', "console.log(require('playwright').chromium.executablePath())"], cwd=playwright, env=i.env)
-    config = i.home / '.config/ai-setup/playwright.json'
-    i.write(config, json.dumps({'browser': {'browserName': 'chromium', 'isolated': True,
-            'launchOptions': {'executablePath': browser, 'headless': True, 'chromiumSandbox': True}}}, indent=2) + '\n')
+    codex_path = i.home / '.codex/config.toml'
+    claude_path = i.home / '.claude.json'
+    codex = tomllib.loads(codex_path.read_text(encoding='utf-8')) if codex_path.exists() else {}
+    claude = json.loads(claude_path.read_text(encoding='utf-8')) if claude_path.exists() else {}
+    codex_playwright = codex.get('mcp_servers', {}).get('playwright', {})
+    claude_playwright = claude.get('mcpServers', {}).get('playwright', {})
+    existing = next((spec for spec in (codex_playwright, claude_playwright) if spec.get('command')), None)
+    if existing:
+        print('Reusing existing Playwright MCP command and browser; skipping browser download.')
+        # Share the launch settings with a client that has no entry of its own.
+        playwright_spec = {key: existing[key] for key in ('command', 'args', 'env') if key in existing}
+    else:
+        node = command(i, 'node')[0]
+        playwright = i.home / '.local/share/ai-setup/npm/node_modules/@playwright/mcp'
+        # Apply the timeout before connecting, including in Playwright's forked workers.
+        download_timeout = Path(__file__).parent / 'config/playwright-download-timeout.cjs'
+        run([node, '--require', download_timeout,
+             playwright / 'node_modules/playwright/cli.js', 'install', 'chromium'], env=i.env)
+        browser = capture([node, '-e', "console.log(require('playwright').chromium.executablePath())"], cwd=playwright, env=i.env)
+        config = i.home / '.config/ai-setup/playwright.json'
+        i.write(config, json.dumps({'browser': {'browserName': 'chromium', 'isolated': True,
+                'launchOptions': {'executablePath': browser, 'headless': True, 'chromiumSandbox': True}}}, indent=2) + '\n')
+        argv = command(i, 'playwright-mcp')
+        playwright_spec = {'command': str(argv[0]), 'args': [*map(str, argv[1:]), '--config', str(config)],
+                          'env': {'PATH': i.env['PATH'], 'PLAYWRIGHT_BROWSERS_PATH': i.env['PLAYWRIGHT_BROWSERS_PATH']}}
     servers = {}
-    for name, args in [('codebase-memory-mcp', []), ('graft', ['mcp']), ('playwright', ['--config', str(config)])]:
-        argv = command(i, 'playwright-mcp' if name == 'playwright' else name)
+    for name, args in [('codebase-memory-mcp', []), ('graft', ['mcp'])]:
+        argv = command(i, name)
         servers[name] = {'command': str(argv[0]), 'args': [*map(str, argv[1:]), *args],
                          'env': {'PATH': i.env['PATH'], 'PLAYWRIGHT_BROWSERS_PATH': i.env['PLAYWRIGHT_BROWSERS_PATH']}}
     servers['figma'] = {'url': 'https://mcp.figma.com/mcp'}
-    merge_config(i, i.home / '.codex/config.toml', {'mcp_servers': servers})
-    merge_config(i, i.home / '.claude.json', {'mcpServers': {
-        name: dict(spec, type='http' if 'url' in spec else 'stdio') for name, spec in servers.items()}})
+    claude_servers = {name: dict(spec, type='http' if 'url' in spec else 'stdio') for name, spec in servers.items()}
+    if not codex_playwright:
+        servers['playwright'] = playwright_spec
+    if not claude_playwright:
+        claude_servers['playwright'] = dict(playwright_spec, type='stdio')
+    for path, section, incoming, current in (
+            (codex_path, 'mcp_servers', servers, codex),
+            (claude_path, 'mcpServers', claude_servers, claude)):
+        recorded = i.state.get('configuration', {}).get(path.relative_to(i.home).as_posix(), {}).get(section, {})
+        for name in ('codebase-memory-mcp', 'graft'):
+            # PATH changes between terminals (including after our PATH setup).
+            # Reuse the installed value; retain conflict checks for local edits.
+            configured_env = current.get(section, {}).get(name, {}).get('env', {})
+            recorded_env = recorded.get(name, {}).get('env', {})
+            installed_path = recorded_env.get('PATH', configured_env.get('PATH', i.env['PATH']))
+            incoming[name]['env'] = dict(incoming[name]['env'], PATH=installed_path)
+        merge_config(i, path, {section: incoming})
     trust_generated_hooks(i)
 
 

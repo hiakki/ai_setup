@@ -69,6 +69,8 @@ Downloaded payloads live on the destination machine, outside this Git repository
 
 The installer preserves unrelated configuration. It refuses conflicting existing skill folders, edited managed files, mismatched source revisions, duplicate role names, and conflicting MCP definitions. It backs up files before merging configuration. It does not automatically delete or replace an older setup that it cannot prove it owns.
 
+On Windows, an existing local Playwright MCP entry is reused with its configured browser. For example, `npx -y @playwright/mcp@latest --browser chrome` keeps using Chrome and skips the installer's Chromium download. Each client's existing Playwright entry is preserved; a client without one receives the existing launch settings. With no existing local entry, the installer sets up its managed Chromium browser. The full installation smoke check still tests the configured browser.
+
 Rerun the same command after a failed download; installed component state is retained. Review a reported collision before relocating that specific old file. Do not delete your entire client configuration. Backups are under `~/.local/state/ai-setup/backups/`.
 
 Browser downloads use a five-minute socket timeout instead of Playwright's 30-second default. This applies to Playwright MCP, blog/Patchright and gstack through their shared installer environment. An explicit `PLAYWRIGHT_DOWNLOAD_CONNECTION_TIMEOUT` value is preserved. To recover an older checkout from a browser download timeout, rerun from PowerShell with:
@@ -79,6 +81,8 @@ powershell -ExecutionPolicy Bypass -File .\install.ps1
 ```
 
 Keep the original `-HomeDirectory` argument if you used one. Completed browser downloads are reused; an incomplete archive may need to download again. This timeout controls inactivity during download, not the maximum total download duration. See [Playwright's download configuration](https://playwright.dev/docs/browsers#install-behind-a-firewall-or-a-proxy).
+
+If the native Windows Playwright MCP download still reports a timeout after this increase, rerun `./install.ps1` from the updated checkout. The pinned downloader can hit Node's five-second connection timeout before IPv6-to-IPv4 fallback completes, while its error prints the much longer configured timeout. The Windows integration step now preloads `config/playwright-download-timeout.cjs` for the download command and its workers so that the configured timeout also applies during connection establishment. This leaves TLS verification, proxy settings, address selection, and browser extraction with the provider and does not persist Node options.
 
 ## Preview, verify, and selective recovery
 

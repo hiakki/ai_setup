@@ -33,7 +33,11 @@ def command_args(args, *, windows=None, env=None):
             if any(any(c in arg for c in ('%', '"', '\r', '\n', '\0')) for arg in args):
                 raise ValueError('Unsafe batch argument; use the native executable or Node entry point')
             command = ' '.join('"' + arg + '"' for arg in args)
-            return [environment.get('COMSPEC', 'cmd.exe'), '/d', '/s', '/c', '"' + command + '"']
+            # Popen applies CRT escaping to lists, but cmd.exe does not understand
+            # its backslash-escaped quotes. Supply cmd's complete command line.
+            prefix = subprocess.list2cmdline([environment.get('COMSPEC', 'cmd.exe'),
+                                              '/d', '/v:off', '/s', '/c'])
+            return prefix + ' "' + command + '"'
     return args
 
 
@@ -183,6 +187,12 @@ class Installer:
     def write(self, path, text, mode=None):
         self.safe(path)
         self.owned(path)
+        # Match write_text's native newline encoding. Avoid replacing unchanged
+        # managed files, which Windows can deny when read-only or held open.
+        if path.is_file() and path.read_bytes() == text.replace('\n', os.linesep).encode('utf-8'):
+            if mode:
+                path.chmod(mode)
+            return
         path.parent.mkdir(parents=True, exist_ok=True)
         temporary = path.with_name(path.name + '.ai-setup-tmp')
         temporary.write_text(text, encoding='utf-8')
@@ -394,6 +404,9 @@ class Installer:
 
     def blog(self):
         source = self.fetch(self.spec('claude-blog'))
+        if self.windows:
+            from windows_runtime import blog_renderer_adapter
+            blog_renderer_adapter(self, source)
         for path in sorted((source / 'skills').glob('*/SKILL.md')):
             meta, _ = metadata(path)
             self.install_skill(source, {'name': meta['name'], 'path': str(path.parent.relative_to(source))}, True)

@@ -88,6 +88,30 @@ class InstallerTests(unittest.TestCase):
         self.run_setup('install', '--only', 'rules', ok=False)
         self.assertEqual(path.read_text(), content)
 
+    @unittest.skipUnless(os.name == 'nt', 'Windows refuses replacing read-only files')
+    def test_agent_rerun_preserves_unchanged_read_only_file(self):
+        self.run_setup('install', '--only', 'agents')
+        path = self.home / '.claude/agents/test-reviewer.md'
+        before = path.read_bytes()
+        modified = path.stat().st_mtime_ns
+        path.chmod(0o444)
+        try:
+            self.run_setup('install', '--only', 'agents')
+            self.assertEqual(path.read_bytes(), before)
+            self.assertEqual(path.stat().st_mtime_ns, modified)
+            self.assertFalse(path.with_name(path.name + '.ai-setup-tmp').exists())
+            self.run_setup('verify')
+        finally:
+            path.chmod(0o666)
+
+    def test_agent_rerun_still_preserves_local_edits(self):
+        self.run_setup('install', '--only', 'agents')
+        path = self.home / '.claude/agents/test-reviewer.md'
+        path.write_text('My edited role\n')
+        result = self.run_setup('install', '--only', 'agents', ok=False)
+        self.assertIn('locally edited path', result.stderr)
+        self.assertEqual(path.read_text(), 'My edited role\n')
+
     def test_python_helper_execution_does_not_look_like_a_user_edit(self):
         self.run_setup('install', '--only', 'skills')
         scripts = self.home / '.agents/skills/example/scripts'

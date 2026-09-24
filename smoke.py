@@ -126,7 +126,15 @@ def check_runtime(i, report_file):
     run([*tool_command(i, 'graft'), 'check'], cwd=fixture, env=i.env)
     with contextlib.closing(RPC([*tool_command(i, 'codex'), 'app-server', '--listen', 'stdio://'],
                                i.env, fixture, codex=True)) as rpc:
+        isolated_windows_home = i.windows and i.home != Path(os.environ.get('USERPROFILE', str(i.home))).resolve()
+        if isolated_windows_home:
+            # Codex discovers user skills from Windows' real profile directory,
+            # even with CODEX_HOME/USERPROFILE redirected for an isolated test.
+            rpc.call('skills/extraRoots/set', {'extraRoots': [str(i.home / '.agents/skills')]})
         skills = rpc.call('skills/list', {'cwds': [str(fixture)], 'forceReload': True})['data'][0]
+        if isolated_windows_home:
+            skills = {key: [entry for entry in skills[key] if Path(entry['path']).is_relative_to(i.home)]
+                      for key in ('skills', 'errors')}
         counts = Counter(s['name'] for s in skills['skills'])
         if skills['errors'] or any(count > 1 for count in counts.values()):
             raise RuntimeError('Codex skill loading errors or duplicate names')

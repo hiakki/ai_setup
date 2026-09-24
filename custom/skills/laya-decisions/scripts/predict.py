@@ -84,11 +84,13 @@ def validate_request(payload):
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--input', type=Path, help='JSON request file; defaults to stdin')
-    parser.add_argument('--config', type=Path, default=Path.home() / '.config/laya/config.json')
+    parser.add_argument('--config', type=Path, help='Defaults to ~/.config/laya/config.json')
     parser.add_argument('--timeout', type=float, default=30, help='Request timeout in seconds (1–120)')
     args = parser.parse_args(argv)
     started = time.monotonic()
     try:
+        if args.config is None:
+            args.config = Path.home() / '.config/laya/config.json'
         if not 1 <= args.timeout <= 120:
             raise ValueError('Timeout must be between 1 and 120 seconds.')
         config = {}

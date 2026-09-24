@@ -38,15 +38,18 @@ class PredictTests(unittest.TestCase):
 $ErrorActionPreference = 'Stop'
 $path = $env:LAYA_TEST_CONFIG
 $sid = [System.Security.Principal.WindowsIdentity]::GetCurrent().User
-$acl = [System.Security.AccessControl.FileSecurity]::new()
+$acl = Get-Acl -LiteralPath $path
 $acl.SetOwner($sid)
 $acl.SetAccessRuleProtection($true, $false)
+foreach ($rule in @($acl.Access)) { $acl.RemoveAccessRuleSpecific($rule) }
 $acl.AddAccessRule([System.Security.AccessControl.FileSystemAccessRule]::new($sid, 'FullControl', 'Allow'))
 if ($env:LAYA_TEST_PUBLIC -eq '1') {
     $everyone = [System.Security.Principal.SecurityIdentifier]::new('S-1-1-0')
     $acl.AddAccessRule([System.Security.AccessControl.FileSystemAccessRule]::new($everyone, 'Read', 'Allow'))
 }
-Set-Acl -LiteralPath $path -AclObject $acl
+# Persist only the changed access/owner sections. Set-Acl can request audit
+# privileges when applying a replacement descriptor on Windows PowerShell 5.1.
+([System.IO.FileInfo]::new($path)).SetAccessControl($acl)
 '''
         subprocess.run(['powershell.exe', '-NoProfile', '-NonInteractive', '-Command', script],
                        env=dict(os.environ, LAYA_TEST_CONFIG=str(self.config),

@@ -1,4 +1,5 @@
 """Exercise shared installer behavior required by native Windows."""
+import json
 import os
 from pathlib import Path
 import subprocess
@@ -14,11 +15,26 @@ class PlatformTests(unittest.TestCase):
     def setUp(self):
         (ROOT / '.work').mkdir(exist_ok=True)
 
+    @unittest.skipUnless(os.name == 'nt', 'Requires native Windows batch invocation')
+    def test_batch_command_preserves_quoted_path_and_literal_arguments(self):
+        from setup import capture
+        with tempfile.TemporaryDirectory(prefix='batch & spaces ', dir=ROOT / '.work') as temp:
+            folder = Path(temp)
+            program = folder / 'arguments.py'
+            program.write_text('import json, sys\nprint(json.dumps(sys.argv[1:]))\n', encoding='utf-8')
+            shim = folder / 'npx.cmd'
+            shim.write_text('@echo off\nsetlocal DisableDelayedExpansion\n'
+                            f'"{sys.executable}" "{program}" %*\n', encoding='utf-8')
+            arguments = ['-y', '@playwright/mcp@latest', '--browser', 'chrome',
+                         'space here', 'literal & (parentheses) | < > ^ !', '']
+            self.assertEqual(json.loads(capture([shim, *arguments])), arguments)
+
     def test_import_and_plan_without_unix_fcntl(self):
-        result = subprocess.run([sys.executable, '-c',
-            "import sys; sys.modules['fcntl'] = None; import setup; "
-            "sys.argv = ['setup.py', 'plan']; setup.main()"],
-            cwd=ROOT, capture_output=True, text=True)
+        with tempfile.TemporaryDirectory(dir=ROOT / '.work') as temp:
+            result = subprocess.run([sys.executable, '-c',
+                "import sys; sys.modules['fcntl'] = None; import setup; "
+                "sys.argv = ['setup.py', 'plan', '--home', sys.argv[1]]; setup.main()", temp],
+                cwd=ROOT, capture_output=True, text=True)
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn('Components:', result.stdout)
 
