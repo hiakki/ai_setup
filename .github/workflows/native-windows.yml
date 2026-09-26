@@ -20,7 +20,6 @@ jobs:
     env:
       PYTHONUTF8: '1'
       PYTHONIOENCODING: utf-8
-      AI_SETUP_TEST_HOME: ${{ runner.temp }}\AI setup home
     defaults:
       run:
         shell: pwsh
@@ -31,6 +30,7 @@ jobs:
           python-version: '3.12'
       - name: Install test dependencies
         run: |
+          "AI_SETUP_TEST_HOME=$env:USERPROFILE" >> $env:GITHUB_ENV
           python -m pip install -r requirements.txt
           if ($LASTEXITCODE -ne 0) { throw 'Test dependency installation failed' }
           New-Item -ItemType Directory -Force .work | Out-Null
@@ -43,7 +43,7 @@ jobs:
       - name: Install with Windows PowerShell 5.1
         shell: powershell
         run: |
-          & .\install.ps1 -HomeDirectory $env:AI_SETUP_TEST_HOME *>&1 |
+          & .\install.ps1 *>&1 |
             Tee-Object -FilePath .work/windows-install.log
           if ($LASTEXITCODE -ne 0) { throw 'Native installation failed' }
       - name: Verify the installed configuration
@@ -53,7 +53,7 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'Native configuration verification failed' }
       - name: Repeat install with PowerShell 7 to prove idempotence
         run: |
-          & .\install.ps1 -HomeDirectory $env:AI_SETUP_TEST_HOME *>&1 |
+          & .\install.ps1 *>&1 |
             Tee-Object -FilePath .work/windows-repeat-install.log
           if ($LASTEXITCODE -ne 0) { throw 'Repeated native installation failed' }
       - name: Collect diagnostic evidence

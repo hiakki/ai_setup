@@ -1,0 +1,4 @@
+interface:
+  display_name: "Build Usable Apps"
+  short_description: "Simple workflows, shared UI rules and real browser checks"
+  default_prompt: "Use $build-usable-apps to build or review this app with clear workflows, consistent UI and verified recovery paths."

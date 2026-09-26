@@ -3,6 +3,44 @@
   "recorded": "2026-09-23",
   "sources": [
     {
+      "id": "hermes-agent",
+      "url": "https://github.com/NousResearch/hermes-agent.git",
+      "revision": "11e22f25823cdb0bec7d86e8591f6415eb0b58e6"
+    },
+    {
+      "id": "anthropic-testing",
+      "url": "https://github.com/anthropics/knowledge-work-plugins.git",
+      "revision": "bdf7160f2b33598fb0cb3860027e033cbaec7ce6",
+      "sparse": ["engineering/skills/testing-strategy"],
+      "skills": [{
+        "path": "engineering/skills/testing-strategy",
+        "name": "testing-strategy",
+        "extra_files": {"LICENSE": "LICENSE"}
+      }]
+    },
+    {
+      "id": "vercel-design",
+      "url": "https://github.com/vercel-labs/agent-skills.git",
+      "revision": "063bee94c3f4df8453406c830b0a7df0f2860278",
+      "sparse": ["skills/web-design-guidelines"],
+      "skills": [{"path": "skills/web-design-guidelines", "name": "web-design-guidelines"}]
+    },
+    {
+      "id": "quantitative-trading",
+      "url": "https://github.com/wshobson/agents.git",
+      "revision": "4236bb91f8395b0435f1d8b8baf9e8e4c69a8620",
+      "sparse": ["plugins/quantitative-trading/skills"],
+      "skills": [{
+        "path": "plugins/quantitative-trading/skills/backtesting-frameworks",
+        "name": "backtesting-frameworks",
+        "extra_files": {"LICENSE": "LICENSE"}
+      }, {
+        "path": "plugins/quantitative-trading/skills/risk-metrics-calculation",
+        "name": "risk-metrics-calculation",
+        "extra_files": {"LICENSE": "LICENSE"}
+      }]
+    },
+    {
       "id": "powershell-cli",
       "url": "https://github.com/UncertaintyDeterminesYou4ndMe/powershell-windows-cli-agent-skill.git",
       "revision": "90a59539db1d7b4406a32cd7b337e76bbe7d6a3c",

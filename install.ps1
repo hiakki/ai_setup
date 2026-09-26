@@ -3,7 +3,8 @@
 param(
     [ValidateSet('install', 'plan', 'verify')][string]$Action = 'install',
     [string]$HomeDirectory = [Environment]::GetFolderPath('UserProfile'),
-    [string]$Only = '',
+    # One-click setup includes every component, including Hermes. setup.py owns the list.
+    [string]$Only = 'all',
     [string]$RepositoryDirectory = ''
 )
 $ErrorActionPreference = 'Stop'
@@ -158,6 +159,11 @@ function Invoke-AISetup {
     Assert-NativeWindows
     $env:PYTHONUTF8 = '1'
     $SetupHome = [IO.Path]::GetFullPath($SetupHome)
+    $selected = if ($SetupOnly) { $SetupOnly } else { 'all' }
+    $currentUserHome = [IO.Path]::GetFullPath([Environment]::GetFolderPath('UserProfile'))
+    if ($SetupAction -eq 'install' -and ($selected -eq 'all' -or 'hermes' -in $selected.Split(',')) -and $SetupHome -ne $currentUserHome) {
+        throw 'The full setup includes Hermes and requires the current user profile. Omit -HomeDirectory, or use -Only with components excluding hermes for an isolated test.'
+    }
     $bootstrap = Join-Path $SetupHome '.local/share/ai-setup/bootstrap'
     if (-not $Checkout -and $script:EntryDirectory -and (Test-Path -LiteralPath (Join-Path $script:EntryDirectory 'setup.py'))) {
         $Checkout = $script:EntryDirectory
@@ -169,7 +175,7 @@ function Invoke-AISetup {
         if (-not (Test-Path -LiteralPath $python)) { $python = Find-SetupPython $bootstrap }
         if (-not $python) { throw 'Python 3.12-3.13 is required to preview or verify; install first.' }
     } else {
-        $needsRuntime = -not $SetupOnly -or 'runtime' -in $SetupOnly.Split(',')
+        $needsRuntime = $selected -eq 'all' -or 'runtime' -in $selected.Split(',')
         $drive = Get-PSDrive -Name ([IO.Path]::GetPathRoot($SetupHome).TrimEnd('\').TrimEnd(':')) -ErrorAction SilentlyContinue
         if ($needsRuntime -and $drive -and $drive.Free -lt 20GB -and -not (Test-Path -LiteralPath (Join-Path $SetupHome '.local/state/ai-setup/state.json'))) {
             throw 'A fresh native setup needs at least 20 GiB free for build tools, packages, and browsers.'
@@ -198,7 +204,7 @@ function Invoke-AISetup {
         Invoke-CheckedNative $python @('-m', 'pip', 'install', '--disable-pip-version-check', '-r', (Join-Path $Checkout 'requirements.txt'))
     }
     $arguments = @((Join-Path $Checkout 'setup.py'), $SetupAction, '--home', $SetupHome)
-    if ($SetupOnly) { $arguments += @('--only', $SetupOnly) }
+    $arguments += @('--only', $selected)
     Invoke-CheckedNative $python $arguments
 }
 

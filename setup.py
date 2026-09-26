@@ -15,7 +15,7 @@ import time
 import tomllib
 
 ROOT = Path(__file__).resolve().parent
-COMPONENTS = ('runtime', 'skills', 'agents', 'custom', 'blog', 'gstack', 'integrations', 'rules', 'figma')
+COMPONENTS = ('runtime', 'skills', 'agents', 'custom', 'blog', 'gstack', 'integrations', 'rules', 'figma', 'hermes')
 
 
 def command_args(args, *, windows=None, env=None):
@@ -392,6 +392,10 @@ class Installer:
             meta, _ = metadata(path)
             self.install_skill(ROOT / 'custom', {'name': meta['name'], 'path': str(path.parent.relative_to(ROOT / 'custom'))})
 
+    def hermes(self):
+        from hermes_runtime import install
+        install(self)
+
     def blog_note(self, source):
         return (f'## Portable local adapter\n\nCanonical skills: `{self.home}/.agents/skills`. '
                 f'Resolve root scripts/, agents/, data/ against `{source}`; execute Python helpers '
@@ -467,6 +471,9 @@ class Installer:
         if not self.state_file.exists():
             raise ValueError('No successful installation state in selected home')
         errors = []
+        if 'hermes' in self.state['completed']:
+            from hermes_runtime import verify
+            verify(self)
         for name, expected in self.state['files'].items():
             p = self.home / name
             if fingerprint(p) != expected or (is_link(p) and not p.exists()):
@@ -501,9 +508,9 @@ def main():
     parser.add_argument('command', choices=['plan', 'install', 'verify'], nargs='?', default='install')
     parser.add_argument('--home', type=Path, default=Path.home())
     parser.add_argument('--manifest', type=Path, default=ROOT / 'manifest.json')
-    parser.add_argument('--only', default=','.join(COMPONENTS))
+    parser.add_argument('--only', default='all', help='all (default), or comma-separated components')
     args = parser.parse_args()
-    selected = args.only.split(',')
+    selected = list(COMPONENTS) if args.only == 'all' else args.only.split(',')
     if set(selected) - set(COMPONENTS):
         parser.error('Unknown component: ' + ', '.join(sorted(set(selected) - set(COMPONENTS))))
     manifest = json.loads(args.manifest.read_text(encoding='utf-8'))
@@ -518,6 +525,9 @@ def main():
     if args.command == 'verify':
         installer.verify()
         return
+    if installer.windows and 'hermes' in selected and installer.home != Path(os.environ['USERPROFILE']).resolve():
+        parser.error('The full Windows setup includes Hermes and requires the current user home. '
+                     'Omit --home, or use --only with a component list excluding hermes for an isolated test.')
     installer.safe(installer.state_dir / 'install.lock')
     installer.state_dir.mkdir(parents=True, exist_ok=True, mode=0o700)
     with install_lock(installer.state_dir / 'install.lock'):
@@ -540,7 +550,7 @@ def main():
                 installer.state['completed'].append(component)
             installer.save()
         installer.verify()
-        if set(selected) == set(COMPONENTS):
+        if set(COMPONENTS).issubset(selected):
             run([sys.executable, ROOT / 'smoke.py', '--home', installer.home], env=installer.env)
 
 

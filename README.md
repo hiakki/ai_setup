@@ -2,6 +2,15 @@
 
 Recreate the documented Claude Code + Codex environment on another machine. Provider skills, agents, plugins, binaries, and runtimes are downloaded from their original publishers. This repository contains the installer, pinned source manifest, personal rules, adapters, tests, and local custom skills.
 
+Browse the [custom skill catalog](custom/skills/README.md) to share or install an individual skill.
+
+[Hermes Agent](docs/HERMES.md) is included in the normal one-click setup:
+`bash install.sh` or `.\install.ps1`. Its shared agent skill is included in `custom`;
+its runtime is downloaded directly from pinned NousResearch source. Use
+`--only hermes` or `-Only hermes` only for selective installation or repair.
+
+For model selection, see the [decision AI comparison](docs/DECISION_AI_MODELS.md): quality evidence, pricing, CPU/GPU sizing, and SemIf/Laya options from 4 GB systems to large GPU deployments.
+
 ## Install
 
 On **Ubuntu 24.04+, Debian 12+, or macOS with Homebrew**, run as the user who will use the tools:
@@ -48,7 +57,8 @@ Start a fresh terminal after installation to load the user PATH. Existing WSL in
 | Graph integration | Codebase Memory and Graft, provider-generated hooks and guidance, registered once per client |
 | Design/browser | Isolated headless Playwright MCP; Figma remote MCP and official Codex Figma plugin |
 | Rules | Portable global preferences, workflow/release evidence rules, project-onboarding reference, local AI Git exclusions |
-| Custom additions | Laya skill/helper/tests and two local operational instruction folders |
+| Custom additions | Laya, SRE incident investigation, HyperDX regression memory, build-usable-apps, social-rights-review, india-card-research, auditable-business-workflows, reliable-web-app-operations, Hermes agent guidance |
+| Hermes | Included by default: pinned NousResearch runtime, shared-skill discovery and Claude/Codex guidance; provider login is separate |
 
 See [manifest.json](manifest.json) for exact provider URLs, revisions, selections and package versions, and [the inventory](docs/INVENTORY.md) for migration decisions. Research-only model benchmarks and the 72-repository recommendation list are not installed.
 
@@ -66,6 +76,8 @@ See [manifest.json](manifest.json) for exact provider URLs, revisions, selection
 ```
 
 Downloaded payloads live on the destination machine, outside this Git repository. `.work/` is an ignored development/test area and must never be published. Provider licenses remain in their source checkouts and skill assets. The bundled local instructions have distinct provenance: [custom/README.md](custom/README.md).
+
+Reusable project skills are now shared globally: [scope, sources and migration](docs/GLOBAL_SKILLS.md). The skills component also downloads Anthropic testing strategy, Vercel web design guidelines and Wshobson quantitative research skills from pinned original providers. Project decisions, conversation records and application-specific agents remain with their projects.
 
 The installer preserves unrelated configuration. It refuses conflicting existing skill folders, edited managed files, mismatched source revisions, duplicate role names, and conflicting MCP definitions. It backs up files before merging configuration. It does not automatically delete or replace an older setup that it cannot prove it owns.
 
@@ -93,7 +105,13 @@ bash install.sh install --only skills,agents,custom,rules
 ~/.local/share/ai-setup/venv/bin/python smoke.py  # Actual local graph/browser flows
 ```
 
-Available components: `runtime,skills,agents,custom,blog,gstack,integrations,rules,figma`. Install `runtime` before runtime-dependent components. The complete default installs all components. `--home /absolute/path` selects a separate installation home; it is useful for testing, not a way to install into another user's account with the wrong ownership.
+Default components: `runtime,skills,agents,custom,blog,gstack,integrations,rules,figma,hermes`.
+Both entry points select `all` by default, using the shared component list in
+`setup.py`. Hermes provisions its own upstream runtime.
+Install `runtime` before the other runtime-dependent components. `--home /absolute/path`
+selects a separate installation home; it is useful for testing, not a way to install
+into another user's account with the wrong ownership. Hermes on Windows requires
+the current user's home because its upstream installer registers that user's PATH.
 
 Windows equivalents, from the checkout:
 
@@ -102,7 +120,7 @@ Windows equivalents, from the checkout:
 .\install.ps1 -Action verify
 .\install.ps1 -Only 'skills,agents,custom,rules'
 # Isolated installation (does not persist that home's PATH in your user profile):
-.\install.ps1 -HomeDirectory 'C:\AI setup test'
+.\install.ps1 -HomeDirectory 'C:\AI setup test' -Only 'skills,agents,custom,rules'
 & "$HOME/.local/share/ai-setup/venv/Scripts/python.exe" smoke.py
 ```
 

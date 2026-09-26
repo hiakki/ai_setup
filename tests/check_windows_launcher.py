@@ -59,7 +59,8 @@ function Install-SetupBuildTools { throw 'Selective skills install must not inst
 function Set-SetupUserEnvironment { throw 'Isolated home must not persist user environment' }
 $PSNativeCommandArgumentPassing = $env:SETUP_TEST_MODE
 if ($env:SETUP_TEST_BOOTSTRAP -eq '1') { $script:EntryDirectory = Split-Path $env:SETUP_TEST_PYTHON -Parent }
-Invoke-AISetup $env:SETUP_TEST_ACTION $env:SETUP_TEST_HOME 'skills,agents' $env:SETUP_TEST_CHECKOUT
+$selection = if ($env:SETUP_TEST_DEFAULT -eq '1') { $Only } else { 'skills,agents' }
+Invoke-AISetup $env:SETUP_TEST_ACTION $env:SETUP_TEST_HOME $selection $env:SETUP_TEST_CHECKOUT
 ''')
         env = dict(os.environ, SETUP_TEST_PYTHON=str(executable), SETUP_TEST_CHECKOUT=str(checkout))
         count = 0
@@ -98,6 +99,33 @@ Invoke-AISetup $env:SETUP_TEST_ACTION $env:SETUP_TEST_HOME 'skills,agents' $env:
             assert calls[0] == ['clone', 'https://github.com/hiakki/ai_setup.git',
                                 str(home / '.local/share/ai-setup-repo')], calls
             print(f'PASS simulated: {mode} downloaded script clones into selected home')
+            # Exercise the script's actual default parameter and pass-through.
+            log = temp / f'default-{mode}.jsonl'
+            result = subprocess.run([str(args.pwsh.resolve()), '-NoLogo', '-NoProfile', '-File', str(harness)],
+                cwd=ROOT, env=dict(env, SETUP_TEST_ACTION='plan', SETUP_TEST_MODE=mode,
+                    SETUP_TEST_HOME=str(home), SETUP_TEST_LOG=str(log), SETUP_TEST_DEFAULT='1'),
+                text=True, capture_output=True, timeout=30)
+            assert result.returncode == 0, result.stdout + result.stderr
+            calls = [json.loads(line) for line in log.read_text().splitlines()]
+            assert calls[-1] == [str(checkout / 'setup.py'), 'plan', '--home', str(home), '--only', 'all'], calls
+            print(f'PASS simulated: {mode} default PowerShell selection forwards all components')
+        # Exercise the real PowerShell -> Python plan with only OS detection mocked.
+        real_plan = temp / 'real-plan.ps1'
+        real_plan.write_text('''$ErrorActionPreference = 'Stop'
+. ./install.ps1
+function Assert-NativeWindows { }
+function Find-SetupPython { return $env:SETUP_REAL_PYTHON }
+Invoke-AISetup 'plan' $env:SETUP_PLAN_HOME $Only (Get-Location).Path
+''')
+        plan_home = temp / 'plan home'
+        result = subprocess.run([str(args.pwsh.resolve()), '-NoLogo', '-NoProfile', '-File', str(real_plan)],
+            cwd=ROOT, env=dict(os.environ, SETUP_REAL_PYTHON=sys.executable, SETUP_PLAN_HOME=str(plan_home)),
+            capture_output=True, text=True, timeout=30)
+        assert result.returncode == 0, result.stdout + result.stderr
+        components = next(line for line in result.stdout.splitlines() if line.startswith('Components:'))
+        assert 'hermes' in components and 'runtime' in components, result.stdout
+        assert not plan_home.exists(), 'Plan unexpectedly wrote to its target home'
+        print('PASS: real PowerShell-to-Python default plan includes Hermes without writes')
         # Parse all syntax using PowerShell itself and reject accidentally restored WSL logic.
         source = (ROOT / 'install.ps1').read_text()
         assert 'wsl.exe' not in source and 'wsl --install' not in source

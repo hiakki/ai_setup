@@ -56,7 +56,7 @@ if [[ "$setup_action" == install ]]; then
     brew install git python@3.12 ffmpeg
     setup_python="$(brew --prefix python@3.12)/bin/python3.12"
   else
-    echo 'On Windows run install.ps1, which uses WSL2.' >&2
+    echo 'On native Windows run install.ps1 in PowerShell.' >&2
     exit 1
   fi
   "$setup_python" -c 'import sys; assert sys.version_info >= (3,11), "Python 3.11+ required (Debian 12+ / Ubuntu 24.04+)"'
