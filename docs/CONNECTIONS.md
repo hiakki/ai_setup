@@ -1,5 +1,10 @@
 # Private connections
 
+Context7 is now part of the portable setup and works at anonymous rate limits. Existing
+authentication is preserved; optional account setup and Strix model/cloud credentials
+are described in [web development tools](WEB_DEVELOPMENT_TOOLS.md). Neither registration
+nor CLI installation authorizes scans, source uploads or provider spending.
+
 The original machine has Codex MCP registrations named `hyperdx-prd`, `hyperdx-stg`, `servinoza-diagnostics`, and `stripe`, in addition to the portable Codebase Memory/Graft/Playwright/Figma set. These private registrations are not hard-coded into a public setup repository.
 
 Provision each integration using the intended account, endpoint, and its current provider-supported transport. Do not copy an entire `.claude.json`, Codex config, OAuth cache, browser profile or keychain to another machine. Configuration presence is not a successful provider request.

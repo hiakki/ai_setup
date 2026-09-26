@@ -9,7 +9,7 @@ Browse the [custom skill catalog](custom/skills/README.md) to share or install a
 its runtime is downloaded directly from pinned NousResearch source. Use
 `--only hermes` or `-Only hermes` only for selective installation or repair.
 
-For model selection, see the [decision AI comparison](docs/DECISION_AI_MODELS.md): quality evidence, pricing, CPU/GPU sizing, and SemIf/Laya options from 4 GB systems to large GPU deployments.
+For model selection, use the shared [AI model comparison skill](custom/skills/ai-model-comparison/SKILL.md) to keep exact-product scores separate from unmatched model references. See the [agentic model comparison](docs/AGENTIC_AI_MODELS.md) and [decision AI comparison](docs/DECISION_AI_MODELS.md): quality evidence, pricing, CPU/GPU sizing, and SemIf/Laya options from 4 GB systems to large GPU deployments.
 
 ## Install
 
@@ -57,8 +57,12 @@ Start a fresh terminal after installation to load the user PATH. Existing WSL in
 | Graph integration | Codebase Memory and Graft, provider-generated hooks and guidance, registered once per client |
 | Design/browser | Isolated headless Playwright MCP; Figma remote MCP and official Codex Figma plugin |
 | Rules | Portable global preferences, workflow/release evidence rules, project-onboarding reference, local AI Git exclusions |
-| Custom additions | Laya, SRE incident investigation, HyperDX regression memory, build-usable-apps, social-rights-review, india-card-research, auditable-business-workflows, reliable-web-app-operations, Hermes agent guidance |
+| Custom additions | Laya, SRE incident investigation, HyperDX regression memory, build-usable-apps, social-rights-review, india-card-research, auditable-business-workflows, reliable-web-app-operations, Hermes agent guidance, ai-model-comparison |
 | Hermes | Included by default: pinned NousResearch runtime, shared-skill discovery and Claude/Codex guidance; provider login is separate |
+| Context7 | Default remote documentation MCP for both clients; anonymous access, existing authentication preserved |
+| UI skills | Default `create-design-md` and `fixing-metadata`, from pinned `ibelick/ui-skills` |
+| Strix (optional) | Native checksum-verified CLI and nine upstream security skills; no automatic scans or Docker installation |
+| SkillUI (optional) | Pinned global `skillui` CLI for project design context; local directory mode needs no browser or API key |
 
 See [manifest.json](manifest.json) for exact provider URLs, revisions, selections and package versions, and [the inventory](docs/INVENTORY.md) for migration decisions. Research-only model benchmarks and the 72-repository recommendation list are not installed.
 
@@ -105,9 +109,11 @@ bash install.sh install --only skills,agents,custom,rules
 ~/.local/share/ai-setup/venv/bin/python smoke.py  # Actual local graph/browser flows
 ```
 
-Default components: `runtime,skills,agents,custom,blog,gstack,integrations,rules,figma,hermes`.
-Both entry points select `all` by default, using the shared component list in
-`setup.py`. Hermes provisions its own upstream runtime.
+Default components: `runtime,skills,agents,custom,blog,gstack,integrations,context7,rules,figma,hermes`.
+Both entry points select `all` by default, using the shared default profile in
+`setup.py`. Optional components are `strix,skillui`; `all` does not install them.
+Use `--only all,strix,skillui` or `-Only 'all,strix,skillui'` for the default profile plus both tools.
+Hermes provisions its own upstream runtime.
 Install `runtime` before the other runtime-dependent components. `--home /absolute/path`
 selects a separate installation home; it is useful for testing, not a way to install
 into another user's account with the wrong ownership. Hermes on Windows requires
@@ -125,6 +131,22 @@ Windows equivalents, from the checkout:
 ```
 
 `plan` needs an existing Python 3.12–3.13 on Windows and makes no downloads. Directory junctions share Windows skill folders without requiring Developer Mode. Native MCP registrations use executables directly; terminal commands have Windows and Git Bash launchers.
+
+To add the new tools to an existing installation:
+
+```bash
+bash install.sh install --only context7,skills,strix,skillui
+```
+
+```powershell
+.\install.ps1 -Only 'context7,skills,strix,skillui'
+```
+
+`skills` installs the provider skill selection, including the two new UI skills.
+SkillUI needs Node 18+ and npm (already supplied by `runtime`). Strix installs a native
+CLI on Windows; local scans additionally need a Docker Linux-container backend.
+See [web development tools](docs/WEB_DEVELOPMENT_TOOLS.md) for agent discovery,
+usage, authentication, preservation behavior and runtime limits.
 
 The installer pins top-level npm versions and Git commits. OS packages and upstream Python dependency ranges remain platform/resolver dependent; this is not a byte-identical OS image. Review and change pins deliberately. Do not run a generic `skills update` over the separately managed blog/gstack adapters. Replacing an existing source revision is intentionally not an automatic destructive operation.
 

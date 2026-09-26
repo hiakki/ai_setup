@@ -34,7 +34,8 @@ if args[:2] == ['-m', 'venv']:
 elif args[:3] == ['-m', 'pip', 'install']:
     sys.exit(int(os.environ.get('SETUP_TEST_PIP_EXIT', '0')))
 elif args and args[0].endswith('setup.py'):
-    sys.exit(int(os.environ.get('SETUP_TEST_SETUP_EXIT', '0')))
+    setting = 'SETUP_TEST_PLAN_EXIT' if args[1] == 'plan' else 'SETUP_TEST_SETUP_EXIT'
+    sys.exit(int(os.environ.get(setting, '0')))
 elif args and args[0] == 'clone':
     target = pathlib.Path(args[2])
     target.mkdir(parents=True)
@@ -59,7 +60,7 @@ function Install-SetupBuildTools { throw 'Selective skills install must not inst
 function Set-SetupUserEnvironment { throw 'Isolated home must not persist user environment' }
 $PSNativeCommandArgumentPassing = $env:SETUP_TEST_MODE
 if ($env:SETUP_TEST_BOOTSTRAP -eq '1') { $script:EntryDirectory = Split-Path $env:SETUP_TEST_PYTHON -Parent }
-$selection = if ($env:SETUP_TEST_DEFAULT -eq '1') { $Only } else { 'skills,agents' }
+$selection = if ($env:SETUP_TEST_DEFAULT -eq '1') { $Only } elseif ($env:SETUP_TEST_SELECTION) { $env:SETUP_TEST_SELECTION } else { 'skills,agents' }
 Invoke-AISetup $env:SETUP_TEST_ACTION $env:SETUP_TEST_HOME $selection $env:SETUP_TEST_CHECKOUT
 ''')
         env = dict(os.environ, SETUP_TEST_PYTHON=str(executable), SETUP_TEST_CHECKOUT=str(checkout))
@@ -80,7 +81,7 @@ Invoke-AISetup $env:SETUP_TEST_ACTION $env:SETUP_TEST_HOME $selection $env:SETUP
                                          + result.stdout + result.stderr)
                 calls = [json.loads(line) for line in log.read_text().splitlines()]
                 if pip_exit:
-                    assert not any(call[0].endswith('setup.py') for call in calls), calls
+                    assert not any(call[0].endswith('setup.py') and call[1] == 'install' for call in calls), calls
                 else:
                     assert calls[-1] == [str(checkout / 'setup.py'), action, '--home', str(home),
                                         '--only', 'skills,agents'], calls
@@ -109,23 +110,74 @@ Invoke-AISetup $env:SETUP_TEST_ACTION $env:SETUP_TEST_HOME $selection $env:SETUP
             calls = [json.loads(line) for line in log.read_text().splitlines()]
             assert calls[-1] == [str(checkout / 'setup.py'), 'plan', '--home', str(home), '--only', 'all'], calls
             print(f'PASS simulated: {mode} default PowerShell selection forwards all components')
+            for selection in ('context7', 'strix,skillui'):
+                home = temp / f'optional home {mode} {selection}'
+                log = temp / f'optional-{mode}-{selection}.jsonl'
+                result = subprocess.run([str(args.pwsh.resolve()), '-NoLogo', '-NoProfile', '-File', str(harness)],
+                    cwd=ROOT, env=dict(env, SETUP_TEST_ACTION='install', SETUP_TEST_MODE=mode,
+                        SETUP_TEST_HOME=str(home), SETUP_TEST_LOG=str(log), SETUP_TEST_SELECTION=selection),
+                    text=True, capture_output=True, timeout=30)
+                assert result.returncode == 0, result.stdout + result.stderr
+                calls = [json.loads(line) for line in log.read_text().splitlines()]
+                assert calls[0] == [str(checkout / 'setup.py'), 'plan', '--home', str(home), '--only', selection], calls
+                assert calls[-1] == [str(checkout / 'setup.py'), 'install', '--home', str(home), '--only', selection], calls
+                print(f'PASS simulated: {mode} {selection} validates and forwards without C++ tools')
+            log = temp / f'all-extras-{mode}.jsonl'
+            result = subprocess.run([str(args.pwsh.resolve()), '-NoLogo', '-NoProfile', '-File', str(harness)],
+                cwd=ROOT, env=dict(env, SETUP_TEST_ACTION='install', SETUP_TEST_MODE=mode,
+                    SETUP_TEST_HOME=str(temp / 'isolated all'), SETUP_TEST_LOG=str(log),
+                    SETUP_TEST_SELECTION=' all ,strix,skillui'), text=True, capture_output=True, timeout=30)
+            assert result.returncode != 0 and 'requires the current user profile' in result.stderr, result.stderr
+            assert not log.exists(), 'The Hermes home guard must run before prerequisite installation'
+            print(f'PASS simulated: {mode} all plus optional tools retains Hermes profile guard')
         # Exercise the real PowerShell -> Python plan with only OS detection mocked.
         real_plan = temp / 'real-plan.ps1'
         real_plan.write_text('''$ErrorActionPreference = 'Stop'
 . ./install.ps1
 function Assert-NativeWindows { }
 function Find-SetupPython { return $env:SETUP_REAL_PYTHON }
-Invoke-AISetup 'plan' $env:SETUP_PLAN_HOME $Only (Get-Location).Path
+Invoke-AISetup $env:SETUP_PLAN_ACTION $env:SETUP_PLAN_HOME $env:SETUP_PLAN_ONLY (Get-Location).Path
 ''')
         plan_home = temp / 'plan home'
+        for selection in ('all', 'all,strix,skillui', 'context7'):
+            result = subprocess.run([str(args.pwsh.resolve()), '-NoLogo', '-NoProfile', '-File', str(real_plan)],
+                cwd=ROOT, env=dict(os.environ, SETUP_REAL_PYTHON=sys.executable, SETUP_PLAN_HOME=str(plan_home),
+                    SETUP_PLAN_ACTION='plan', SETUP_PLAN_ONLY=selection), capture_output=True, text=True, timeout=30)
+            assert result.returncode == 0, result.stdout + result.stderr
+            components = next(line for line in result.stdout.splitlines() if line.startswith('Components:'))
+            assert 'context7' in components, result.stdout
+            if selection.startswith('all'):
+                assert 'hermes' in components and 'runtime' in components, result.stdout
+            assert ('strix' in components) == ('strix' in selection), result.stdout
+            assert ('skillui' in components) == ('skillui' in selection), result.stdout
+            assert not plan_home.exists(), 'Plan unexpectedly wrote to its target home'
+            print(f'PASS: real PowerShell-to-Python {selection} plan expands defaults without writes')
         result = subprocess.run([str(args.pwsh.resolve()), '-NoLogo', '-NoProfile', '-File', str(real_plan)],
-            cwd=ROOT, env=dict(os.environ, SETUP_REAL_PYTHON=sys.executable, SETUP_PLAN_HOME=str(plan_home)),
+            cwd=ROOT, env=dict(os.environ, SETUP_REAL_PYTHON=sys.executable, SETUP_PLAN_HOME=str(plan_home),
+                SETUP_PLAN_ACTION='install', SETUP_PLAN_ONLY='context77'), capture_output=True, text=True, timeout=30)
+        assert result.returncode != 0 and 'Unknown component' in result.stderr, result.stderr
+        assert not plan_home.exists(), 'Invalid selection unexpectedly mutated the target home'
+        print('PASS: invalid selection fails before Windows bootstrap mutations')
+        # A default profile with optional tools must still select the C++ runtime
+        # prerequisite. Suppress all filesystem/registry writes to the real profile.
+        runtime_guard = temp / 'runtime-guard.ps1'
+        runtime_guard.write_text('''$ErrorActionPreference = 'Stop'
+. ./install.ps1
+function Assert-NativeWindows { }
+function Find-SetupPython { return $env:SETUP_TEST_PYTHON }
+function Install-SetupPython { return $env:SETUP_TEST_PYTHON }
+function Enable-SetupGit { return $env:SETUP_TEST_PYTHON }
+function New-Item { }
+function Add-SetupPath { }
+function Get-PSDrive { }
+function Install-SetupBuildTools { throw 'BUILD_TOOLS_SELECTED' }
+Invoke-AISetup 'install' ([Environment]::GetFolderPath('UserProfile')) ' all ,strix,skillui' $env:SETUP_TEST_CHECKOUT
+''')
+        result = subprocess.run([str(args.pwsh.resolve()), '-NoLogo', '-NoProfile', '-File', str(runtime_guard)],
+            cwd=ROOT, env=dict(env, SETUP_TEST_LOG=str(temp / 'runtime-guard.jsonl')),
             capture_output=True, text=True, timeout=30)
-        assert result.returncode == 0, result.stdout + result.stderr
-        components = next(line for line in result.stdout.splitlines() if line.startswith('Components:'))
-        assert 'hermes' in components and 'runtime' in components, result.stdout
-        assert not plan_home.exists(), 'Plan unexpectedly wrote to its target home'
-        print('PASS: real PowerShell-to-Python default plan includes Hermes without writes')
+        assert result.returncode != 0 and 'BUILD_TOOLS_SELECTED' in result.stderr, result.stdout + result.stderr
+        print('PASS simulated: all plus optional tools retains C++ prerequisite selection')
         # Parse all syntax using PowerShell itself and reject accidentally restored WSL logic.
         source = (ROOT / 'install.ps1').read_text()
         assert 'wsl.exe' not in source and 'wsl --install' not in source

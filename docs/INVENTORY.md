@@ -29,6 +29,10 @@ The follow-up read of local skill-lock metadata and role names confirmed 35 CLI-
 | `trailhq/Graft` | Published `@nanonets/graft` package, generated integration |
 | `microsoft/playwright-mcp` | Pinned npm package, isolated headless Chromium |
 | `openai/plugins` | Official pinned Figma plugin, registered through a small generated local catalog |
+| `upstash/context7` | Default hosted documentation MCP for both clients; anonymous access |
+| `ibelick/ui-skills` | Pinned `create-design-md` and `fixing-metadata` only |
+| `usestrix/strix` | Optional native release with checksums and nine upstream security skills |
+| `amaancoderx/npxskillui` | Optional `skillui` CLI from its pinned original npm package |
 
 Recorded revisions are retained where available. For sources without recorded commit IDs, the manifest pins the provider HEAD resolved during this implementation; those are newly verified pins, not invented historical installation revisions. Exact local source folder hashes remain evidence of the old snapshot, not Git commit IDs.
 

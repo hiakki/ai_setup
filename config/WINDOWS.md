@@ -4,6 +4,31 @@ Use PowerShell 5.1 or 7. The global installation lives under `$HOME`, your Windo
 user profile. Restart the terminal/client after installation to refresh PATH.
 Git Bash supports upstream shell scripts; no WSL distribution is needed.
 
+From the `ai_setup` checkout, the default installation includes Context7 and the
+selected upstream UI skills. Strix and SkillUI are optional:
+
+```powershell
+.\install.ps1 -Action plan -Only 'all,strix,skillui'
+.\install.ps1 -Only 'all,strix,skillui'
+# Add individual components to an existing setup:
+.\install.ps1 -Only 'context7'
+.\install.ps1 -Only 'strix,skillui'
+```
+
+`all` means the default profile, including Hermes; optional tools must be named.
+The default profile uses the current Windows user profile. Selective Context7,
+Strix and SkillUI setup does not require Microsoft C++ build tools or the full
+runtime's disk-space allowance. SkillUI needs Node.js 18+ and npm, supplied by
+the default runtime or an existing installation. Its optional browser mode is
+separate; setup does not download another Playwright browser for it.
+
+Strix installs as a native Windows executable. Installing it does not start a
+scan, start Docker, or configure model credentials. Local security scans need
+a working Docker Linux-container backend and configured model access. Docker
+on Windows may use WSL2, Hyper-V or a remote Linux daemon; the installer does
+not provision that backend. Only scan applications you are authorized to test.
+Keep SkillUI's generated design context inside the relevant project.
+
 Follow `AI_READY_PROJECTS.md` for scope, existing instructions, exclusions and
 verification. Replace its Unix shell examples with these PowerShell commands:
 

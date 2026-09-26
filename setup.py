@@ -15,7 +15,21 @@ import time
 import tomllib
 
 ROOT = Path(__file__).resolve().parent
-COMPONENTS = ('runtime', 'skills', 'agents', 'custom', 'blog', 'gstack', 'integrations', 'rules', 'figma', 'hermes')
+DEFAULT_COMPONENTS = ('runtime', 'skills', 'agents', 'custom', 'blog', 'gstack', 'integrations', 'context7', 'rules', 'figma', 'hermes')
+OPTIONAL_COMPONENTS = ('strix', 'skillui')
+COMPONENTS = DEFAULT_COMPONENTS + OPTIONAL_COMPONENTS
+
+
+def select_components(value):
+    """Expand all to the default profile; expensive optional tools stay explicit."""
+    requested = [item.strip() for item in value.split(',')]
+    unknown = set(requested) - set(COMPONENTS) - {'all'}
+    if unknown:
+        raise ValueError('Unknown component: ' + ', '.join(sorted(unknown)))
+    selected = set(requested)
+    if 'all' in selected:
+        selected.update(DEFAULT_COMPONENTS)
+    return [component for component in COMPONENTS if component in selected]
 
 
 def command_args(args, *, windows=None, env=None):
@@ -474,6 +488,10 @@ class Installer:
         if 'hermes' in self.state['completed']:
             from hermes_runtime import verify
             verify(self)
+        for component in ('context7', 'strix', 'skillui'):
+            if component in self.state['completed']:
+                import importlib
+                importlib.import_module(component + '_runtime').verify(self)
         for name, expected in self.state['files'].items():
             p = self.home / name
             if fingerprint(p) != expected or (is_link(p) and not p.exists()):
@@ -508,17 +526,19 @@ def main():
     parser.add_argument('command', choices=['plan', 'install', 'verify'], nargs='?', default='install')
     parser.add_argument('--home', type=Path, default=Path.home())
     parser.add_argument('--manifest', type=Path, default=ROOT / 'manifest.json')
-    parser.add_argument('--only', default='all', help='all (default), or comma-separated components')
+    parser.add_argument('--only', default='all', help='all = default profile; comma-separated components, e.g. all,strix,skillui or context7')
     args = parser.parse_args()
-    selected = list(COMPONENTS) if args.only == 'all' else args.only.split(',')
-    if set(selected) - set(COMPONENTS):
-        parser.error('Unknown component: ' + ', '.join(sorted(set(selected) - set(COMPONENTS))))
+    try:
+        selected = select_components(args.only)
+    except ValueError as exc:
+        parser.error(str(exc))
     manifest = json.loads(args.manifest.read_text(encoding='utf-8'))
     if manifest.get('schema') != 1:
         parser.error('Unsupported manifest schema')
     installer = Installer(args.home, manifest)
     if args.command == 'plan':
         print(f'Home: {installer.home}\nComponents: {", ".join(selected)}')
+        print('Optional (explicit selection only): ' + ', '.join(OPTIONAL_COMPONENTS))
         for s in manifest['sources']:
             print(f'{s["id"]}: {s["url"]} @ {s["revision"]}')
         return
@@ -538,6 +558,10 @@ def main():
             else:
                 from runtime import runtime, gstack, integrations, figma
             actions = {'runtime': runtime, 'gstack': gstack, 'integrations': integrations, 'figma': figma}
+        for component in ('context7', 'strix', 'skillui'):
+            if component in selected:
+                import importlib
+                actions[component] = importlib.import_module(component + '_runtime').install
         for component in COMPONENTS:
             if component not in selected:
                 continue
@@ -550,7 +574,7 @@ def main():
                 installer.state['completed'].append(component)
             installer.save()
         installer.verify()
-        if set(COMPONENTS).issubset(selected):
+        if set(DEFAULT_COMPONENTS).issubset(selected):
             run([sys.executable, ROOT / 'smoke.py', '--home', installer.home], env=installer.env)
 
 

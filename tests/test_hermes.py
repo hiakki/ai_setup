@@ -25,7 +25,7 @@ class HermesTests(unittest.TestCase):
 
     def test_default_install_and_all_dispatch_hermes_without_opt_in(self):
         expected = ['runtime', 'skills', 'agents', 'custom', 'blog', 'gstack',
-                    'integrations', 'rules', 'figma', 'hermes']
+                    'integrations', 'context7', 'rules', 'figma', 'hermes']
         for arguments in ([], ['--only', 'all']):
             with self.subTest(arguments=arguments), ExitStack() as patches:
                 calls = []
@@ -37,6 +37,8 @@ class HermesTests(unittest.TestCase):
                     if name in ('runtime', 'gstack', 'integrations', 'figma'):
                         module = 'windows_runtime' if os.name == 'nt' else 'runtime'
                         patches.enter_context(patch(module + '.' + name, new=action))
+                    elif name == 'context7':
+                        patches.enter_context(patch('context7_runtime.install', new=action))
                     else:
                         patches.enter_context(patch.object(Installer, name, new=action))
                 patches.enter_context(patch.object(sys, 'argv', ['setup.py', 'install',

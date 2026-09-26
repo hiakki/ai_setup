@@ -42,6 +42,11 @@ SRE skill is shared under `.agents/skills`, with a compatibility link from its
 former `.codex/skills` location. Laya still needs its configured service. HyperDX
 still needs that project's evidence; neither is a default for unrelated tasks.
 
+The locally authored `ai-model-comparison` skill adds shared guidance for comparing
+exact checkpoints, quantizations and agent configurations. Its maintained source is
+`custom/skills/ai-model-comparison`; unmatched model scores remain references, not
+scores or ranks for proposed deployments.
+
 ## What stays in each project
 
 - Elvique: product/calculation rules, agent routing and the shared-skill consumer guide.
@@ -63,8 +68,9 @@ Elvique's follow-up migration adds `auditable-business-workflows` and
 `reliable-web-app-operations` to the custom collection. Its `operational-admin-ux`
 guidance is merged into `build-usable-apps`, including all three supporting
 references. See the [engineering playbook](REUSABLE_ENGINEERING_PLAYBOOK.md) for
-the merge rationale. With the Hermes adapter, the collection now has nine custom skills; the same
-installer discovers them without new platform-specific installation code.
+the merge rationale. With the Hermes adapter and AI model comparison guidance, the collection now has
+ten custom skills; the same installer discovers them without new platform-specific
+installation code.
 
 The default [Hermes component](HERMES.md) also configures Hermes to discover the
 shared skills and adds invocation guidance to the global Claude/Codex instructions.

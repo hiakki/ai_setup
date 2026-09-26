@@ -1,0 +1,50 @@
+name: Web development tools
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  native-tools:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-14, windows-2022]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      # Hosted runners provide Node/npm; SkillUI checks the minimum version itself.
+      - name: Install optional tools through the POSIX entry point
+        if: runner.os != 'Windows'
+        shell: bash
+        run: bash install.sh install --home "$RUNNER_TEMP/AI tools home" --only context7,strix,skillui
+      - name: Install optional tools through Windows PowerShell 5.1
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: |
+          .\install.ps1 -HomeDirectory "$env:RUNNER_TEMP/AI tools home" -Only 'context7,strix,skillui'
+          if ($LASTEXITCODE -ne 0) { throw 'Optional tools installation failed' }
+      - name: Check workflows and reruns on POSIX
+        if: runner.os != 'Windows'
+        shell: bash
+        run: '"$RUNNER_TEMP/AI tools home/.local/share/ai-setup/venv/bin/python" tests/check_web_tools.py --home "$RUNNER_TEMP/AI tools home"'
+      - name: Check workflows and reruns on Windows
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          & "$env:RUNNER_TEMP/AI tools home/.local/share/ai-setup/venv/Scripts/python.exe" tests/check_web_tools.py --home "$env:RUNNER_TEMP/AI tools home"
+          if ($LASTEXITCODE -ne 0) { throw 'Optional workflow checks failed' }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: web-tools-${{ matrix.os }}
+          path: ${{ runner.temp }}/AI tools home/.local/state/ai-setup/web-tools-report.json
+          include-hidden-files: true

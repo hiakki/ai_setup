@@ -1,6 +1,42 @@
 # Verification evidence
 
-Checks were run on 2026-09-23. Installation tests use separate homes and synthetic projects; the original workstation's Claude/Codex configuration and credentials were not changed.
+## Web development integrations — 2026-09-26
+
+- **macOS ARM64:** real Context7 anonymous MCP tool discovery, React library resolution,
+  and documentation retrieval passed. Pinned UI skills installed from their original
+  provider into an isolated home, including Claude links; rerun and integrity checks passed.
+  Independent workers ran actual Strix checksum/version/help and nine upstream skill
+  installation checks, and actual SkillUI npm installation/local CSS extraction. Both
+  optional tools passed repeat installation and managed-state verification.
+  The final shared workflow checker also passed on macOS, including the exact installed
+  CLI launchers, generated color token, repeat installation and 25-path verification.
+- **Debian 12 ARM64:** a fresh disposable `node:24-bookworm-slim` container ran the real
+  `install.sh install --only context7,strix,skillui` using a home with spaces. The shared
+  `tests/check_web_tools.py` then fetched the two UI skills, repeated installation twice,
+  checked Strix, extracted `#123456` into SkillUI's DESIGN.md, and verified all 25 managed
+  paths plus configuration/instruction blocks. No browser or Docker sandbox was needed.
+- **Regression checks:** 69 tests ran, 66 passed and three native Windows tests were
+  skipped on macOS (batch invocation, junctions and read-only file semantics). The unrelated
+  untracked MiroFish test draft was excluded. Bash syntax and whitespace checks passed.
+  The real PowerShell executable passed 27 launcher checks with simulated Windows
+  prerequisites. These simulations are not native Windows execution.
+- **Independent review:** fixed stale Context7 state that rejected a later operator
+  transport change, with a regression test and reviewer reproduction. Fixed explicit
+  UTF-8 decoding in the cross-platform workflow checker after reproducing Windows cp1252
+  failure against the actual upstream skill.
+- **Pending:** native Windows execution of these new tools and the new
+  `.github/workflows/web-tools.yml` matrix. The workflow exercises native Windows,
+  Ubuntu and macOS entry points and the same CLI extraction/rerun checks after push.
+  Strix scans, model authentication, Docker sandbox execution, cloud uploads and SkillUI
+  browser/ultra mode were not run. Installation does not claim those workflows passed.
+
+The Linux image supplies Node/npm; the script installs actual Debian prerequisites and
+its Python environment. This is verification of the new selective installation path,
+not a repeat of every default component or a fresh macOS operating-system bootstrap.
+Local logs are ignored under `.work/web-tools-*.log`. The workflow checker records only
+its check summary, not credentials or full client configuration.
+
+The earlier baseline checks below were run on 2026-09-23. Installation tests use separate homes and synthetic projects; the original workstation's Claude/Codex configuration and credentials were not changed.
 
 ## macOS ARM64 — before native Windows changes
 

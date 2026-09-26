@@ -3,7 +3,8 @@
 param(
     [ValidateSet('install', 'plan', 'verify')][string]$Action = 'install',
     [string]$HomeDirectory = [Environment]::GetFolderPath('UserProfile'),
-    # One-click setup includes every component, including Hermes. setup.py owns the list.
+    # Defaults include Context7 and Hermes; opt in with -Only 'all,strix,skillui'.
+    # setup.py owns the component list and expands all to the default components.
     [string]$Only = 'all',
     [string]$RepositoryDirectory = ''
 )
@@ -160,8 +161,9 @@ function Invoke-AISetup {
     $env:PYTHONUTF8 = '1'
     $SetupHome = [IO.Path]::GetFullPath($SetupHome)
     $selected = if ($SetupOnly) { $SetupOnly } else { 'all' }
+    $components = @($selected.Split(',') | ForEach-Object { $_.Trim() })
     $currentUserHome = [IO.Path]::GetFullPath([Environment]::GetFolderPath('UserProfile'))
-    if ($SetupAction -eq 'install' -and ($selected -eq 'all' -or 'hermes' -in $selected.Split(',')) -and $SetupHome -ne $currentUserHome) {
+    if ($SetupAction -eq 'install' -and ('all' -in $components -or 'hermes' -in $components) -and $SetupHome -ne $currentUserHome) {
         throw 'The full setup includes Hermes and requires the current user profile. Omit -HomeDirectory, or use -Only with components excluding hermes for an isolated test.'
     }
     $bootstrap = Join-Path $SetupHome '.local/share/ai-setup/bootstrap'
@@ -169,13 +171,21 @@ function Invoke-AISetup {
         $Checkout = $script:EntryDirectory
     }
     $hasCheckout = $Checkout -and (Test-Path -LiteralPath (Join-Path $Checkout 'setup.py'))
+    $validatedSelection = $false
+    if ($SetupAction -eq 'install' -and $hasCheckout) {
+        $existingPython = Find-SetupPython $bootstrap
+        if ($existingPython) {
+            Invoke-CheckedNative $existingPython @((Join-Path $Checkout 'setup.py'), 'plan', '--home', $SetupHome, '--only', $selected) | Out-Null
+            $validatedSelection = $true
+        }
+    }
     if ($SetupAction -ne 'install') {
         if (-not $hasCheckout) { throw 'plan/verify require a local repository checkout. Run install first.' }
         $python = Join-Path $SetupHome '.local/share/ai-setup/venv/Scripts/python.exe'
         if (-not (Test-Path -LiteralPath $python)) { $python = Find-SetupPython $bootstrap }
         if (-not $python) { throw 'Python 3.12-3.13 is required to preview or verify; install first.' }
     } else {
-        $needsRuntime = $selected -eq 'all' -or 'runtime' -in $selected.Split(',')
+        $needsRuntime = 'all' -in $components -or 'runtime' -in $components
         $drive = Get-PSDrive -Name ([IO.Path]::GetPathRoot($SetupHome).TrimEnd('\').TrimEnd(':')) -ErrorAction SilentlyContinue
         if ($needsRuntime -and $drive -and $drive.Free -lt 20GB -and -not (Test-Path -LiteralPath (Join-Path $SetupHome '.local/state/ai-setup/state.json'))) {
             throw 'A fresh native setup needs at least 20 GiB free for build tools, packages, and browsers.'
@@ -195,6 +205,9 @@ function Invoke-AISetup {
         }
         if (-not (Test-Path -LiteralPath (Join-Path $Checkout 'setup.py'))) { throw "Incomplete setup checkout: $Checkout" }
         $basePython = Install-SetupPython $bootstrap
+        if (-not $validatedSelection) {
+            Invoke-CheckedNative $basePython @((Join-Path $Checkout 'setup.py'), 'plan', '--home', $SetupHome, '--only', $selected) | Out-Null
+        }
         $env:npm_config_python = $basePython
         $env:PYTHON = $basePython
         if ($needsRuntime) { Install-SetupBuildTools $bootstrap }

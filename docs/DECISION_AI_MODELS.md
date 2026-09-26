@@ -6,7 +6,15 @@ Research snapshot: **25 September 2026** · Audience: engineering and infrastruc
 
 > **Recommendation:** evaluate **AutoJev-27B** first when GPU capacity is available. For a **32 GB CPU-only VM**, compare **Decider-4B BF16**, **SemIf-4B Q4**, and **Laya** on the same business tasks. Keep **Jev** as the hosted quality and cost reference.
 
-This report covers **18 scored configurations and 14 additional variants**. Scores come from a shared published benchmark; resource allocations are planning estimates unless explicitly marked as publisher measurements. **No inference, latency, or memory tests were run for this report.**
+This report covers **18 published benchmark configurations plus additional deployment variants**. Scores come from a shared published benchmark; resource allocations are planning estimates unless explicitly marked as publisher measurements. **No inference, latency, or memory tests were run for this report.**
+
+**Common scoring across the docs:** every ranked row here uses **Decision Index 0.2**.
+The [agentic-model comparison](AGENTIC_AI_MODELS.md#common-score-for-comparing-models)
+now uses **Artificial Analysis Intelligence Index v4.3.2** for its broad model ranking.
+The two indices evaluate different tasks: their 100-point scales are not interchangeable.
+Compare candidates within the same index; do not rank a decision engine against a
+general model by mixing these columns. This cross-reference does not update the
+25 September decision-benchmark snapshot below.
 
 **Contents:** [Rankings](#1-ranked-comparison) · [Trading score](#trading-score-scope-and-method) · [32 GB CPU options](#2-what-fits-on-a-32-gb-cpu-only-vm) · [4 GB options](#3-what-happened-to-the-4-gb-options) · [Additional GPU variants](#4-additional-gpu-variants) · [Pricing](#5-pricing-and-licensing) · [Selection plan](#6-how-to-choose-for-our-workload) · [Evidence](#appendix-evidence-and-sources)
 
@@ -77,22 +85,22 @@ For the first comparison, use **Decider-4B BF16** as the trained decision baseli
 
 ### CPU paths and estimated allocations
 
-The two configurations with a published reference score appear first, in descending score order. **NR = not ranked:** no directly comparable score for that exact configuration. NR is not zero.
+These proposed CPU deployments are **unranked**, listed alphabetically. **NR** means a matching score for the proposed artifact/runtime configuration has not been established; it is not zero. Published model references remain in section 1.
 
-| Configuration | Reference score | Trading proxy /100* | vCPU | Total RAM | CPU status |
+| Configuration | Exact-deployment score | Exact-deployment trading proxy | vCPU | Total RAM | CPU status |
 | --- | ---: | ---: | ---: | --- | --- |
-| [Decider-4B · BF16 candidate][decider4] | **36.58*** | 86.04† | 8 | 16–24 GB | CPU eager documented |
-| [Laya English][laya] | **5.51** | 60.98 | 2–4 | 4–8 GB | CPU documented |
-| [SemIf + Qwen3.5-4B · Q4_K_M][semif] | NR | NR | 4–8 | 6–8 GB | llama.cpp CPU documented |
-| [Decider-2B · BF16][decider2] | NR | NR | 4–8 | 8–12 GB | CPU eager documented |
 | [Decider-0.8B · BF16][decider08] | NR | NR | 4 | 4–8 GB | CPU eager documented |
-| [OpenJev (lookski) + Qwen3-4B-Instruct-2507 · FP32][lookski] | NR | NR | 8 | 24–28 GB | CPU documented; less headroom |
+| [Decider-2B · BF16][decider2] | NR | NR | 4–8 | 8–12 GB | CPU eager documented |
+| [Decider-4B · BF16 candidate][decider4] | NR | NR | 8 | 16–24 GB | CPU eager documented |
+| [Laya English][laya] | NR | NR | 2–4 | 4–8 GB | CPU documented |
 | [Laya multilingual][laya-multi] | NR | NR | 2–4 | 4–8 GB | CPU documented |
 | [Laya typed-decisions][laya-typed] | NR | NR | 2–4 | 4–8 GB | CPU documented |
-| [SemIf + Qwen3-0.6B · Q8][semif] | NR | NR | 2 | 2–3 GB | Exact CPU configuration needs testing |
+| [OpenJev (lookski) + Qwen3-4B-Instruct-2507 · FP32][lookski] | NR | NR | 8 | 24–28 GB | CPU documented; less headroom |
 | [SemIf + MiniCPM5-2B · Q4][semif] | NR | NR | 2–4 | 3–4 GB | Exact CPU configuration needs testing |
+| [SemIf + Qwen3-0.6B · Q8][semif] | NR | NR | 2 | 2–3 GB | Exact CPU configuration needs testing |
+| [SemIf + Qwen3.5-4B · Q4_K_M][semif] | NR | NR | 4–8 | 6–8 GB | llama.cpp CPU documented |
 
-No reference score above was measured on this proposed VM. **\*Decider-4B's 36.58 is a model reference:** the index summary does not identify its evaluated precision or exact weight revision, so the proposed BF16 CPU configuration does not have a confirmed score. **†The same restriction applies to its 86.04 trading proxy.** Decider-2B BF16 cannot inherit the FP8 score of 26.11, and SemIf Q4 cannot inherit 25.70 from the published 4B-Base entry.
+**Decider-4B's 36.58 and 86.04 trading proxy are model references:** the index summary does not identify its evaluated precision or exact weight revision, so they are not assigned to the proposed BF16 CPU configuration. Laya English's published 5.51 and 60.98 likewise remain reference results until the proposed deployment is matched to the evaluated configuration. Decider-2B BF16 cannot inherit the FP8 score of 26.11, and SemIf Q4 cannot inherit 25.70 from the published 4B-Base entry. No proposed VM configuration was measured here. Apply the shared [AI model comparison skill](../custom/skills/ai-model-comparison/SKILL.md) when updating these tables.
 
 ### Potential fits requiring runtime qualification
 
@@ -127,7 +135,7 @@ Laya also has separate checkpoints: English, multilingual, and typed-decisions. 
 
 ## 4. Additional GPU variants
 
-These six variants complete the **14 unranked configurations** alongside the eight NR CPU variants above. They are retained because they may be useful, but cannot be inserted into the common ranking without matched evidence.
+These six additional variants are unranked. They are retained because they may be useful, but cannot be inserted into the common ranking without matched evidence.
 
 Host allocations are estimates. Published GPU configurations are marked **†**; other GPU allocations are estimates.
 

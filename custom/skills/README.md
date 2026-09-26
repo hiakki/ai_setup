@@ -7,6 +7,7 @@ Each directory name is also the skill's identifier in its `SKILL.md` frontmatter
 
 | Skill | Directory | Purpose | Requirements |
 | --- | --- | --- | --- |
+| AI Model Comparison | [ai-model-comparison](ai-model-comparison/SKILL.md) | Compare exact models, quantizations and agent configurations without inheriting unmatched scores. | Primary evaluation sources and configuration details; matched workload results for deployment rankings. |
 | Auditable Business Workflows | [auditable-business-workflows](auditable-business-workflows/SKILL.md) | Keep rule-heavy calculations, status, corrections and historical documents consistent. | Approved domain rules and representative calculation/persistence evidence. |
 | Build Usable Apps | [build-usable-apps](build-usable-apps/SKILL.md) | Design and verify forms, onboarding, dashboards and application workflows. | Project context; a browser for rendered interaction checks. Framework-independent. |
 | Hermes Workflows | [hermes-workflows](hermes-workflows/SKILL.md) | Invoke Hermes for persistent tasks and reuse shared skills. | `hermes` runtime component (included in full setup) and separately configured model access. |
@@ -21,6 +22,8 @@ Each directory name is also the skill's identifier in its `SKILL.md` frontmatter
 
 ```text
 custom/skills/
+├── ai-model-comparison/
+│   └── SKILL.md
 ├── auditable-business-workflows/
 │   ├── SKILL.md
 │   └── references/
@@ -50,7 +53,7 @@ custom/skills/
 
 ## Install and use
 
-From the repository root, install all nine custom skills using the existing setup:
+From the repository root, install all ten custom skills using the existing setup:
 
 ```bash
 # macOS / Ubuntu / Debian
