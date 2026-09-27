@@ -1,7 +1,7 @@
 # Native Windows entry point. Git Bash is an auxiliary tool, not a Linux VM.
 [CmdletBinding()]
 param(
-    [ValidateSet('install', 'plan', 'verify')][string]$Action = 'install',
+    [ValidateSet('install', 'plan', 'verify', 'update')][string]$Action = 'install',
     [string]$HomeDirectory = [Environment]::GetFolderPath('UserProfile'),
     # Defaults include Context7 and Hermes; opt in with -Only 'all,strix,skillui'.
     # setup.py owns the component list and expands all to the default components.
@@ -180,8 +180,11 @@ function Invoke-AISetup {
         }
     }
     if ($SetupAction -ne 'install') {
-        if (-not $hasCheckout) { throw 'plan/verify require a local repository checkout. Run install first.' }
+        if (-not $hasCheckout) { throw 'plan/verify/update require a local repository checkout. Run install first.' }
         $python = Join-Path $SetupHome '.local/share/ai-setup/venv/Scripts/python.exe'
+        if ($SetupAction -eq 'update' -and -not (Test-Path -LiteralPath $python)) {
+            throw 'Updates require an existing ai_setup Python environment. Run install first.'
+        }
         if (-not (Test-Path -LiteralPath $python)) { $python = Find-SetupPython $bootstrap }
         if (-not $python) { throw 'Python 3.12-3.13 is required to preview or verify; install first.' }
     } else {

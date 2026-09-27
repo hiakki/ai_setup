@@ -10,7 +10,7 @@ for setup_arg in "$@"; do
   if [[ "$setup_previous" == --home ]]; then setup_home="$setup_arg"; fi
   if [[ "$setup_previous" == --only ]]; then setup_only="$setup_arg"; fi
   case "$setup_arg" in
-    plan|verify|install) setup_action="$setup_arg" ;;
+    plan|verify|install|update) setup_action="$setup_arg" ;;
     --home=*) setup_home="${setup_arg#--home=}" ;;
     --only=*) setup_only="${setup_arg#--only=}" ;;
   esac
@@ -87,6 +87,11 @@ if [[ "$setup_action" == install ]]; then
   setup_venv="$setup_home/.local/share/ai-setup/venv"
   if [[ ! -x "$setup_venv/bin/python" ]]; then "$setup_python" -m venv "$setup_venv"; fi
   "$setup_venv/bin/python" -m pip install --disable-pip-version-check -r "$setup_root/requirements.txt"
+fi
+
+if [[ "$setup_action" == update && ! -x "$setup_home/.local/share/ai-setup/venv/bin/python" ]]; then
+  echo 'Updates require an existing ai_setup Python environment. Run install first.' >&2
+  exit 1
 fi
 
 exec "$setup_home/.local/share/ai-setup/venv/bin/python" "$setup_root/setup.py" "$@"

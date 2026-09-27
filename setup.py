@@ -15,9 +15,10 @@ import time
 import tomllib
 
 ROOT = Path(__file__).resolve().parent
-DEFAULT_COMPONENTS = ('runtime', 'skills', 'agents', 'custom', 'blog', 'gstack', 'integrations', 'context7', 'rules', 'figma', 'hermes')
+DEFAULT_COMPONENTS = ('runtime', 'skills', 'agents', 'custom', 'blog', 'gstack', 'integrations', 'context7', 'rules', 'figma', 'hermes', 'docs', 'hub')
 OPTIONAL_COMPONENTS = ('strix', 'skillui')
 COMPONENTS = DEFAULT_COMPONENTS + OPTIONAL_COMPONENTS
+SHARED_COMPONENTS = ('skills', 'agents', 'custom', 'rules', 'docs', 'hub')
 
 
 def select_components(value):
@@ -132,10 +133,11 @@ def slug(name):
 
 
 class Installer:
-    def __init__(self, home, manifest):
+    def __init__(self, home, manifest, *, allow_source_updates=False):
         self.windows = os.name == 'nt'
         self.home = home.resolve()
         self.manifest = manifest
+        self.allow_source_updates = allow_source_updates
         self.state_dir = self.home / '.local/state/ai-setup'
         self.state_file = self.state_dir / 'state.json'
         self.sources = self.home / '.agents/skills/.sources'
@@ -295,10 +297,35 @@ class Installer:
 
     def fetch(self, spec):
         revision = spec['revision']
+        if not re.fullmatch('[a-z0-9][a-z0-9-]*', spec['id']):
+            raise ValueError('Invalid source id: ' + spec['id'])
         if not re.fullmatch('[0-9a-f]{40}', revision):
             raise ValueError(f'Expected immutable commit for {spec["id"]}')
         source = self.sources / spec['id']
         self.safe(source)
+        if is_link(source):
+            raise ValueError(f'Refusing linked source directory: {source}')
+        if source.exists():
+            if not (source / '.git').exists():
+                raise ValueError(f'Unmanaged source directory: {source}')
+            actual = capture(['git', '-C', source, 'rev-parse', 'HEAD'])
+            origin = capture(['git', '-C', source, 'remote', 'get-url', 'origin'])
+            if origin != spec['url']:
+                raise ValueError(f'Source revision/origin changed: {source}; preserve it before upgrading')
+            if actual != revision:
+                # Never reset or clean a provider checkout: it may contain local
+                # adaptations, environments or downloaded runtime assets.
+                replacement = self.sources / (spec['id'] + '-' + revision)
+                if not replacement.exists() and not self.allow_source_updates:
+                    raise ValueError(f'Source revision/origin changed: {source}; use update to fetch the new pin separately')
+                source = replacement
+        else:
+            replacement = self.sources / (spec['id'] + '-' + revision)
+            if replacement.exists():
+                source = replacement
+        self.safe(source)
+        if is_link(source):
+            raise ValueError(f'Refusing linked source directory: {source}')
         if source.exists():
             if not (source / '.git').exists():
                 raise ValueError(f'Unmanaged source directory: {source}')
@@ -327,7 +354,8 @@ class Installer:
                 if capture(['git', '-C', checkout, 'rev-parse', 'HEAD']) != revision:
                     raise ValueError('Fetched commit mismatch')
                 checkout.rename(source)
-        self.state['sources'][spec['id']] = {'url': spec['url'], 'revision': revision}
+        self.state['sources'][spec['id']] = {'url': spec['url'], 'revision': revision,
+                                           'path': source.relative_to(self.home).as_posix()}
         self.save()
         return source
 
@@ -400,11 +428,21 @@ class Installer:
                 source = self.fetch(spec)
                 for path in spec['agents']:
                     self.agent(source / path)
+        for path in sorted((ROOT / 'custom/agents').glob('*.md')):
+            if path.name == 'README.md':
+                continue
+            if is_link(path):
+                raise ValueError(f'Refusing linked custom agent: {path}')
+            self.agent(path)
 
     def custom(self):
-        for path in sorted((ROOT / 'custom/skills').glob('*/SKILL.md')):
+        source = ROOT / 'custom/skills'
+        if self.manifest.get('dotagents'):
+            from dotagents_runtime import stage_custom
+            source = stage_custom(self, source)
+        for path in sorted(source.glob('*/SKILL.md')):
             meta, _ = metadata(path)
-            self.install_skill(ROOT / 'custom', {'name': meta['name'], 'path': str(path.parent.relative_to(ROOT / 'custom'))})
+            self.install_skill(source, {'name': meta['name'], 'path': path.parent.name})
 
     def hermes(self):
         from hermes_runtime import install
@@ -523,7 +561,7 @@ class Installer:
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('command', choices=['plan', 'install', 'verify'], nargs='?', default='install')
+    parser.add_argument('command', choices=['plan', 'install', 'update', 'verify'], nargs='?', default='install')
     parser.add_argument('--home', type=Path, default=Path.home())
     parser.add_argument('--manifest', type=Path, default=ROOT / 'manifest.json')
     parser.add_argument('--only', default='all', help='all = default profile; comma-separated components, e.g. all,strix,skillui or context7')
@@ -535,7 +573,13 @@ def main():
     manifest = json.loads(args.manifest.read_text(encoding='utf-8'))
     if manifest.get('schema') != 1:
         parser.error('Unsupported manifest schema')
-    installer = Installer(args.home, manifest)
+    installer = Installer(args.home, manifest, allow_source_updates=args.command == 'update')
+    if args.command == 'update':
+        if args.only.strip() == 'all':
+            completed = set(installer.state['completed'])
+            selected = [name for name in SHARED_COMPONENTS if not completed or name in completed]
+        elif not set(selected).issubset(SHARED_COMPONENTS):
+            parser.error('update supports shared content only: ' + ', '.join(SHARED_COMPONENTS))
     if args.command == 'plan':
         print(f'Home: {installer.home}\nComponents: {", ".join(selected)}')
         print('Optional (explicit selection only): ' + ', '.join(OPTIONAL_COMPONENTS))
@@ -550,14 +594,18 @@ def main():
                      'Omit --home, or use --only with a component list excluding hermes for an isolated test.')
     installer.safe(installer.state_dir / 'install.lock')
     installer.state_dir.mkdir(parents=True, exist_ok=True, mode=0o700)
-    with install_lock(installer.state_dir / 'install.lock'):
+    from hub import operation_lock
+    with operation_lock(installer.home, allow_inherited=True), install_lock(installer.state_dir / 'install.lock'):
         actions = {}
+        if set(selected) & {'docs', 'hub'}:
+            import hub
+            actions.update(docs=hub.docs, hub=hub.install)
         if set(selected) & {'runtime', 'gstack', 'integrations', 'figma'}:
             if installer.windows:
                 from windows_runtime import runtime, gstack, integrations, figma
             else:
                 from runtime import runtime, gstack, integrations, figma
-            actions = {'runtime': runtime, 'gstack': gstack, 'integrations': integrations, 'figma': figma}
+            actions.update(runtime=runtime, gstack=gstack, integrations=integrations, figma=figma)
         for component in ('context7', 'strix', 'skillui'):
             if component in selected:
                 import importlib
@@ -574,7 +622,7 @@ def main():
                 installer.state['completed'].append(component)
             installer.save()
         installer.verify()
-        if set(DEFAULT_COMPONENTS).issubset(selected):
+        if args.command == 'install' and set(DEFAULT_COMPONENTS).issubset(selected):
             run([sys.executable, ROOT / 'smoke.py', '--home', installer.home], env=installer.env)
 
 

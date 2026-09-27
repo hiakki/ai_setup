@@ -1,7 +1,17 @@
 {
   "schema": 1,
-  "recorded": "2026-09-26",
+  "recorded": "2026-09-27",
+  "dotagents": {
+    "version": "3.1.0"
+  },
   "sources": [
+    {
+      "id": "anthropic-skills",
+      "url": "https://github.com/anthropics/skills.git",
+      "revision": "33375500bcea98d610eb30ce10ac4e59b89c390d",
+      "sparse": ["skills/doc-coauthoring"],
+      "skills": [{"path": "skills/doc-coauthoring", "name": "doc-coauthoring"}]
+    },
     {
       "id": "ui-skills",
       "url": "https://github.com/ibelick/ui-skills.git",

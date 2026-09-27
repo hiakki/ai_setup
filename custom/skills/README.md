@@ -8,13 +8,15 @@ Each directory name is also the skill's identifier in its `SKILL.md` frontmatter
 | Skill | Directory | Purpose | Requirements |
 | --- | --- | --- | --- |
 | AI Model Comparison | [ai-model-comparison](ai-model-comparison/SKILL.md) | Compare exact models, quantizations and agent configurations without inheriting unmatched scores. | Primary evaluation sources and configuration details; matched workload results for deployment rankings. |
+| API Docs Governance | [api-docs-governance](api-docs-governance/SKILL.md) | Assign contract ownership, publish versioned API docs and navigate changes across repositories. | Authorized source/contracts and consumer context; current primary sources for tool choices. |
 | Auditable Business Workflows | [auditable-business-workflows](auditable-business-workflows/SKILL.md) | Keep rule-heavy calculations, status, corrections and historical documents consistent. | Approved domain rules and representative calculation/persistence evidence. |
 | Build Usable Apps | [build-usable-apps](build-usable-apps/SKILL.md) | Design and verify forms, onboarding, dashboards and application workflows. | Project context; a browser for rendered interaction checks. Framework-independent. |
 | Hermes Workflows | [hermes-workflows](hermes-workflows/SKILL.md) | Invoke Hermes for persistent tasks and reuse shared skills. | `hermes` runtime component (included in full setup) and separately configured model access. |
 | HyperDX UI Regression Memory | [hyperdx-ui-regression-memory](hyperdx-ui-regression-memory/SKILL.md) | Investigate HyperDX interaction regressions and preserve verified findings. | An authorized HyperDX checkout and its project evidence. |
 | Indian Card Research | [india-card-research](india-card-research/SKILL.md) | Research Indian card terms, compare practical rewards and audit calculations. | Current official issuer sources, or date-applicable evidence for historical audits. |
 | Laya Decisions | [laya-decisions](laya-decisions/SKILL.md) | Classify, score or select among supplied choices through Laya. | Python and a configured Laya endpoint with any required credentials. |
-| Reliable Web App Operations | [reliable-web-app-operations](reliable-web-app-operations/SKILL.md) | Design repeatable setup, deployment, environment, telemetry and provider-delivery workflows. | Project runbooks and authorized infrastructure/provider access when executing operations. |
+| Reliable Web App Operations | [reliable-web-app-operations](reliable-web-app-operations/SKILL.md) | Design repeatable setup, versioning/hotfixes, immutable promotion, Compose/Kubernetes deployment, database recovery and observability. | Project runbooks and authorized infrastructure/provider access when executing operations. |
+| Service Architecture and Extraction | [service-architecture-and-extraction](service-architecture-and-extraction/SKILL.md) | Choose service boundaries and verify gateway, data and deployment transitions. | Current architecture, transaction invariants and authorized change scope. |
 | Social Rights Review | [social-rights-review](social-rights-review/SKILL.md) | Review source rights, originality and monetization eligibility separately. | Official platform sources and evidence about the actual assets/account. |
 | SRE Incident Investigation | [sre-incident-investigation](sre-incident-investigation/SKILL.md) | Investigate outages and explain causes using correlated operational evidence. | Authorized access to relevant telemetry or supplied incident evidence. |
 
@@ -24,6 +26,10 @@ Each directory name is also the skill's identifier in its `SKILL.md` frontmatter
 custom/skills/
 ├── ai-model-comparison/
 │   └── SKILL.md
+├── api-docs-governance/
+│   ├── SKILL.md
+│   ├── agents/openai.yaml
+│   └── references/
 ├── auditable-business-workflows/
 │   ├── SKILL.md
 │   └── references/
@@ -44,6 +50,10 @@ custom/skills/
 ├── reliable-web-app-operations/
 │   ├── SKILL.md
 │   └── references/
+├── service-architecture-and-extraction/
+│   ├── SKILL.md
+│   ├── agents/openai.yaml
+│   └── references/
 ├── social-rights-review/
 │   ├── SKILL.md
 │   └── references/
@@ -53,7 +63,7 @@ custom/skills/
 
 ## Install and use
 
-From the repository root, install all ten custom skills using the existing setup:
+From the repository root, install all twelve custom skills using the existing setup:
 
 ```bash
 # macOS / Ubuntu / Debian

@@ -1,5 +1,84 @@
 # Verification evidence
 
+## Central authoring policy and search — 2026-09-27
+
+- **Installed and exercised on the actual Mac:** the normal
+  `bash install.sh update --only docs,hub` installed the search/library/check commands,
+  updated both clients' global guidance and the onboarding reference, bound this central
+  checkout, and enabled the global Git dispatcher. Installer integrity passed for 71
+  managed paths and instruction blocks. `ai-setup search "central authoring"` returned
+  canonical and installed entries with an explicit local-freshness label.
+- **Actual user-level Git gate:** a disposable repository using the real installed hook
+  rejected a staged local documentation commit, forwarded its pre-existing hook, allowed
+  a source-code commit, and reported active hook coverage. No consuming project's files,
+  hook settings or branch rules were rewritten. No existing documentation was migrated.
+- **Regression evidence:** 108 tests ran, 104 passed and four skipped (three native Windows
+  checks and the optional dotagents network check previously exercised separately).
+  Twelve policy tests cover central/private binding, search boundaries, failed refresh,
+  staged-content checking, ignored-file audits, CI commit ranges, hook preservation,
+  operator edits, disable/restore, hook stdin/arguments/exit status and local override reporting. Eighteen hub/installer
+  tests include custom roles in both client formats and shared recovery/locking.
+- **Failures reproduced and fixed:** reference-transaction hooks can run during `git init`
+  before repository discovery works; dispatch now uses Git's supplied directory context.
+  Nested installer work now retains the inherited lock token, avoiding a false concurrent
+  operation failure during central updates.
+  A further regression reproduced stdin loss when forwarding through `git hook run`;
+  direct execution now preserves input, arguments and status, with a shell fallback for
+  shebangless hooks. An actual local Git push through the installed global dispatcher
+  passed the original pre-push hook's input/argument checks.
+- **Boundaries:** global instructions request search; there is no mandatory tool-call
+  interceptor or filesystem sandbox. The Git guard is bypassable and local hooksPath
+  overrides are reported. The reusable CI gate is prepared but must be published, adopted
+  and made required in each consuming repository. Native Windows/Linux execution of this
+  new guard and remote Actions runs remain pending. No private library is bound, and
+  private cloning/synchronization is not automated. Publication and scheduled updates
+  were not performed.
+
+Policy and usage: [Central library](../config/CENTRAL_LIBRARY.md). Local evidence is
+ignored under `.work/library-*.log`. Documentation links/fences, workflow YAML parsing
+and Git whitespace checks passed.
+
+Use `python tests/run_tests.py` to isolate fixture repositories from the operator's
+global Git configuration. This session used `--exclude test_mirofish.py` to leave the
+unrelated untracked test draft outside its scope. Running fixtures directly after
+enabling the real global guard correctly rejects their local documentation commits;
+that is why the reproducible suite runner uses an isolated home.
+
+## Central shared hub — 2026-09-27
+
+The [implementation walkthrough](CENTRAL_AI_HUB.md) describes ownership, installation,
+updates, contributions and recovery. Evidence for this change:
+
+- **Actual macOS ARM64 installation:** installed all twelve custom skills using pinned
+  dotagents 3.1.0, the shared documentation bundle and the global `ai-setup` command.
+  Created the permanent installer Python environment because earlier selective installs
+  used the development checkout's interpreter. Retried the normal
+  `bash install.sh update --only custom,docs,hub` successfully; integrity verification
+  passed for 65 managed paths and instruction blocks. This was an existing-machine
+  selective update, not a fresh operating-system bootstrap.
+- **Git distribution and recovery:** seventeen hub/installer tests passed. Real local
+  Git sources delivered the same revision to two isolated homes; rolling one back left
+  the other unchanged. Local edits, independent installer state, source conflicts,
+  provenance and concurrent installer activity were checked. Contribution export left
+  a reviewable diff without committing or pushing. Bash and locally available PowerShell
+  exercised the update adapters; PowerShell simulations are not native Windows evidence.
+- **Actual provider:** nine dotagents backend tests passed with the opt-in network test
+  enabled. All twelve repository skills were also staged twice with complete byte-level
+  checks, including supporting files. dotagents stages custom skills only; original-provider
+  skill and agent downloads retain the existing installer pipeline.
+- **Full regression pass:** 95 tests ran, 91 passed, and four were skipped: three require
+  native Windows and one was the separately exercised opt-in provider network test.
+  The unrelated untracked MiroFish test draft was excluded. Independent review identified
+  and led to fixes for shared installer locking, bounded snapshots and contribution links.
+- **Pending publication and platforms:** these new changes have not been committed or
+  pushed. Public GitHub rollout therefore remains pending; fixture Git tests do not prove
+  the public branch contains the implementation. The new `shared-hub.yml` matrix covers
+  macOS, Ubuntu and native Windows, but has not run remotely. Previous platform results
+  elsewhere in this document do not establish that this new hub passed on those platforms.
+
+Local logs are ignored under `.work/hub-*.log`. No scheduled update, paid host, public
+documentation site, project rewrite or credential distribution was enabled.
+
 ## Web development integrations — 2026-09-26
 
 - **macOS ARM64:** real Context7 anonymous MCP tool discovery, React library resolution,

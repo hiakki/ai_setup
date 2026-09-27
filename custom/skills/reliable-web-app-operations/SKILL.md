@@ -1,6 +1,6 @@
 ---
 name: reliable-web-app-operations
-description: Design, implement, debug, or audit repeatable web application setup, deployment, environment synchronization, provider delivery, health checks, backups, and observability. Use for server scripts, deployment runbooks, monitoring, and production incident diagnosability.
+description: Design, implement, debug, or audit repeatable web application operations, release versioning, immutable artifact promotion, manifest-driven Compose/Kubernetes deployment, environment configuration, database lifecycle and recovery. Use for central CI/CD, deployment runbooks, backups, provider delivery, observability and legacy retirement.
 ---
 
 # Reliable Web App Operations
@@ -37,5 +37,9 @@ write permission. Confirm existing authorization before any such action.
 ## References
 
 - Read [deployment-contract.md](references/deployment-contract.md) for environment synchronization, command boundaries, and release evidence.
+- Read [service-release-and-retirement.md](references/service-release-and-retirement.md) for multi-repository deployment, worker handover, runtime resource ownership and legacy cleanup.
+- Read [release-versioning-and-hotfixes.md](references/release-versioning-and-hotfixes.md) for central version automation, release provenance, production hotfix branches and partial publication recovery.
+- Read [portable-deployment.md](references/portable-deployment.md) for manifest-driven Compose/Kubernetes adapters, immutable promotion, worker draining and cross-target recovery.
+- Read [database-operations.md](references/database-operations.md) for database lifecycle ownership, migration/schema verification, locking, backups and restore rehearsals.
 - Read [observability-and-incidents.md](references/observability-and-incidents.md) for telemetry layers, user-reported slowness, cardinality, and incident diagnosis.
 - Read [provider-delivery.md](references/provider-delivery.md) when integrating email, SMS, storage, payment, or other external providers.

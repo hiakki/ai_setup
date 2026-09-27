@@ -1,12 +1,12 @@
 # Project instructions template
 
-Fill in the placeholders from the actual project before adopting this document. Store personal context in ignored `.agents/project-context.md` and connect it through the local client instruction files described in [AI_READY_PROJECTS.md](AI_READY_PROJECTS.md). Preserve existing shared instructions; do not overwrite them. Remove fields that do not apply. These are project instructions, not additional machine-wide rules.
+Search the central library first, then fill in confirmed project facts. Store this entry in the authorized central checkout at `docs/projects/<project>/context.md`; private facts require a private library. Local client files may point to it but must not duplicate it. Follow [AI_READY_PROJECTS.md](AI_READY_PROJECTS.md) and [CENTRAL_LIBRARY.md](CENTRAL_LIBRARY.md). Preserve existing shared instructions and remove fields that do not apply.
 
 Add the [local AI ignore block](ai-local.gitignore) before generating setup. Keep personal instructions, agent-routing files, MCP configuration, graph caches and AI-only notes out of Git. Inspect tracked/staged files separately; do not untrack existing files without authorization.
 
 ## Purpose and boundaries
 
-- Project root: `<absolute path>`
+- Project identifier and repository: `<portable identifier; keep machine paths private>`
 - Product purpose and intended users: `<short description>`
 - Current task and acceptance criteria: `<observable outcome>`
 - Authorized edit scope: `<directories/files>`
@@ -49,4 +49,4 @@ Available tools and their purpose: `<only tools confirmed available in this proj
 
 ## Optional specialist use
 
-For a task that benefits from a specialist, identify the role and bounded responsibility. Use the smallest relevant set and follow the user's delegation preferences. Do not create an agent registry unless the project actually needs routing.
+For a task that benefits from a specialist, identify the installed role and bounded responsibility. Use the smallest relevant set and follow the user's delegation preferences. New reusable role definitions belong in the central library, never in a project-local registry.

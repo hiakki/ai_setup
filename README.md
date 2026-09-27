@@ -4,6 +4,19 @@ Recreate the documented Claude Code + Codex environment on another machine. Prov
 
 Browse the [custom skill catalog](custom/skills/README.md) to share or install an individual skill.
 
+Maintain shared content once and reuse it across projects and machines with the
+[central AI hub](docs/CENTRAL_AI_HUB.md). The walkthrough covers the architecture,
+installation, central updates, contributions and rollback. Existing installations
+can add it with `bash install.sh install --only custom,docs,hub` or
+`.\install.ps1 -Only 'custom,docs,hub'`.
+
+The [central authoring policy](config/CENTRAL_LIBRARY.md) requires agents to search before
+creating skills, roles or documentation. `ai-setup search "TOPIC"` searches central and
+installed content; `ai-setup library` locates authoring checkouts. The hub also installs
+a global Git commit guard, preserving existing hooks. Check its effective coverage with
+`ai-setup guard status`; local overrides and bypasses require the supplied CI gate.
+This is not filesystem write isolation. Private project docs require a private library.
+
 [Hermes Agent](docs/HERMES.md) is included in the normal one-click setup:
 `bash install.sh` or `.\install.ps1`. Its shared agent skill is included in `custom`;
 its runtime is downloaded directly from pinned NousResearch source. Use
@@ -57,7 +70,8 @@ Start a fresh terminal after installation to load the user PATH. Existing WSL in
 | Graph integration | Codebase Memory and Graft, provider-generated hooks and guidance, registered once per client |
 | Design/browser | Isolated headless Playwright MCP; Figma remote MCP and official Codex Figma plugin |
 | Rules | Portable global preferences, workflow/release evidence rules, project-onboarding reference, local AI Git exclusions |
-| Custom additions | Laya, SRE incident investigation, HyperDX regression memory, build-usable-apps, social-rights-review, india-card-research, auditable-business-workflows, reliable-web-app-operations, Hermes agent guidance, ai-model-comparison |
+| Custom additions | Laya, SRE incident investigation, HyperDX regression memory, build-usable-apps, social-rights-review, india-card-research, auditable-business-workflows, reliable-web-app-operations, Hermes agent guidance, ai-model-comparison, api-docs-governance, service-architecture-and-extraction |
+| Shared hub and docs | Per-user `ai-setup` status/update/contribute/rollback command and local documentation bundle; pinned dotagents stages custom skills in isolation |
 | Hermes | Included by default: pinned NousResearch runtime, shared-skill discovery and Claude/Codex guidance; provider login is separate |
 | Context7 | Default remote documentation MCP for both clients; anonymous access, existing authentication preserved |
 | UI skills | Default `create-design-md` and `fixing-metadata`, from pinned `ibelick/ui-skills` |
@@ -76,14 +90,15 @@ See [manifest.json](manifest.json) for exact provider URLs, revisions, selection
 ~/.claude/agents/                 Claude Markdown roles
 ~/.local/bin/                    Tool launchers
 ~/.local/share/ai-setup/          Node/npm/bootstrap runtime and reference docs
+~/.local/share/ai-setup/docs/     Shared documentation bundle; open README.md
 ~/.local/state/ai-setup/          Installation state, config backups, verification
 ```
 
 Downloaded payloads live on the destination machine, outside this Git repository. `.work/` is an ignored development/test area and must never be published. Provider licenses remain in their source checkouts and skill assets. The bundled local instructions have distinct provenance: [custom/README.md](custom/README.md).
 
-Reusable project skills are now shared globally: [scope, sources and migration](docs/GLOBAL_SKILLS.md). The skills component also downloads Anthropic testing strategy, Vercel web design guidelines and Wshobson quantitative research skills from pinned original providers. Project decisions, conversation records and application-specific agents remain with their projects.
+Reusable project skills are now shared globally: [scope, sources and migration](docs/GLOBAL_SKILLS.md). The skills component also downloads Anthropic testing strategy and document co-authoring, Vercel web design guidelines and Wshobson quantitative research skills from pinned original providers. New authored project context belongs in the appropriate central library; private material requires an explicitly bound private checkout. Existing project documents are not automatically migrated. Projects retain minimal routing/configuration and generated runtime evidence, rather than a second authored library.
 
-The installer preserves unrelated configuration. It refuses conflicting existing skill folders, edited managed files, mismatched source revisions, duplicate role names, and conflicting MCP definitions. It backs up files before merging configuration. It does not automatically delete or replace an older setup that it cannot prove it owns.
+The installer preserves unrelated configuration. It refuses conflicting existing skill folders, edited managed files, unexpected source revisions during `install`, duplicate role names, and conflicting MCP definitions. Use the shared `update` action for a reviewed provider pin change; older checkouts are retained. It backs up files before merging configuration and does not automatically delete or replace an older setup that it cannot prove it owns.
 
 On Windows, an existing local Playwright MCP entry is reused with its configured browser. For example, `npx -y @playwright/mcp@latest --browser chrome` keeps using Chrome and skips the installer's Chromium download. Each client's existing Playwright entry is preserved; a client without one receives the existing launch settings. With no existing local entry, the installer sets up its managed Chromium browser. The full installation smoke check still tests the configured browser.
 
@@ -106,14 +121,27 @@ If the native Windows Playwright MCP download still reports a timeout after this
 bash install.sh plan                      # No writes/downloads; Python 3.11+ needed
 bash install.sh verify                    # Installed paths, rules and config
 bash install.sh install --only skills,agents,custom,rules
+ai-setup status                           # Installed shared content and local edits
+ai-setup search "deployment rollback"     # Search before authoring central material
+ai-setup library                          # Canonical authoring paths
+ai-setup guard status                     # Check effective Git enforcement here
+ai-setup update                           # Fetch central revision; update installed shared components
 ~/.local/share/ai-setup/venv/bin/python smoke.py  # Actual local graph/browser flows
 ```
 
-Default components: `runtime,skills,agents,custom,blog,gstack,integrations,context7,rules,figma,hermes`.
+Default components: `runtime,skills,agents,custom,blog,gstack,integrations,context7,rules,figma,hermes,docs,hub`.
 Both entry points select `all` by default, using the shared default profile in
 `setup.py`. Optional components are `strix,skillui`; `all` does not install them.
 Use `--only all,strix,skillui` or `-Only 'all,strix,skillui'` for the default profile plus both tools.
 Hermes provisions its own upstream runtime.
+`docs` installs the shared Markdown reference bundle; `hub` installs the central
+search/update/contribution command, client guidance and global Git commit guard.
+The guard forwards existing hooks and preserves an explicit operator disable.
+dotagents is an isolated
+staging dependency of `custom`; the existing installer remains the sole owner of
+real global skills and client files. `ai-setup update` updates already-installed
+shared components only. `bash install.sh update` / `-Action update` instead applies
+the current checkout. See the [hub walkthrough](docs/CENTRAL_AI_HUB.md) before rollout.
 Install `runtime` before the other runtime-dependent components. `--home /absolute/path`
 selects a separate installation home; it is useful for testing, not a way to install
 into another user's account with the wrong ownership. Hermes on Windows requires
@@ -148,7 +176,7 @@ CLI on Windows; local scans additionally need a Docker Linux-container backend.
 See [web development tools](docs/WEB_DEVELOPMENT_TOOLS.md) for agent discovery,
 usage, authentication, preservation behavior and runtime limits.
 
-The installer pins top-level npm versions and Git commits. OS packages and upstream Python dependency ranges remain platform/resolver dependent; this is not a byte-identical OS image. Review and change pins deliberately. Do not run a generic `skills update` over the separately managed blog/gstack adapters. Replacing an existing source revision is intentionally not an automatic destructive operation.
+The installer pins top-level npm versions and Git commits. OS packages and upstream Python dependency ranges remain platform/resolver dependent; this is not a byte-identical OS image. Review and change pins deliberately. Do not run a generic `skills update` over the separately managed blog/gstack adapters. The shared `update` action fetches changed provider pins into separate checkouts, preserves older source caches, and refuses locally edited managed destinations. The installed `ai-setup update` command additionally creates a recovery snapshot before applying the selected central revision. Retired skills are not automatically deleted.
 
 Graft uses a separate Node 20 runtime because its pinned native parser failed to build with Node 24 on Linux ARM. Other tools use Node 24. The installer trusts only the exact provider hooks it installs, using hashes reported by Codex itself. It does not enable optional gstack learning, desktop-browser integration or automatic upgrades.
 

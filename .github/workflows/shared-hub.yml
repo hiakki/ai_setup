@@ -1,0 +1,60 @@
+name: Shared AI hub
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  shared-content:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-14, windows-2022]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    env:
+      PYTHONUTF8: '1'
+      AI_SETUP_TEST_DOTAGENTS: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Install Python test dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Exercise Git distribution, updates, rollback and contribution
+        run: python -m unittest discover -s tests -p "test_hub*.py" -v
+      - name: Exercise the actual pinned dotagents package
+        run: python -m unittest discover -s tests -p test_dotagents.py -v
+      - name: Exercise central search and real Git enforcement
+        run: python -m unittest discover -s tests -p test_library.py -v
+      - name: Install through POSIX launcher
+        if: runner.os != 'Windows'
+        shell: bash
+        run: bash install.sh install --home "$RUNNER_TEMP/AI hub home" --only custom,docs,hub
+      - name: Install through native Windows launcher
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: |
+          .\install.ps1 -HomeDirectory "$env:RUNNER_TEMP/AI hub home" -Only 'custom,docs,hub'
+          if ($LASTEXITCODE -ne 0) { throw 'Shared hub installation failed' }
+      - name: Update and verify POSIX installation
+        if: runner.os != 'Windows'
+        shell: bash
+        run: |
+          bash install.sh update --home "$RUNNER_TEMP/AI hub home" --only custom,docs,hub
+          bash install.sh verify --home "$RUNNER_TEMP/AI hub home"
+          "$RUNNER_TEMP/AI hub home/.local/bin/ai-setup" --home "$RUNNER_TEMP/AI hub home" status
+      - name: Update and verify native Windows installation
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          .\install.ps1 -Action update -HomeDirectory "$env:RUNNER_TEMP/AI hub home" -Only 'custom,docs,hub'
+          .\install.ps1 -Action verify -HomeDirectory "$env:RUNNER_TEMP/AI hub home"
+          & "$env:RUNNER_TEMP/AI hub home/.local/bin/ai-setup.cmd" --home "$env:RUNNER_TEMP/AI hub home" status
+          if ($LASTEXITCODE -ne 0) { throw 'Shared hub verification failed' }

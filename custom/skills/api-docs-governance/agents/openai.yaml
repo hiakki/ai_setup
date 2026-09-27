@@ -1,0 +1,4 @@
+interface:
+  display_name: "API Docs and AI Change Context"
+  short_description: "Versioned API docs and reliable multi-repo AI context"
+  default_prompt: "Use $api-docs-governance to assess this project and design maintainable API documentation and AI change context."

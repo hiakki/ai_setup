@@ -1,0 +1,4 @@
+interface:
+  display_name: "Service Architecture and Extraction"
+  short_description: "Service boundaries, gateways, cutovers and QA evidence"
+  default_prompt: "Use $service-architecture-and-extraction to assess this project and plan or perform the authorized service changes with clear ownership and verification."

@@ -13,6 +13,14 @@ Define and document an order similar to:
 
 When two authorities conflict, stop financial implementation and surface the exact conflict. Do not “fix” one screen independently.
 
+## Across Service Boundaries
+
+One authority does not require a generic shared-code directory or a single repository. Identify the owner of each fact and state transition, then expose versioned interfaces or projections. Keep calculations and mutations that require one atomic transaction together unless a tested concurrency, idempotency, compensation and reconciliation protocol replaces that transaction.
+
+Authentication, tenant membership, location/field access and subscription eligibility are separate policies. A provider transport service may verify signatures or call payment APIs while invoice, order and entitlement outcomes remain owned by their domains. Document transitional shared-database reads and compatibility adapters instead of claiming full isolation from directory structure.
+
+Test cross-service retries, duplicates, timeouts, cancellation/refund races and stale projections when those boundaries change. Preserve immutable invoice/order snapshots and money already moved; a code rollback or administrative correction must not erase legitimate history.
+
 ## Modeling
 
 Separate:
@@ -44,4 +52,3 @@ Assert both the final number and the explanatory components shown to users.
 ## Terminology
 
 Use customer language in UI and stable domain language in code. Maintain an explicit translation map where internal coordinates or legacy terms differ. A label change is incomplete until forms, trees, reports, exports, notifications, tests, and docs agree.
-
