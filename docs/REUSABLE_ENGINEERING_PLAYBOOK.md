@@ -1,7 +1,7 @@
 # Reusable Engineering Playbook
 
-Project-neutral lessons originally collected in Elvique, centralized on
-25 September 2026. Detailed guidance travels with each skill in `custom/skills/`
+Project-neutral lessons from application delivery and service extraction.
+Detailed guidance travels with each skill in `custom/skills/`
 and its global installation. Application specifications, architecture discussions
 and release evidence stay in each application's own repository. Only reusable AI
 learning belongs here; see the [central authoring policy](../config/CENTRAL_LIBRARY.md).
@@ -20,6 +20,31 @@ learning belongs here; see the [central authoring policy](../config/CENTRAL_LIBR
 For work across several areas, begin with the highest-risk behavior and load only
 the additional guidance needed. Skills support the user's chosen task and existing
 permissions; they do not authorize deployments, restarts, payments or publishing.
+
+## Microservices, security, QA, DevOps and CI/CD coverage
+
+Use this index to find the maintained lesson, rather than creating a second skill
+or copying a project's runbook. These are reusable decision rules; they do not
+certify an application's security or prove that a deployment backend was tested.
+
+| Topic | Canonical guidance | Decisions and failures preserved |
+| --- | --- | --- |
+| Monolith to microservices | [Service boundaries](../custom/skills/service-architecture-and-extraction/references/boundaries-and-gateway.md) | Transaction authority, payment/PII boundaries, explicit shared ownership, independent builds; repo count is not isolation or scalability. |
+| API gateway and centralized API docs | [Gateway boundaries](../custom/skills/service-architecture-and-extraction/references/boundaries-and-gateway.md), [API ownership](../custom/skills/api-docs-governance/references/ownership-and-publication.md) | Gateway versus ops ownership, service authorization, raw webhooks, forwarding trust, owner-maintained contracts and versioned central discovery. |
+| Security and QA | [Security and QA](../custom/skills/service-architecture-and-extraction/references/security-and-qa.md) | Endpoint/actor matrix, tenant and field restrictions, direct-service bypass, streamed-body limits, actual browser workflows and separate evidence levels. |
+| Central CI/CD and containers | [Container build contract](../custom/skills/reliable-web-app-operations/references/central-container-builds.md) | App manifests, shared build profiles, scoped credentials, runtime dependency closure, hardened images, size measurement and safe cleanup. |
+| Versions and hotfixes | [Release versioning](../custom/skills/reliable-web-app-operations/references/release-versioning-and-hotfixes.md) | Independent versions, Git-generated short IDs, immutable provenance, release PRs, isolated patches and partial-publication recovery. |
+| Compose, multiple VMs and Kubernetes CD | [Portable deployment](../custom/skills/reliable-web-app-operations/references/portable-deployment.md) | Placement/discovery, retained-artifact promotion, OIDC identity, durable deployment locks, worker draining and complete rollback scope. |
+| DevOps cutover and cleanup | [Release and retirement](../custom/skills/reliable-web-app-operations/references/service-release-and-retirement.md) | Runtime ownership, explicit environment preservation, legacy dependency proof, compatible releases and data-preserving rollback. |
+| Database operations | [Database lifecycle](../custom/skills/reliable-web-app-operations/references/database-operations.md) | Runtime resource versus repo, least-privilege roles, live schema checks, backup rotation, disposable restore and host migration. |
+| Observability and incident response | [Operations telemetry](../custom/skills/reliable-web-app-operations/references/observability-and-incidents.md), [SRE investigation](../custom/skills/sre-incident-investigation/SKILL.md) | Layered evidence, safe logs, bounded metrics and causal investigation. |
+| Parallel specialist work | [Agent briefs and acceptance](../custom/skills/service-architecture-and-extraction/references/agents-and-acceptance.md) | Bounded ownership, graph/source handoffs, contract coordination and independent review without duplicate discovery. |
+
+When reporting that knowledge was shared, distinguish an edited canonical file,
+a local commit, a verified remote commit and an installed consumer revision.
+Check the remote branch contains the intended files before saying “published”.
+Other machines require their normal authorized update; publication does not
+automatically refresh their installed skills.
 
 ## Merge decisions
 

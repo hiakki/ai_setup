@@ -24,6 +24,18 @@ Preserve roles, extensions, configuration and encryption-key requirements needed
 
 Protect backup scope/paths against traversal, symlink confusion and accidental overwrite. Use unique destinations and explicit target validation. Do not assume a backup stored only beside the primary survives host/storage loss; assess independent storage and access controls against the required recovery objective.
 
+## Scheduled backup retention
+
+Make cadence, retention count, destination and environment explicit configuration.
+Publish a completed archive atomically only after successful creation and integrity
+checks; failed or partial output must not replace the newest good backup. Rotate
+only completed archives owned by this schedule after success, with locking to
+prevent overlapping runs. Keep pre-release or incident recovery backups under
+their own retention policy. Verify scheduler execution, permissions, timezone,
+failure notification and a restore rehearsal; configuring a cron line alone is not
+backup evidence. A simple existing scheduler and owned script can suffice without
+introducing a separate running backup service.
+
 ## Restore and host migration
 
 Separate backup, inspection, disposable restore and live restore commands. Live recovery needs explicit scope, expected data-loss window, writer/worker coordination, a safe stopping condition and post-restore reconciliation. A normal app rollback must not replace newer customer data with an older dump.

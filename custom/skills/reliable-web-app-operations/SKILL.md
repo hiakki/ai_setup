@@ -37,6 +37,7 @@ write permission. Confirm existing authorization before any such action.
 ## References
 
 - Read [deployment-contract.md](references/deployment-contract.md) for environment synchronization, command boundaries, and release evidence.
+- Read [central-container-builds.md](references/central-container-builds.md) for central CI/CD ownership, per-app manifests, shared Docker build profiles, image size and hardened runtime verification.
 - Read [service-release-and-retirement.md](references/service-release-and-retirement.md) for multi-repository deployment, worker handover, runtime resource ownership and legacy cleanup.
 - Read [release-versioning-and-hotfixes.md](references/release-versioning-and-hotfixes.md) for central version automation, release provenance, production hotfix branches and partial publication recovery.
 - Read [portable-deployment.md](references/portable-deployment.md) for manifest-driven Compose/Kubernetes adapters, immutable promotion, worker draining and cross-target recovery.
