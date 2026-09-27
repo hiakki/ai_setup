@@ -7,6 +7,14 @@ description: Model, implement, or review rule-heavy business workflows involving
 
 Make one rule produce one answer across every surface.
 
+When the central library is available, consult a matching concrete case before
+substantial recommendations: `ai-setup search "servinoza recovery"` for state
+transitions, `"delx reconciliation"` for uncertain external mutations,
+`"bulkbuyer provenance"` for dated scoring inputs, or `"card-savvy comparison"`
+for unknown values and monetary arithmetic. Read the returned case and its
+evidence limits; explain what to adopt, adapt or reject. Cases do not supply the
+target's business rules or prove its provider integration works.
+
 ## Workflow
 
 1. Establish the authority order for approved requirements, open assumptions, executable configuration, domain code, and UI copy.
@@ -32,4 +40,3 @@ Make one rule produce one answer across every surface.
 - Read [source-of-truth-and-calculations.md](references/source-of-truth-and-calculations.md) for rule hierarchy, derived values, fixtures, and thresholds.
 - Read [hierarchy-status-and-corrections.md](references/hierarchy-status-and-corrections.md) for tree relationships, eligibility, propagation, replacement, and deletion.
 - Read [financial-artifacts-and-demo-data.md](references/financial-artifacts-and-demo-data.md) for products, invoices, reversals, demo isolation, and realistic seeds.
-

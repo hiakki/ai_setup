@@ -15,6 +15,13 @@ For an existing app, preserve its brand and useful components. For a new app,
 choose a coherent visual direction suited to its audience and establish its
 shared rules before implementing several independent pages.
 
+When the central library is available, `ai-setup search "servinoza recovery"`
+finds concrete state/recovery and responsive-table failures; search
+`"card-savvy comparison"` for preserved comparison context and the distinction
+between UI verification and unresolved calculation defects. Read the relevant
+case's evidence limits, then adapt its tests to this product. The cases are
+optional context for this portable skill, not dependencies or business templates.
+
 ## Start with the user's job and the actual business model
 
 Read the brief and existing decisions. Resolve routine choices yourself; ask

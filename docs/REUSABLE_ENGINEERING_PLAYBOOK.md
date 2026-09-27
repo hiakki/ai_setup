@@ -8,6 +8,13 @@ learning belongs here; see the [central authoring policy](../config/CENTRAL_LIBR
 
 ## Choose the relevant skill
 
+Start with the [cross-project case catalog](case-studies/README.md) for concrete
+failures, source evidence and review coverage. Alongside Panyora and Elvique it
+routes to Servinoza's workflow recovery, NarrateAI's automation trial, bulkBuyer's
+data provenance, DelX's durable execution and card-savvy's calculation/comparison
+findings. Search the origin plus topic; do not mistake an open defect or proposal
+for a verified repair.
+
 For service extraction, central CI/CD, security and QA, first read the
 [Panyora case study](case-studies/panyora-service-extraction.md). It preserves
 concrete decisions, failures and evidence limits with source revisions, rather

@@ -32,6 +32,24 @@ Separate:
 
 Compute derived values through one domain path. If performance requires persistence, store rule version, source period, and reconciliation data so the value can be reproduced.
 
+## Evidence, units and uncertain external operations
+
+Keep ranking preferences separate from monetary values, missing observations
+separate from observed zeros, and data eligibility separate from model validity.
+Retain the applicable rule date, observation cutoff and actual collection time
+when reconstructing historical results. A backfilled observation must not become
+a supposedly prospective decision. Preserve credit/refund direction through
+imports; an absolute-value parser can silently manufacture spend.
+
+When a mutation can be accepted despite a lost response, persist request identity
+and parameters before calling the provider. Reconcile exact identity under the
+provider's supported contract; do not infer rejection from an empty or failed
+list lookup. A local ID alone does not guarantee remote idempotency. Separate
+documented pre-acceptance refusal from uncertain acceptance. Retain recovery
+ownership until earlier in-flight work is resolved, and reconcile partial
+completion before replacement. Test failed journal writes, response loss,
+restart, cancellation races and missing terminal quantities when applicable.
+
 ## Test Fixtures
 
 Include:

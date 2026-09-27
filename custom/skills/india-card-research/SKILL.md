@@ -43,6 +43,12 @@ For historical audits, process transactions chronologically with separate actual
 
 ## Deliver and validate
 
+For a concrete import/comparison failure record, when available run
+`ai-setup search "card-savvy comparison"`. Its case separates unresolved sign,
+unknown-reward and preference-score findings from later browser checks. Read the
+evidence limits; a polished comparison does not establish corrected arithmetic
+or current issuer terms.
+
 Use a compact comparison or recommendation with assumptions, practical net value, decisive restrictions, direct citations and verification dates. Separate verified facts, estimates and unresolved terms. Match detail to the question; a simple fee lookup does not need a full portfolio report.
 
 Before changing calculation code, check representative arithmetic independently: spend just below/at/above an earning block, remaining-cap exhaustion, period reset, an excluded transaction and a refund where applicable. Test waiver threshold equality and prevent fee/benefit double counting. Use synthetic transactions; retain no credentials or unnecessary personal statement data.

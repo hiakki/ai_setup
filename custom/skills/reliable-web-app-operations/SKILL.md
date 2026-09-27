@@ -28,6 +28,13 @@ library for observability and the named reference project when known. Read the
 case's evidence limits: proxy recovery, collector ingestion and application
 activation are separate claims, not a historical topology to copy blindly.
 
+For unattended provider workflows, search `ai-setup search "narrateai automation"`;
+for execution-host data access and dependent-report freshness, search
+`"bulkbuyer provenance"`; for uncertain mutation recovery, search
+`"delx reconciliation"`. Read the relevant recorded failure and evidence limits.
+An intervened demo, one manual transfer or fake-provider tests do not establish
+unattended operation through the destination's real application path.
+
 1. Identify the supported operating systems, runtime, process manager, reverse proxy, data store, and external providers.
 2. Separate command intent: prerequisite setup, application deployment, monitoring setup, health/status, proxy reload, backup, and restore must not silently invoke one another.
 3. Define one environment contract. Sync missing example keys without overwriting operator values, validate URL and credential shapes, and fail before mutating runtime state.

@@ -17,6 +17,11 @@ the policy article from any generated support-assistant summary on that page.
 
 ## Evidence to distinguish
 
+For implementation context, when the central library is available, search
+`ai-setup search "narrateai publishing"`. Its case distinguishes source metadata,
+review and exact-output publishing intent. It is historical engineering evidence,
+not current platform policy or permission for the source under review.
+
 Assess these independently; do not collapse them into a single safe/eligible score:
 
 - **Source rights:** asset URL, actual owner, origin, license or permission,
