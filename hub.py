@@ -437,6 +437,13 @@ only the generic lesson here. Label unverified ideas as proposals. This is maint
 knowledge, not automatic model training or guaranteed recall. Documentation for
 ai_setup's own tools and operation belongs here.
 
+Before substantial architecture, microservices, CI/CD, security or QA recommendations,
+search by topic and any named reference project. Read relevant curated cases under
+docs/case-studies and their linked skill references. Explain adopt/adapt/reject
+decisions against the target's requirements. Cases retain sanitized lessons and
+source/evidence limits; full project docs stay with their owner. Search is literal
+and does not read arbitrary sibling repositories or past conversations.
+
 Use `ai-setup check-project --project PATH` before committing. A Git guard can reject
 commits, but unrestricted filesystem tools can still create files. Do not claim
 search or central-authoring is enforced by a sandbox when only instructions apply.

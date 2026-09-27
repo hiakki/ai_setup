@@ -9,6 +9,13 @@ Make ownership, runtime dependencies and release consequences explicit. Splittin
 
 ## Scope and evidence
 
+When the central `ai-setup` library is available, search for prior extraction cases
+before selecting a design: `ai-setup search "service extraction"`, and search any
+reference project the user names. The curated Panyora case is discoverable with
+`ai-setup search "panyora microservices"`. Read its evidence and linked references;
+state which decisions fit, need adaptation or should be rejected for this project.
+Do not infer repository count, live readiness or business authority from analogy.
+
 1. Determine whether the request is an assessment, plan, implementation, deployment or cleanup. Honor existing authorization; a plan or reusable skill grants no additional deployment, deletion, provider-spending or source-publication permission.
 2. Read applicable instructions and inspect the actual code, routes, contracts, configuration ownership, tests and runtime/deployment records. Prefer configured graph tools when required; verify project/generation/coverage and read missed source. Do not use unrelated graph matches simply because they contain words such as gateway or ops.
 3. Record current, proposed, implemented and observed deployed architecture separately. Include workers, external providers, databases, uploads, caches, backups, secrets/configuration ownership and host infrastructure—not only repositories.

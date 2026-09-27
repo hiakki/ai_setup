@@ -11,6 +11,12 @@ For actual service decomposition or runtime extraction, use `service-architectur
 
 ## Establish the task and existing authority
 
+When `ai-setup` is available, search for relevant case studies and the user's named
+reference project before proposing a documentation platform. For example,
+`ai-setup search "panyora"` retrieves the curated extraction/discovery case. Read
+its source/evidence limits and identify which decisions apply to this project;
+do not assume sibling docs or previous conversations are automatically searched.
+
 - Separate research/proposal, bounded audit and implementation. Research does not authorize repository creation, source moves, portal publication, deployment, new subscriptions or tool installation.
 - Inspect the existing documentation index, contracts, route registration, package exports, compatibility/deployment records and applicable repository instructions. Preserve user changes and working consumers.
 - Use configured code-discovery tools according to project rules. Verify graph freshness/coverage before relying on absence; use exact source where coverage is missing. Documentation/configuration inspection does not require building a code graph for an unrelated workspace.

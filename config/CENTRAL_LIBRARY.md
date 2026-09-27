@@ -12,12 +12,29 @@ rules, workflows, AI learning discussions and reviewed self-learning. It is not 
 store for individual apps' discussions, decisions or conversation transcripts.
 Documentation for ai_setup's own installers, integrations and operation stays here.
 
+Curated, sanitized project case studies are shared AI learning when they explain
+reusable decisions, failures, tradeoffs and evidence. Keep them in
+`docs/case-studies/<origin>-<topic>.md`; retain full/current project docs with their
+owner. Include search aliases, source project/path/revision, review date,
+implemented versus proposed status, verification limits and links to the relevant
+skills. Do not publish raw discussions, transcripts, secrets or private product
+details. A source project name is a discovery key, not permission to mirror it.
+
 ## Search before authoring
 
 ```sh
 ai-setup search "release deployment"
 ai-setup library
 ```
+
+Before proposing substantial architecture, service extraction, CI/CD, security or
+QA work, search by topic and any named reference project, read relevant cases and
+their linked skills, and explain which decisions you adopt, adapt or reject for
+the target. Do this before writing recommendations, not only when authoring skills.
+Find the case index with `ai-setup search "engineering playbook"`.
+Search uses literal words, not semantic retrieval; try `cicd` and `CI/CD`, or
+`microservices` and `service extraction`, when a query misses relevant material.
+It does not read arbitrary sibling projects or previous conversations.
 
 Read matching entries before creating shared AI material. For application work,
 also read the project's own source-of-truth docs. Search includes bound central
@@ -66,6 +83,7 @@ ai-setup library --checkout /path/to/ai_setup
 | Custom agent role | `custom/agents/<name>.md` |
 | Original-provider skills/roles | Provider source; selections and pins in `manifest.json` |
 | Generic AI learning, reusable discussions and shared documentation | Existing canonical entry, or `docs/shared/<topic>.md` for a new topic |
+| Curated, sanitized project case studies | `docs/case-studies/<origin>-<topic>.md`, linked from the engineering playbook and relevant skills |
 | Application architecture, decisions, design, runbooks and release evidence | The application's own repository and existing docs conventions |
 | Private reusable AI skills, roles or learning | A separately authorized private library, never the public ai_setup repository |
 

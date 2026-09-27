@@ -16,6 +16,13 @@ write permission. Confirm existing authorization before any such action.
 
 ## Workflow
 
+If the central `ai-setup` library is available, consult concrete release cases
+before recommending CI/CD or deployment structure. Search `ai-setup search "cicd"`
+and any named reference project; `ai-setup search "panyora cicd"` finds the curated
+extraction/build/recovery case. Read relevant linked references, then explain what
+to adopt, adapt or reject. Historical VM success does not verify a new topology,
+provider account or release pipeline.
+
 1. Identify the supported operating systems, runtime, process manager, reverse proxy, data store, and external providers.
 2. Separate command intent: prerequisite setup, application deployment, monitoring setup, health/status, proxy reload, backup, and restore must not silently invoke one another.
 3. Define one environment contract. Sync missing example keys without overwriting operator values, validate URL and credential shapes, and fail before mutating runtime state.
