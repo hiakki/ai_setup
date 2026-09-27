@@ -33,6 +33,14 @@ Read [boundaries-and-gateway.md](references/boundaries-and-gateway.md) for decom
 
 ## Execute and verify the authorized slice
 
+For a user-selected VM → local images → Compose → CI/CD workflow, use the
+[staged extraction → images → Compose → CI/CD sequence](references/staged-extraction-to-cicd.md).
+First prove the separated application on its target VM with ordinary commands,
+then build/push images on the user's chosen machine, verify Compose deployment,
+and only then automate CI/CD. Other deployment targets and automation platforms
+remain valid. Record and honor the selected sequence; do not provision later-stage
+infrastructure while the earlier runtime gate is unmet.
+
 - Establish the current working journey and regressions at boundaries likely to move. Extract one useful vertical slice; keep compatibility adapters explicitly owned and removable.
 - Produce reproducible service artifacts from identified revisions. A consumer must not require an undeclared sibling source tree or retired parent checkout. Verify a clean checkout/build where that independence is claimed.
 - Coordinate contracts, migrations and worker handover; preserve explicit operator configuration. Use the operations references below for release and recovery mechanics.

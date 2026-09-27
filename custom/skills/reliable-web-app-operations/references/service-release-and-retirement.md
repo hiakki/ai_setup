@@ -14,6 +14,12 @@ Provider enablement, test/live mode, origin and operator flags must survive rede
 
 ## Reproducible deployment
 
+When this is part of a service extraction, follow the user's selected stage order.
+The [staged extraction reference](../../service-architecture-and-extraction/references/staged-extraction-to-cicd.md)
+separates ordinary VM process verification, local image build/publication, Compose
+cutover and eventual CI/CD. Do not make new CI infrastructure a prerequisite for
+validating a requested ordinary-process migration.
+
 For version calculation, release PRs, image tags and production hotfix tracks,
 read [release-versioning-and-hotfixes.md](release-versioning-and-hotfixes.md).
 
