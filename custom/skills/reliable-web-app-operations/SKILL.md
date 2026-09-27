@@ -23,6 +23,11 @@ extraction/build/recovery case. Read relevant linked references, then explain wh
 to adopt, adapt or reject. Historical VM success does not verify a new topology,
 provider account or release pipeline.
 
+For monitoring setup or a healthy-API/broken-dashboard incident, search the central
+library for observability and the named reference project when known. Read the
+case's evidence limits: proxy recovery, collector ingestion and application
+activation are separate claims, not a historical topology to copy blindly.
+
 1. Identify the supported operating systems, runtime, process manager, reverse proxy, data store, and external providers.
 2. Separate command intent: prerequisite setup, application deployment, monitoring setup, health/status, proxy reload, backup, and restore must not silently invoke one another.
 3. Define one environment contract. Sync missing example keys without overwriting operator values, validate URL and credential shapes, and fail before mutating runtime state.

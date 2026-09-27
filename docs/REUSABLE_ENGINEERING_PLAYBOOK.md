@@ -15,6 +15,13 @@ than another generic checklist. Search by the origin and topic, then compare
 adopt/adapt/reject decisions against the target project's requirements. Cases
 are learning material; each project's current docs remain authoritative.
 
+For operational admin UX, business-rule consistency, agent routing and monitoring,
+read the [Elvique case study](case-studies/elvique-operational-workflows.md).
+It distinguishes design requirements from the recorded proxy repair and local
+telemetry checks; it does not claim every requirement is implemented or that
+production application instrumentation was activated. Search `elvique admin UI`,
+`elvique architecture` or `elvique observability` to find it.
+
 | Work | Primary skill | Add when relevant |
 | --- | --- | --- |
 | API contract ownership, docs publication and cross-repo navigation | [api-docs-governance](../custom/skills/api-docs-governance/SKILL.md) | API platform or developer tooling expertise |

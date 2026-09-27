@@ -42,3 +42,64 @@ For a report that “the website is slow,” first separate one-user network/dev
 6. Verify recovery through both health signals and the affected workflow.
 7. Record root cause, detection gap, prevention, and owner.
 
+## Healthy APIs, Broken Browser
+
+When dashboard APIs and queries succeed but panels or plugins fail, inspect the
+actual signed-in browser's network and console before reinstalling a datasource.
+Compare the failing asset through the public proxy and direct origin: status,
+complete byte count, hash and a cache-busted request. Include a throttled download
+when failures depend on response size or client speed. A successful response
+header does not prove a complete response body.
+
+If a buffered proxy response is truncated, inspect the effective worker identity,
+temporary-directory permissions, disk/inodes and persistent proxy error log.
+Transport errors alone do not identify the cause. Choose an authorized,
+route-scoped repair: correct the temporary storage ownership or deliberately
+change buffering for the affected route after considering resource behavior.
+Do not disable buffering everywhere or weaken filesystem permissions by default.
+Validate, reload only the affected service with permission, then repeat both the
+download and the real browser journey. Logs attached to a dead terminal are not
+durable incident evidence.
+
+## Collector Readiness Is Not Telemetry Completion
+
+Verify each boundary separately:
+
+1. The collector's readiness and scrape endpoints respond.
+2. A labelled synthetic event is accepted, queryable and displayed.
+3. A real request through the production-built application emits a safe event.
+4. The event and sampled trace correlate through the configured exporters.
+5. The actual public customer path and intended deployed release are verified.
+
+A readiness endpoint can succeed while ingestion fails, for example during a
+disk/WAL safety shutdown. Inspect write responses, dropped/export-failure metrics
+and disk capacity. Do not raise production safety limits just to pass a test.
+Keep synthetic records distinguishable from customer activity. A collector smoke
+test does not establish that an unrestarted application emits instrumentation.
+
+Make application telemetry opt-in where the deployment contract requires it.
+Preserve operator settings and separate monitoring provisioning from app rollout.
+Validate effective in-container configuration after updates: atomic file replacement
+can leave a single-file bind mount pointing at an old inode. For mutable config,
+consider a directory mount or explicit container recreation; confirm ownership and
+readability under the actual container UID. Keep secret access least-privileged.
+
+## Safe Correlation And Failure Behavior
+
+- Instrument the actual framework/runtime path. A vendor-specific header hook
+  that works on managed hosting may not run on a self-hosted deployment. Verify
+  correlation through real HTTP requests and concurrent request isolation.
+- Treat incoming correlation IDs as untrusted: validate length/format or replace
+  them, and never use them for authorization. Keep IDs out of metric and indexed
+  log labels; use structured log metadata and traces for correlation.
+- Inspect all exporters, automatic spans and resource attributes. A sanitized
+  custom span does not make a second automatic exporter safe. Verify with synthetic
+  query/header/body canaries without using real secrets or customer data.
+- Bound asynchronous telemetry queues, event sizes, files, retries and retention.
+  A telemetry failure must not change a successful business outcome or conceal
+  its original exception. Surface dropped events, failed writes and exporter
+  initialization errors through an independent, rate-limited diagnostic path.
+- Document sampling honestly. Head sampling does not guarantee an error trace;
+  keep safe error events separately and avoid links to traces never exported.
+- Check environment parsing against the installed SDK and effective process.
+  A configuration-shaped unit test is not evidence of runtime enablement.

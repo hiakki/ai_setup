@@ -122,7 +122,7 @@ pattern. Do not introduce those features merely because this skill mentions them
 For dense admin or staff workflows, load only the relevant reference:
 
 - [tables-and-selectors.md](references/tables-and-selectors.md): deterministic
-  pagination, remote selectors, selection scope and bulk outcomes.
+  pagination, remote selectors, interactive hierarchies, selection scope and bulk outcomes.
 - [forms-uploads-and-feedback.md](references/forms-uploads-and-feedback.md):
   structured field errors, durable upload outcomes and recovery.
 - [permissions-audit-and-destructive-actions.md](references/permissions-audit-and-destructive-actions.md):

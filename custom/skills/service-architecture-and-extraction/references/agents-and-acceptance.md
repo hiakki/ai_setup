@@ -2,6 +2,13 @@
 
 These briefs reuse available roles. They do not require permanent agent registrations or authorize extra tools. For small work, apply the relevant review locally. For substantial authorized parallel work, use independently useful tasks, not several agents rediscovering the same code.
 
+Choose by task risk, not roster size. Before claiming specialist use, actually
+load the relevant instructions or delegate to the configured role. Distinguish
+delegated review from instructions applied by the primary agent. Report concrete
+findings, resulting changes and verification limits; a registry entry is not
+execution evidence, and a review verdict is not a runtime test. Do not make a
+source project's mandatory delegation policy universal.
+
 ## Shared handoff
 
 Give each worker: objective, approved directory/behavior scope, applicable instructions, current/proposed state, exact owned files, source revisions, discovered symbols/call chains, graph generation and coverage/gaps if applicable, tests and known unresolved questions. State that others may be editing; preserve their changes and do not revert unrelated work. Do not assume a child has MCP access. Never pass credentials or unnecessary customer data.

@@ -17,6 +17,7 @@ of any changed shared component.
 | Tables | All role tabs; empty, one and many rows; long text; zero and large amounts. | Relevant columns, correct singular/plural labels, understandable no-data values. |
 | Alignment | Every sortable header inactive/ascending/descending, including wrapping. | Header text and body content share the intended edge; badges use outer edge; numeric values align right. |
 | Open actions | Open/close menu or modal for first/last/long row. | No accidental table resizing or shifted columns; selected record stays clear. |
+| Interactive hierarchy | Deep/uneven tree, several branches open, manual selection, search/result selection/query clear, ancestor navigation, pan/zoom/reset on supported inputs. | Nodes remain bounded and reachable; query, committed selection and expansion follow the agreed distinct behavior; report touch/trackpad/keyboard evidence separately. |
 | Responsive | Phone, tablet with sidebar, desktop, zoom and long content. | Main action reachable; no clipped controls or accidental page overflow; deliberate table scrolling remains usable. |
 | Modal | Keyboard open, Tab/Shift+Tab, Escape, close button, nested close. | Accessible name, background inert, focus visible and restored; child close does not dismiss parent. |
 | Feedback | Success, error, loading, retry and disabled states. | Clear outcome/next action, no contradictory badges, no misleading completion. |
