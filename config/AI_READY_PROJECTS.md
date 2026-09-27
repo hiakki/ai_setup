@@ -1,12 +1,12 @@
 # Make a repository or directory AI-ready
 
-Updated 2026-09-27. Scope: **central authoring, global Claude Code and Codex tooling, minimal local routing**.
+Updated 2026-09-27. Scope: **central AI guidance, project-owned application docs, global Claude Code and Codex tooling**.
 
 ## The request to use in any project
 
 Open Claude or Codex in the intended directory and send:
 
-> Make this directory AI-ready using {{REFERENCE}}/AI_READY_PROJECTS.md. Search the central library first and reuse global Claude/Codex agents and skills, Graft, gstack and Codebase Memory. Add the local-AI ignore rules before creating setup files. Inspect the actual project and preserve its existing instructions. Author new documentation, skills and roles centrally; leave only required local configuration and routing pointers. Build/index this project when it contains supported code, verify discovery, the Git guard and exclusions, and report passed/skipped checks. Do not reinstall global tools, restart services or change application behavior.
+> Make this directory AI-ready using {{REFERENCE}}/AI_READY_PROJECTS.md. Search the central library and reuse global Claude/Codex agents and skills, Graft, gstack and Codebase Memory. Add the local-AI ignore rules before creating setup files. Inspect the actual project and preserve its existing instructions. Keep reusable AI skills, roles and learning centrally; keep application docs in this repository. Build/index this project when it contains supported code, verify discovery, the Git guard and exclusions, and report passed/skipped checks. Do not reinstall global tools, restart services or change application behavior.
 
 This authorizes onboarding the chosen directory. It does not authorize changing other projects or publishing anything. In this setup, “memorybase” refers to the already-installed **Codebase Memory MCP**; do not install a new memory product because of that shorthand.
 
@@ -19,7 +19,7 @@ This authorizes onboarding the chosen directory. It does not authorize changing 
 | gstack | Existing global source, runtime and host adapters | Invoke the matching workflow from the project root; no `gstack init` step |
 | Graft | CLI, MCP registration and existing global integration | Build this project's structural graph |
 | Codebase Memory MCP | Binary, MCP registration and machine-local graph storage | Index the exact project root and verify coverage |
-| Product context | Central `docs/projects/<project>/` in an authorized public/private library | Route to the central context; verify actual project facts before using them |
+| Product context | Reusable AI guidance only | Read and maintain application facts in the project's own canonical docs |
 
 Inspect the global skill and role directories listed above to confirm discovery. On native Windows, `~` denotes the Windows user profile; consult [the Windows command reference](WINDOWS.md) for PowerShell equivalents. For installation repair, use the ai_setup repository's README and `bash install.sh verify` (Unix) or `.\install.ps1 -Action verify` (Windows). Do not rerun global installers as ordinary project onboarding.
 
@@ -35,7 +35,7 @@ An empty directory can be prepared for instructions and Git exclusions. Defer gr
 
 Merge the exact block from [ai-local.gitignore](ai-local.gitignore) into the project's `.gitignore`, once, preserving existing entries. Keep it even when a machine-wide ignore file also covers these names. The `.gitignore` change itself may be committed; the excluded personal setup remains local.
 
-The block covers Claude/Codex directories, legacy local skill/context directories, personal instruction files, MCP configuration and graph caches. New authored notes, plans and handoffs belong in the authorized central library. Generated logs, screenshots and runtime caches can remain ignored locally; they are not authored documentation. Add exact exclusions for other generated paths actually observed. An ignore entry does not authorize creating a local skill or document.
+The block covers Claude/Codex directories, legacy local skill/context directories, personal instruction files, MCP configuration and graph caches. Reusable AI guidance belongs in the central library; application plans and decisions stay in project docs. Personal AI-only scratch notes, logs, screenshots and runtime caches remain ignored locally. Add exact exclusions for other generated paths actually observed. An ignore entry does not authorize creating a duplicate skill library.
 
 Do not use broad patterns such as `agents*`, `memory*`, `*.json` or `*.md`: they can hide application code and real documentation. Confirm `graft/` is the generated cache before applying that entry to a repository with a similarly named source directory.
 
@@ -45,19 +45,20 @@ For a directory without Git, the `.gitignore` can be prepared now. Git exclusion
 
 “Local-only” here means excluded from source control. It does not change what a remote AI model or connected service receives.
 
-## 3. Search and route to central project context
+## 3. Reuse central AI guidance and project-owned context
 
 Run `ai-setup search "PROJECT TOPIC"`, inspect relevant results, then run `ai-setup library`.
 Use [CENTRAL_LIBRARY.md](CENTRAL_LIBRARY.md) for binding, freshness and authoring rules.
-Create project context under the authorized central checkout's `docs/projects/<project>/`,
-using [PROJECT_INSTRUCTIONS_TEMPLATE.md](PROJECT_INSTRUCTIONS_TEMPLATE.md). Private facts
-require a separately bound private library. If it is missing, ask for that destination;
-do not write them to the public library or a local substitute.
+Read and maintain application context in the project's own documentation. Use
+[PROJECT_INSTRUCTIONS_TEMPLATE.md](PROJECT_INSTRUCTIONS_TEMPLATE.md) only to fill
+actual gaps; do not create a second version of existing architecture or runbooks.
+Application docs require no private central-library binding. Do not copy private
+project facts to the public AI library when improving a reusable skill.
 
 Keep only minimal routing in ignored `AGENTS.override.md` and/or `CLAUDE.local.md` when
-needed: the instruction to search the library, a verified absolute path to the central
-project entry, and a reminder to read existing team instructions. Preserve existing
-content. Do not copy the central entry into `.agents/project-context.md` or create a
+needed: the instruction to search the library, pointers to the project's own
+docs, and a reminder to read existing team instructions. Preserve existing
+content. Do not copy shared skills into `.agents/project-context.md` or create a
 project-level skill/agent registry. Verify in a fresh session that the route is usable.
 
 ## 4. Build only this project's graphs
@@ -103,7 +104,7 @@ Do not run `graft init` by default: global MCP/hooks already provide the integra
 | Browser QA report | Existing `gstack-qa-only`; use the project's intended browser/session |
 | Recurring bug investigation | Existing debugging skill or `gstack-investigate`, choosing one workflow |
 | Specialized work | Relevant global skill and, when useful and authorized, an existing specialist role |
-| Durable project facts / handoff | Authorized central `docs/projects/<project>/`; private library for private facts; no secrets |
+| Durable project facts / handoff | Application's own canonical docs; personal scratch notes ignored locally; no secrets |
 
 Claude invocation example: `/gstack-review`. Codex example: `$gstack-review`. State the diff, project and scope. Shipping, deployment and service-changing workflows require the corresponding task authorization.
 

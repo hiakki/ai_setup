@@ -1,5 +1,36 @@
 # Verification evidence
 
+## AI-library scope correction — 2026-09-27
+
+The owner clarified that ai_setup owns reusable AI skills, agents and generic
+learning; application architecture, business/design decisions, runbooks and
+release evidence remain in the application's own repository. This supersedes
+the blanket documentation-blocking policy described in the historical entry below.
+Policy references, generated Claude/Codex guidance and the Git guard now follow
+that split. No application documentation was moved into this public repository.
+
+The scoped regressions passed: 12 library tests (including real Git commits and
+CI range checks), nine shared-update/launcher tests and ten hub tests. Application
+docs are allowed while copied skill/agent libraries remain blocked. Fixture-only
+hub/launcher tests used `GIT_CONFIG_GLOBAL=/dev/null` to avoid the user's installed
+hook intercepting their synthetic provider commits; library tests exercise real
+isolated hooks instead. These are local macOS checks, not a Windows execution run.
+After applying the update, a disposable repository using the actual installed
+user-level hook successfully committed application architecture docs and rejected
+a copied skill. Managed installer integrity passed, including the updated global
+rules, policy references and installed skill consumers.
+
+An installer help invocation exposed an unintended bootstrap path. Help now exits
+through the Python argument parser before package operations. Four argument forms
+pass a regression with a package-manager tripwire and no created user installation;
+the actual `bash install.sh --help` also returns usage without bootstrap.
+
+The reusable admin-elevation and QA-isolation lessons were added to the existing
+UI/workflow skills, validated and applied through the managed custom component.
+An independent source review found three stale ownership instructions; those
+were corrected. This is local validation and installation evidence, not a claim
+that these repository changes have been committed or published.
+
 ## Central authoring policy and search — 2026-09-27
 
 - **Installed and exercised on the actual Mac:** the normal
@@ -39,8 +70,8 @@ ignored under `.work/library-*.log`. Documentation links/fences, workflow YAML p
 and Git whitespace checks passed.
 
 Use `python tests/run_tests.py` to isolate fixture repositories from the operator's
-global Git configuration. This session used `--exclude test_mirofish.py` to leave the
-unrelated untracked test draft outside its scope. Running fixtures directly after
+global Git configuration. This session excluded an unrelated untracked test draft
+(since removed). Running fixtures directly after
 enabling the real global guard correctly rejects their local documentation commits;
 that is why the reproducible suite runner uses an isolated home.
 
@@ -68,7 +99,7 @@ updates, contributions and recovery. Evidence for this change:
   skill and agent downloads retain the existing installer pipeline.
 - **Full regression pass:** 95 tests ran, 91 passed, and four were skipped: three require
   native Windows and one was the separately exercised opt-in provider network test.
-  The unrelated untracked MiroFish test draft was excluded. Independent review identified
+  An unrelated untracked test draft (since removed) was excluded. Independent review identified
   and led to fixes for shared installer locking, bounded snapshots and contribution links.
 - **Pending publication and platforms:** these new changes have not been committed or
   pushed. Public GitHub rollout therefore remains pending; fixture Git tests do not prove
@@ -96,7 +127,7 @@ documentation site, project rewrite or credential distribution was enabled.
   paths plus configuration/instruction blocks. No browser or Docker sandbox was needed.
 - **Regression checks:** 69 tests ran, 66 passed and three native Windows tests were
   skipped on macOS (batch invocation, junctions and read-only file semantics). The unrelated
-  untracked MiroFish test draft was excluded. Bash syntax and whitespace checks passed.
+  untracked test draft (since removed) was excluded. Bash syntax and whitespace checks passed.
   The real PowerShell executable passed 27 launcher checks with simulated Windows
   prerequisites. These simulations are not native Windows execution.
 - **Independent review:** fixed stale Context7 state that rejected a later operator

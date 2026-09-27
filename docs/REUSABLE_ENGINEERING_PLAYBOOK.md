@@ -2,10 +2,9 @@
 
 Project-neutral lessons originally collected in Elvique, centralized on
 25 September 2026. Detailed guidance travels with each skill in `custom/skills/`
-and its global installation. New application specifications belong in the appropriate
-central project-docs location, with an explicitly bound private library for private
-material. Existing project specifications remain where they are until an authorized
-migration; see the [central authoring policy](../config/CENTRAL_LIBRARY.md).
+and its global installation. Application specifications, architecture discussions
+and release evidence stay in each application's own repository. Only reusable AI
+learning belongs here; see the [central authoring policy](../config/CENTRAL_LIBRARY.md).
 
 ## Choose the relevant skill
 
@@ -68,6 +67,14 @@ extraction test plan. This avoids keeping an untracked fork of provider content.
 8. Keep realistic demo/test data isolated at the shared reporting boundary.
 9. Make corrections explicit, impact-aware, authorized, atomic and auditable.
 10. Keep reusable guidance project-neutral and business rules in project specifications.
+
+The 27 September admin-access follow-up adds immediate elevation versus accepted
+invitations, appropriate placement of privileged controls, unknown-account
+handling and stale-session/action replay checks to `build-usable-apps`. Its
+acceptance reference covers the same behavior across relevant roles and approval
+states. `auditable-business-workflows` owns the accompanying QA financial
+isolation and classification-transition guidance. These are reusable decision
+rules, not a migration of private project architecture or proof of deployment.
 
 ## Install and maintain
 

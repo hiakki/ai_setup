@@ -408,24 +408,34 @@ def install(i):
     i.save()
     guidance = '''# Central shared AI setup
 
-Skills, agent definitions and authored documentation belong in the central library.
-Before creating or changing any of them, run `ai-setup search "TOPIC"`, read the
+Reusable AI skills, agent definitions and generic AI learning/docs belong in the
+central library. Application architecture, business decisions, design docs,
+runbooks and release/test evidence belong in the application's own repository.
+Before creating or changing shared AI material, run `ai-setup search "TOPIC"`, read the
 relevant results, then run `ai-setup library` to locate the canonical checkout.
 Use `ai-setup search "TOPIC" --refresh` when current remote content is required;
 it applies a trusted central update. A failed refresh is not permission to claim
 freshness or create a project-local substitute. Report the failure and use clearly
 labelled local evidence only. Do not commit or push without task authorization.
 
-Do not create project-local SKILL.md files, skill/agent libraries, Markdown notes,
-plans or documentation. Update the central entry instead. Shared content belongs in
-custom/skills, custom/agents and docs/shared; public project docs in docs/projects.
-Private project docs require an explicitly bound PRIVATE central checkout. If none
-is configured, ask for that destination before writing; never upload private content
-to the public library. Secrets are never library content. Existing project files are
-not automatically migrated or deleted. Local client config, generated runtime/graph
-data and minimal routing pointers remain local; preserve existing team instructions.
-This central-authoring policy supersedes older personal guidance to create local
-project-context, handoff, plan or reusable documentation files.
+Do not create project-local copies of reusable SKILL.md files or skill/agent
+libraries. Update their central source in custom/skills, custom/agents or the
+existing shared docs entry. Keep product-specific facts and discussions in project
+docs; generalize only reusable lessons into ai_setup. Do not move application docs
+into ai_setup or require a private central checkout to maintain them. Private
+reusable AI material needs an authorized private source, never this public library.
+Secrets are never library content. Personal client configuration and generated
+runtime/graph data stay ignored locally; preserve existing team instructions.
+This ownership split supersedes older rules requiring all project docs centrally.
+
+Use this library to learn once and reuse across projects: maintain reusable AI
+skills, agents, rules, workflows, AI learning discussions and reviewed self-learning.
+When a correction or verified solution yields a general lesson, search and improve
+the existing central entry within the authorized scope, then apply it on future
+tasks. Keep individual app discussions and transcripts with their app; preserve
+only the generic lesson here. Label unverified ideas as proposals. This is maintained
+knowledge, not automatic model training or guaranteed recall. Documentation for
+ai_setup's own tools and operation belongs here.
 
 Use `ai-setup check-project --project PATH` before committing. A Git guard can reject
 commits, but unrestricted filesystem tools can still create files. Do not claim

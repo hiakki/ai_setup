@@ -1,6 +1,6 @@
 # Project instructions template
 
-Search the central library first, then fill in confirmed project facts. Store this entry in the authorized central checkout at `docs/projects/<project>/context.md`; private facts require a private library. Local client files may point to it but must not duplicate it. Follow [AI_READY_PROJECTS.md](AI_READY_PROJECTS.md) and [CENTRAL_LIBRARY.md](CENTRAL_LIBRARY.md). Preserve existing shared instructions and remove fields that do not apply.
+Read the project's own docs and search the central library for relevant reusable AI guidance. Keep confirmed application facts in the application's existing docs; this template is guidance, not a reason to duplicate them or move them into ai_setup. Personal client routing can point to project docs and global skills. Follow [AI_READY_PROJECTS.md](AI_READY_PROJECTS.md) and [CENTRAL_LIBRARY.md](CENTRAL_LIBRARY.md). Preserve existing shared instructions and remove fields that do not apply.
 
 Add the [local AI ignore block](ai-local.gitignore) before generating setup. Keep personal instructions, agent-routing files, MCP configuration, graph caches and AI-only notes out of Git. Inspect tracked/staged files separately; do not untrack existing files without authorization.
 

@@ -91,7 +91,7 @@ class LibraryTests(unittest.TestCase):
     def test_private_binding_is_explicit_and_missing_checkout_is_not_silent(self):
         private = self.repo('private-library')
         library.bind(self.hub, private, private=True)
-        self.write('docs/projects/internal/context.md', 'Private internal context', private)
+        self.write('docs/shared/internal-ai-guide.md', 'Private internal AI guide', private)
         self.assertEqual(len(library.search(self.hub, 'internal')), 1)
         private.rename(self.root / 'moved-library')
         with self.assertRaisesRegex(ValueError, 'missing'):
@@ -111,18 +111,22 @@ class LibraryTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'independently'):
             library.remove_guard(self.hub)
 
-    def test_real_commit_blocked_source_and_router_commit_allowed(self):
+    def test_real_commit_blocks_skill_copy_but_allows_project_docs_source_and_router(self):
         library.install_guard(self.hub)
-        self.write('docs/new guide.md')
+        self.write('.agents/skills/copied/SKILL.md')
         self.git(self.project, 'add', '.')
-        rejected = self.git(self.project, 'commit', '-qm', 'Local docs', success=False)
+        rejected = self.git(self.project, 'commit', '-qm', 'Local skill copy', success=False)
         self.assertNotEqual(rejected.returncode, 0)
         self.assertIn('CENTRAL LIBRARY REQUIRED', rejected.stderr)
         self.git(self.project, 'reset', '-q')
         self.write('src/app.py', 'print(1)')
         self.write('AGENTS.md', 'Read the central library.')
-        self.git(self.project, 'add', 'src/app.py', 'AGENTS.md')
-        self.git(self.project, 'commit', '-qm', 'Code and routing')
+        self.write('docs/architecture/decision.md', '# Application architecture')
+        self.write('docs/qa/release.md', '# Project release evidence')
+        self.write('docs/api/openapi.json', '{}')
+        self.git(self.project, 'add', 'src/app.py', 'AGENTS.md', 'docs')
+        self.git(self.project, 'commit', '-qm', 'Code, project docs and routing')
+        library.check(self.hub, self.project, base='HEAD~1')
 
     def test_central_checkout_allowed_but_same_named_project_is_not(self):
         library.install_guard(self.hub)
@@ -211,9 +215,10 @@ class LibraryTests(unittest.TestCase):
         self.git(self.project, 'commit', '-qm', 'Unrelated code')
         self.git(self.project, 'rm', 'docs/existing.md')
         self.git(self.project, 'commit', '-qm', 'Retire local doc')
-        for path in ('notes/new.md', '.agents/skills/test/helper.py', '.codex/agents/new.toml', 'Docs/spec.json', 'nested/SKILL.md'):
+        for path in ('.agents/skills/test/helper.py', '.codex/agents/new.toml', 'nested/SKILL.md', '.github/agents/reviewer.md'):
             self.assertIsNotNone(library.reason(path), path)
-        self.assertIsNone(library.reason('src/agents/handler.py'))
+        for path in ('notes/new.md', 'Docs/spec.json', 'docs/architecture.md', 'documentation/design.rst', 'src/agents/handler.py'):
+            self.assertIsNone(library.reason(path), path)
 
 
 if __name__ == '__main__':

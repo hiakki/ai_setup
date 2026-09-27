@@ -10,6 +10,7 @@ of any changed shared component.
 | Saved progress | Leave before/after each relevant save; expire the session and return. | No duplicate account, no nonexistent-password demand, honest saved state and usable resume path. |
 | Verification | Invalid/expired/replayed code, resend, double-click, concurrent creation. | No unverified activation or duplicate side effect; actionable retry and consistent server state. |
 | Authentication | Wrong role entry, internal return URL, external return URL, held account. | Correct existing role/destination preserved; no restriction or redirect bypass. |
+| Admin elevation or QA conversion | Allowed admin, ordinary user, unknown target, relevant approval states, stale session and replayed old action. | Only the agreed admin flow changes an existing account; role/approval changes match policy; removed controls cannot bypass server rules; resulting session restrictions take effect. |
 | Form failure | Server validation, slow request, network interruption, upload rejection. | No false success; entered valid details retained; error identifies a useful correction. |
 | Approval | Missing evidence, correction, completed checks, one approval. | Blocker names exact next step; approval enables the promised work once. |
 | Approved edits | Direct/tampered request, stale session, harmless formatting, ordinary setting. | Protected changes rejected; allowed updates retain approval; correction path works. |
@@ -19,6 +20,7 @@ of any changed shared component.
 | Responsive | Phone, tablet with sidebar, desktop, zoom and long content. | Main action reachable; no clipped controls or accidental page overflow; deliberate table scrolling remains usable. |
 | Modal | Keyboard open, Tab/Shift+Tab, Escape, close button, nested close. | Accessible name, background inert, focus visible and restored; child close does not dismiss parent. |
 | Feedback | Success, error, loading, retry and disabled states. | Clear outcome/next action, no contradictory badges, no misleading completion. |
+| QA status presentation | Test and ordinary accounts in positive, pending, held and incomplete-review states; list and detail views. | Test status never implies real verification or earnings; actionable blockers remain visible; ordinary approval and server restrictions stay intact. |
 | Mail | Retry burst, provider refusal and authorized real delivery when in scope. | Server throttling works; truthful queue/delivery history; sender/receipt verified separately. |
 | Deletion | Flag off/on, permission denied, linked records, confirmation/cancel. | UI and server agree on eligibility; cancelled operation changes nothing. |
 | Payments | Real contract plus authorized sandbox/live journey, replay and reconciliation. | Separate collection/refund/payout evidence; no transaction-readiness claim from mocks. |

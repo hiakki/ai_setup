@@ -12,11 +12,11 @@ that application workers read coding-agent skill files.
 - Custom maintained sources: this repository's `custom/skills/`.
 - Provider sources and revisions: `manifest.json`; downloads live in the user's
   `~/.agents/skills/.sources/`, never in this repository.
-- New authored project decisions, summaries and product-specific context belong
-  in the central project-docs location; private facts and roles require an
-  explicitly authorized private source. Generated runtime evidence and minimal
-  client routing/configuration can remain local. Existing documents are not
-  automatically moved or deleted; read them alongside relevant shared guidance.
+- Application decisions, summaries, architecture and release evidence stay in
+  the application's own repository. Reusable AI learning belongs centrally;
+  private shared AI material requires an explicitly authorized private source.
+  Generated runtime evidence and personal client configuration remain ignored
+  locally. Read project docs alongside the relevant shared guidance.
 
 Codex discovers the shared catalog. New skills become available on the next turn;
 if a client retains an old catalog, start a new session or read the entrypoint
@@ -52,11 +52,12 @@ exact checkpoints, quantizations and agent configurations. Its maintained source
 `custom/skills/ai-model-comparison`; unmatched model scores remain references, not
 scores or ranks for proposed deployments.
 
-## Historical project material awaiting explicit migration
+## Project-owned material
 
-The following list records the original migration boundary, not permission to
-create new project-local documentation or role libraries. The
-[central authoring policy](../config/CENTRAL_LIBRARY.md) governs new authored work.
+The following application-specific material remains with its project. It is not
+a backlog for migration into ai_setup. Promote generic AI lessons when useful,
+without copying private facts or creating competing shared skill libraries. The
+[central authoring policy](../config/CENTRAL_LIBRARY.md) records this ownership split.
 
 - Elvique: product/calculation rules, agent routing and the shared-skill consumer guide.
 - Servinoza_in: architecture decisions, UI lessons and release evidence.
@@ -69,8 +70,8 @@ create new project-local documentation or role libraries. The
 Historical reports can describe the skills as project-local at the time of their
 research. That history is preserved; current instructions point to shared skills.
 Reusable corrections belong in the custom source here. New authored product
-policies and incident/clip/account reports belong in the appropriate central
-project records, using a private library when required. Raw sensitive evidence
+policies and incident/clip/account reports belong in their application's own
+repository and approved evidence stores. Raw sensitive evidence
 is not shared-library content.
 
 ## Install on another machine

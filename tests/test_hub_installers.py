@@ -16,6 +16,30 @@ spec.loader.exec_module(setup)
 
 
 class SharedUpdateTests(unittest.TestCase):
+    @unittest.skipIf(os.name == 'nt', 'POSIX shell launcher')
+    def test_launcher_help_does_not_bootstrap_or_run_package_manager(self):
+        binaries = self.directory / 'bin'
+        binaries.mkdir()
+        marker = self.directory / 'package-manager-called'
+        for name, body in {
+            'uname': '#!/bin/sh\nprintf Darwin',
+            'brew': '#!/bin/sh\ntouch "$HELP_TEST_MARKER"\nexit 73',
+        }.items():
+            command = binaries / name
+            command.write_text(body + '\n')
+            command.chmod(0o755)
+        environment = dict(os.environ, HOME=str(self.home),
+                           PATH=str(binaries) + os.pathsep + os.environ['PATH'],
+                           HELP_TEST_MARKER=str(marker))
+        for args in (['--help'], ['-h'], ['install', '--help'], ['--only', 'custom', '--help']):
+            with self.subTest(args=args):
+                result = subprocess.run(['bash', str(ROOT / 'install.sh'), *args],
+                                        env=environment, text=True, capture_output=True, timeout=20)
+                self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+                self.assertIn('usage:', result.stdout)
+                self.assertFalse(marker.exists())
+                self.assertFalse(self.home.exists())
+
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)

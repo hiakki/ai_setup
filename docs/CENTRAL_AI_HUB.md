@@ -1,6 +1,6 @@
 # One shared AI setup across projects and machines
 
-**Maintain skills, agent selections, rules and documentation in a central library; install shared material once per user on each machine; update it from an approved Git revision.** Projects reuse globals and route to central project context. Private documentation requires a separately authorized private library.
+**Maintain reusable AI skills, agent selections, rules and learning docs in a central library; install shared material once per user on each machine; update it from an approved Git revision.** Application architecture, business decisions and release docs stay in the application's own repository. Private reusable AI material requires an authorized private source.
 
 This implementation uses GitHub as the central source, pinned Sentry dotagents for custom-skill staging, and the existing `ai_setup` installer for actual Claude Code and Codex integration. It requires no paid hosting service, database, always-running server or scheduled job.
 
@@ -24,7 +24,7 @@ flowchart TD
     D["ai_setup installer<br/>Ownership checks · backups · client adapters"]
     E["Original providers<br/>Pinned skills and agent roles"]
     F["User installation on each machine<br/>Shared skills · Claude/Codex roles · docs"]
-    G["Local and remote projects<br/>Reuse globals; route to central context"]
+    G["Local and remote projects<br/>Reuse globals; own their application docs"]
     H["Reviewed contribution<br/>Commit and publish centrally"]
     A --> B
     B --> C --> D
@@ -42,7 +42,7 @@ flowchart TD
 | Authored shared roles | `custom/agents/<name>.md` | Claude Markdown and Codex TOML adapters |
 | Shared rules | `config/` in this repository | Managed blocks in the user's client instruction files |
 | Shared documentation | Repository Markdown and supporting reference files | `~/.local/share/ai-setup/docs/README.md` |
-| Project-specific authored context | Central `docs/projects/<project>/`; private library for private facts | Minimal local routing pointers; generated runtime evidence stays local |
+| Application architecture, decisions and release context | Application's own repository | Read there; not distributed as shared AI setup |
 
 Here, `~` means the selected user's home. On native Windows it is that user's profile. A server with several user accounts needs an installation for each account that should use these tools.
 
@@ -179,12 +179,12 @@ The command copies the complete skill folder, preserves an existing source backu
 
 Exporting does not commit, push or publish. After review, validate the skill and supporting links, update its catalog entry, test the selective installer, then commit and publish through your normal Git workflow. Other machines can subsequently pull that approved revision.
 
-Shared rule, documentation and agent-selection improvements are edited directly in `config/`, `docs/` or `manifest.json`. New project-specific authored procedures belong in central `docs/projects/<project>/`; private facts require an explicitly bound private repository. Secrets and raw customer data are never library material. Generated runtime evidence can remain ignored in its project.
+Shared AI rule, learning documentation and agent-selection improvements are edited directly in `config/`, `docs/` or `manifest.json`. Application-specific procedures belong in the application's own repository. Secrets and raw customer data are never shared-library material. Personal scratch notes and generated runtime evidence remain ignored locally.
 
 ## Search-first authoring and enforcement
 
 The global Claude/Codex instructions now require a central search before creating or
-changing skills, agent definitions or documentation:
+changing reusable skills, agent definitions or generic AI learning docs:
 
 ```sh
 ai-setup search "deployment rollback"
@@ -193,7 +193,8 @@ ai-setup guard status --project /path/to/project
 ```
 
 The `hub` component installs a global Git dispatcher that preserves existing hooks and
-rejects project-local library changes at commit time. It automatically recognizes its
+rejects project-local skill/agent library changes at commit time, while permitting
+application docs. It automatically recognizes its
 bound central checkout. `ai-setup check-project --audit` can report existing/ignored
 local copies without moving them. Local hook overrides and `--no-verify` bypass the
 client-side guard; the supplied reusable CI workflow must be adopted and required by each

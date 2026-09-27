@@ -21,10 +21,22 @@
 
 - Give synthetic accounts an explicit classification outside business status.
 - Exclude them in the shared reporting/query boundary, not independently on each dashboard.
-- Prevent synthetic activity from creating real payouts, organization totals, notifications, invoices, or analytics unless the test explicitly targets those systems.
+- Define which test effects are permitted. When QA accounts must not spend or
+  receive real money, enforce that at collection, payout and other financial
+  mutation boundaries, including workers and delayed provider events; an admin
+  label or hidden payment control is insufficient. Sandbox payment testing is a
+  separate capability, not an implicit exception to the real-money restriction.
+- Keep test matching, work, reports and notifications inside the agreed test
+  boundary. Do not assume excluding a dashboard also isolates its source data.
+- Treat changes into and out of QA as domain transitions. Check active work,
+  financial history and linked entities; do not erase or relabel settled money
+  to make conversion succeed. Apply the agreed fresh-verification policy when
+  leaving QA, so synthetic evidence cannot authorize real activity.
+- Exercise relevant roles and approval states, stale sessions, direct requests
+  and asynchronous consumers. Report a payment denial as a denial test, not a
+  completed payment or proof of an end-to-end paid journey.
 - Guard destructive reseeding with both environment and disposable-data flags.
 
 ## Realistic Seeds
 
 Seed from permitted actor behavior: one participant, one eligible purchase/event, and real hierarchy propagation. Do not simulate organization growth by assigning impossible personal totals. Provide named scenarios for balanced, unbalanced, threshold-miss, threshold-touch, inactive/provisional, refund, and deep-tree cases.
-

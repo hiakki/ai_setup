@@ -68,8 +68,9 @@ def locations(hub):
         print(key + ':', data.get(key, 'not configured'))
     print('Shared skills: custom/skills/<name>/SKILL.md')
     print('Shared agent selections: manifest.json; authored roles: custom/agents/<name>.md')
-    print('Shared docs: docs/shared/<topic>.md; public project docs: docs/projects/<project>/')
-    print('Private project docs: docs/projects/<project>/ in the explicitly bound private checkout')
+    print('Shared AI learning/docs: docs/shared/<topic>.md (or the existing canonical docs entry)')
+    print('Application architecture, decisions and release docs stay in each application repository.')
+    print('Private reusable AI material requires the explicitly bound private checkout.')
     print('No publication is automatic. Never put private material in the shared repository.')
 
 
@@ -144,9 +145,6 @@ def reason(name):
         return 'client skill/agent definition'
     if any(p in ('.cursor', '.github') for p in parts[:-1]) and any(p in ('agents', 'skills', 'instructions', 'prompts') for p in parts[:-1]):
         return 'agent instruction library'
-    if path.suffix.casefold() in {'.md', '.mdx', '.rst', '.adoc'} or any(
-            p in ('docs', 'documentation') for p in parts[:-1]):
-        return 'documentation'
     return None
 
 
@@ -169,7 +167,7 @@ def check(hub, project, base=None, audit=False, quiet=False):
     if violations:
         for name, why in violations:
             print(f'CENTRAL LIBRARY REQUIRED: {name!r} ({why})', file=sys.stderr)
-        print('Run ai-setup search "topic", then ai-setup library. Author centrally; leave only routing links locally.', file=sys.stderr)
+        print('Run ai-setup search "topic", then ai-setup library. Author reusable AI skills/roles centrally; application docs belong in their project.', file=sys.stderr)
         raise ValueError(f'{len(violations)} project-local library file(s) rejected')
     if not quiet:
         print('PASS: no prohibited ' + ('local files' if audit else 'changed files') + '; existing files were not migrated.')

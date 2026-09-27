@@ -21,7 +21,10 @@ Read the brief and existing decisions. Resolve routine choices yourself; ask
 only about missing information that materially changes the workflow. Do not
 make the user rediscover requirements they already supplied.
 
-Write a short design contract in the app's existing documentation:
+Write a short design contract in the project's own canonical documentation.
+Keep application-specific decisions there; promote only reusable AI guidance to
+a central skill library when configured. Private project facts do not belong in
+the public reusable skill:
 
 | Concern | Record before implementing |
 | --- | --- |
@@ -158,11 +161,15 @@ Record requirement changes, rejected assumptions, source-of-truth locations and
 verification limits where future agents can find them. Keep dates and superseded
 decisions; do not relabel a proposal or a past failure as implemented success.
 
-Maintain the project's lessons record alongside meaningful corrections. When a
+Maintain the project's canonical lessons record alongside meaningful corrections. When a
 demonstrated failure reveals a reusable gap in this skill, refine the relevant
 rule or acceptance check in the same change. Keep product-specific choices in
 project documentation, preserve dated evidence, and merge overlapping guidance
 instead of accumulating a new checklist for every incident.
+
+Update a centrally maintained skill at its source checkout. Installed copies are
+consumers, not independent authoring locations. Application architecture and
+release evidence remain in the application repository, not the shared AI library.
 
 If push/deployment is authorized, complete the tests, push, deploy and public
 verification without asking again. The skill itself grants no production access

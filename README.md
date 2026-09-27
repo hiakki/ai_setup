@@ -11,11 +11,13 @@ can add it with `bash install.sh install --only custom,docs,hub` or
 `.\install.ps1 -Only 'custom,docs,hub'`.
 
 The [central authoring policy](config/CENTRAL_LIBRARY.md) requires agents to search before
-creating skills, roles or documentation. `ai-setup search "TOPIC"` searches central and
+creating reusable AI skills, roles or learning docs. Application architecture and
+product/release docs stay in their own repositories. `ai-setup search "TOPIC"` searches central and
 installed content; `ai-setup library` locates authoring checkouts. The hub also installs
 a global Git commit guard, preserving existing hooks. Check its effective coverage with
 `ai-setup guard status`; local overrides and bypasses require the supplied CI gate.
-This is not filesystem write isolation. Private project docs require a private library.
+This is not filesystem write isolation. The guard permits application documentation;
+private reusable AI material requires an authorized private source.
 
 [Hermes Agent](docs/HERMES.md) is included in the normal one-click setup:
 `bash install.sh` or `.\install.ps1`. Its shared agent skill is included in `custom`;
@@ -96,7 +98,7 @@ See [manifest.json](manifest.json) for exact provider URLs, revisions, selection
 
 Downloaded payloads live on the destination machine, outside this Git repository. `.work/` is an ignored development/test area and must never be published. Provider licenses remain in their source checkouts and skill assets. The bundled local instructions have distinct provenance: [custom/README.md](custom/README.md).
 
-Reusable project skills are now shared globally: [scope, sources and migration](docs/GLOBAL_SKILLS.md). The skills component also downloads Anthropic testing strategy and document co-authoring, Vercel web design guidelines and Wshobson quantitative research skills from pinned original providers. New authored project context belongs in the appropriate central library; private material requires an explicitly bound private checkout. Existing project documents are not automatically migrated. Projects retain minimal routing/configuration and generated runtime evidence, rather than a second authored library.
+Reusable project skills are now shared globally: [scope, sources and migration](docs/GLOBAL_SKILLS.md). The skills component also downloads Anthropic testing strategy and document co-authoring, Vercel web design guidelines and Wshobson quantitative research skills from pinned original providers. Application context and documentation stay in the application's own repository. Reusable AI skills, roles and generic learning are maintained centrally; private shared AI material needs an authorized private source. Projects consume the global installation without duplicating its skill/agent libraries.
 
 The installer preserves unrelated configuration. It refuses conflicting existing skill folders, edited managed files, unexpected source revisions during `install`, duplicate role names, and conflicting MCP definitions. Use the shared `update` action for a reviewed provider pin change; older checkouts are retained. It backs up files before merging configuration and does not automatically delete or replace an older setup that it cannot prove it owns.
 

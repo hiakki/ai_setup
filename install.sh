@@ -2,6 +2,12 @@
 set -euo pipefail
 
 setup_root="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Help must never enter the default installation/bootstrap path.
+for setup_arg in "$@"; do
+  case "$setup_arg" in
+    -h|--help) exec python3 "$setup_root/setup.py" "$@" ;;
+  esac
+done
 setup_home="$HOME"
 setup_action=install
 setup_only=all
