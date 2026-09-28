@@ -538,6 +538,25 @@ its old backup timer was disabled. Billing scheduling was restored and all five
 domain backup jobs succeeded. All application and domain database containers
 were healthy. This completes the bounded VM handoff, superseding the earlier
 pending checkpoints without deleting their failure history. Normal development
-cutover requires its own verification. The domains still share one host; forced
+cutover required its own verification, recorded below. The domains still share one host; forced
 production recovery, independent-host resilience and broad performance/security
 guarantees are not established by these results.
+
+### Later normal-development checkpoint: preserved gateway configuration
+
+The separate normal-local promotion installed five canonical databases and started
+the owner/frontend builds. Scoped database identities and owner health passed,
+but onboarding through the normal gateway failed while the direct owner worked.
+The preserved gateway process still targeted backend/frontend ports from older
+tests. Inspection of its actual launch environment exposed the mismatch; the
+operator explicitly corrected those destinations and restarted the gateway.
+The repeated normal-browser signup, trial, stock, cash POS/replay, pickup/manual
+payment/replay and invoice flow passed, as did existing local demo password logins
+and inventory reads. Old test listeners were retired after verification; the
+original local database was stopped with data retained after its client count
+reached zero. Original-password sign-in and business, subscription and inventory
+reads passed again after the stop. These
+manual/demo results do not establish provider collection or delivery. Reuse the
+check for actual gateway upstreams and the failing public path, not an assumption
+that the expected gateway port or green owner health proves correct routing.
+Detailed run/port evidence stays in the application's acceptance record.

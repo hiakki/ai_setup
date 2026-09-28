@@ -141,6 +141,12 @@ on the current policy. Unknown historical facts remain unknown.
 - Verify the active UI source and deployment manifest. Passing a retired frontend
   repository's build does not validate the deployed consumer. Migrate only the
   intended feature delta and retest the actual app.
+- Verify the running gateway's upstream mapping against the current backend and
+  frontend listeners after a local cutover. A preserved gateway can serve its
+  normal port while retaining destinations from an older test. Owner health and
+  direct-origin success do not prove the user-facing route. Inspect actual launch
+  configuration, report intentional corrections, restart only within authorization
+  and repeat the failing onboarding/page flow through the gateway.
 - Separate reproducible package contents from compression-toolchain identity.
   If an exact compressed-archive test passes locally but fails on the image build
   platform, compare decompressed bytes and archive metadata before changing the
