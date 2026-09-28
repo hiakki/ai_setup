@@ -41,6 +41,18 @@ merely to follow this example. If the user selects another sequence, record it.
   bypass an unexplained object-type or missing-tree error.
 - Exercise the actual cross-service journeys, denied access, writes, uploads and
   workers. Compare behavior with the known working application and verify recovery.
+- Test contract changes against the deployed consumer and its retained rollback,
+  not only the concurrently edited consumer. An added response property breaks a
+  strict object validator. Keep the default response compatible, or use an explicit
+  version/opt-in response and deploy its owner before the new consumer. A consumer-
+  first optional field can work only when the rollback plan also preserves that
+  compatibility. Exercise both old and new response paths before activation.
+- Compare worker configuration with the actual running process, not only a source
+  template. If a required explicit setting was omitted during extraction, preserve
+  its exact value in the reviewed candidate; absence and false are not permission
+  to enable it. Reject conflicts, retain private backups and leave running workers
+  unchanged until the handover is ready. Retire legacy startup paths as well as the
+  current process so a later deployment cannot recreate a duplicate scheduler.
 - Verify rollback environment removal as well as restoration. Process managers
   may merge new environment variables on restart instead of deleting keys absent
   from the old configuration. Preserve private launch metadata, use the manager's

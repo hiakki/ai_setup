@@ -95,3 +95,26 @@ release logs are included here.
 The generic rules are maintained in
 [staged extraction](../../custom/skills/service-architecture-and-extraction/references/staged-extraction-to-cicd.md)
 and [observability checks](../../custom/skills/reliable-web-app-operations/references/observability-and-incidents.md).
+
+### Follow-up: active consumers and worker policy
+
+Predeployment inspection caught an additive avatar field that the existing
+consumer's strict schema would reject. It was not activated. The replacement under
+test keeps the default response unchanged and exposes the field only through an
+explicit opt-in. This catches a release-order and rollback problem that a new
+owner/new consumer fixture alone would miss; verification of that replacement is
+still pending this observation.
+
+A worker preflight also stopped before process changes because a source template
+omitted an explicit launch flag present in the running worker. The candidate
+preparation now preserves the existing value, including false/empty, and rejects
+conflicts. Eight controller tests passed; the live retry and normal scheduled
+handover remain separate gates. The new legacy-launcher guard passed two local
+tests but was not yet deployed at this observation.
+
+Application evidence remains in the current migration record (revision `522ca0e`)
+and ops handover record (`1a791b5`). These are bounded implementation/preflight
+observations, not proof of full segregation or financial success. The generic
+stage reference above now includes deployed-consumer/rollback contract checks and
+actual-process policy preservation; subsequent app evidence should update these
+pending outcomes rather than erase the failed approaches.
