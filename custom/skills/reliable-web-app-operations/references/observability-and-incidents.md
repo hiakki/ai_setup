@@ -84,6 +84,17 @@ can leave a single-file bind mount pointing at an old inode. For mutable config,
 consider a directory mount or explicit container recreation; confirm ownership and
 readability under the actual container UID. Keep secret access least-privileged.
 
+For containerized system-journal readers, mounted files and a healthy component
+do not prove ingestion. Check a labelled synthetic host journal entry, the reader's
+line counter, its actual UID/groups, and the correlated backend query. Default
+local-machine discovery can miss mounted host journals; use an explicit mounted
+journal directory when supported and verify against the installed collector
+version. In an Alloy v1.19.2 runtime check, default discovery read zero lines while
+an explicit directory produced correlated logs and traces. This does not establish
+the right path for every host: verify persistent versus volatile journal storage
+and retain exact unit/identifier filters. Do not collect the whole system journal
+or grant applications extra permissions to compensate for a collector mistake.
+
 ## Safe Correlation And Failure Behavior
 
 - Instrument the actual framework/runtime path. A vendor-specific header hook
