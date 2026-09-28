@@ -11,6 +11,7 @@ Keep live data, dumps and private credentials outside Git and application artifa
 ## Access and schema verification
 
 - Separate administrator/migration credentials from runtime roles. Check actual grants and denied operations, including expected schema/table/sequence privileges and narrowly justified cross-domain reads.
+- When adding a column consumed across domains, inspect explicit column grants as well as table/schema changes. A migration can succeed as administrator while the real service role still cannot read the new field. Add the narrow grant through a reviewed migration and exercise the query using that service's connection.
 - Verify required columns, tables, constraints, indexes and migration checksums against the application's actual database connection. Migration history alone does not prove schema shape or environment identity.
 - Repair drift with reviewed, appropriately additive migrations. Do not hide it by baselining history automatically, destructive synchronization or copying one service's full admin environment.
 - Coordinate one authoritative ordering strategy and locks. Independent domain migration chains can be valid, but shared objects/dependencies need defined ordering and compatibility. Test old/new application compatibility during staged rollout.

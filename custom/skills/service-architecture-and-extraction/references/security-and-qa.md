@@ -16,6 +16,7 @@ Explicitly classify public operations, user-protected operations, privileged ope
 - Invalid JSON, unsupported content types, numeric bounds, duplicate/replayed requests and ambiguous identifiers, proportional to the changed surface.
 - Forged forwarding headers, route normalization mismatches, unknown hosts/origins and direct-upstream access.
 - Session continuity, login throttling, cookie settings, logout/revocation and relevant CSRF/origin checks across the deployed hostname/proxy chain.
+- Credential forms before hydration and when JavaScript is delayed or unavailable: native submission must not put secrets in URL query parameters. Use safe form semantics and prevent submission until the intended authenticated handler is ready; test the actual first-load browser path.
 - Stored user content in actual browser rendering, uploads/remote fetches if present, and sensitive field filtering in APIs—not only hidden UI columns.
 - Tenant-scoped reads/writes, resource access, service-token scope and actual database role privileges. Admin capabilities require their own policy.
 - Webhook raw-body verification, wrong credential/account binding, duplicate processing and late/cancel/refund races when those flows change.
@@ -35,6 +36,7 @@ For the changed flow, test the permitted actor's actual steps and the restricted
 - Dialog sizing, scroll, narrow and desktop layouts, labels, keyboard/focus behavior, errors, loading and retry states. Inspect console/network failures relevant to the journey.
 - Financial/document workflows across calculation, persisted record, invoice/receipt rendering and print/export where changed. Verify discounts, tax/freight and totals against actual rules.
 - Restriction enforced server-side even if a hidden action is called directly. Recovery from stale state, a concurrent change or upstream failure should preserve data integrity.
+- For approval workflows, verify the exact reviewed record revision and media bytes reach publication. Pending edits must not mutate live approved data. List limits must not hide old actionable requests, and mobile comparisons must show proposed values without relying on a page-overflow assertion alone.
 
 Use realistic demo actors and items if a showcase is requested, keep synthetic data isolated and keep credentials private. Explain limitations of stock images, mocked payments and demonstration records. Reuse relevant tests; do not add brittle tests that merely repeat implementation details or rerun unrelated suites without a risk reason.
 
