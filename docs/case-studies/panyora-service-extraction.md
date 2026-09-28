@@ -229,6 +229,29 @@ only with the application, not this library. See the amended database-operations
 reference for the generic rule; applying this lesson elsewhere still requires
 that project's own regression and recovery proof.
 
+### Same-day follow-up: diagrams must distinguish staging from cutover
+
+- **Problem:** the current architecture showed only the original database in its
+  main diagram while a separate migration record described provisioned staging
+  clusters. Broad implementation wording obscured the incomplete application
+  handoff. An owner question exposed this communication and verification gap.
+- **Correction:** the primary agent independently checked running service
+  connection destinations and read-only database activity, alongside a specialist
+  source review. Applications still used the original database; staged clusters
+  existed without client connections at the observation time. The current
+  diagrams now distinguish active traffic, completed point-in-time imports and
+  intended future ownership. Historical design evidence remains labelled.
+- **Evidence limits:** rendered diagrams and documentation checks passed; this
+  review did not perform a writer cutover, rerun migration reconciliation or
+  establish completed data isolation. An idle connection snapshot cannot prove
+  a database has never been used. Detailed evidence stays in the owning app's
+  architecture and migration-progress record named above.
+- **Reuse gate:** independently reconcile each active database arrow with
+  deployed connection configuration and actual activity, then exercise the
+  affected workflow before claiming migration completion. Show staged resources
+  explicitly and label imports as non-replicating when applicable. Agent summaries,
+  container counts and health checks cannot substitute for this acceptance gate.
+
 ### Same-day follow-up: retry safety and sequence state
 
 The finish review found that partial multi-target normalization could not resume,
@@ -393,3 +416,128 @@ Provenance: owner records `panyora-docs/docs/frontend-repository-design.md`,
 baseline `7bc9622`, visual extraction `406592f`, central packaging `6cfd9f3`,
 candidate/release follow-ups `ca49191`, `87dac59`, `dfe4121`, `daa3afa`, `b8beb6b`. This is a sanitized
 engineering case, not an application runbook or distributed memory update.
+
+## 28 September 2026: domain cutover rehearsals and compatibility
+
+This extends the earlier staging-only database entry. Service contracts and local
+application rehearsals are now implemented; the recorded demo deployment still
+uses its original writer. Older staging observations remain historical evidence,
+not current implementation blockers or proof of a completed live handoff.
+
+- **Problem and approach:** separate authentication, personal data, payments,
+  subscriptions and operational state while preserving existing users, documents
+  and publication. A local source rehearsal passed domain migrations and guarded
+  reference backfills, followed by application/browser checks. A second rehearsal
+  used the actual deployed source schema because development already contained
+  unreleased catalogue policy changes.
+- **Observed failures and causes:** a reused cluster-wide role retained capability
+  membership from an earlier rehearsal; the staging-denial check correctly stopped
+  it. An identity login did not inherit its capability role's search path. Health
+  checks also hardcoded runtime names rather than the intended capabilities.
+  A dotenv line-splitting helper changed quoted key values, and ordinary local
+  framework startup could load undeclared fallback credentials. Separately,
+  persistent equality/idempotency hashes incorrectly depended on a bearer token
+  intended for routine rotation.
+- **Replacement/status:** each rehearsal receives new restricted logins, explicit
+  per-login settings and domain grants after verified migration stages. Readiness
+  retains real database/role/privilege/data checks while accepting the scoped
+  principal. Private configuration uses the runtime parser and checks logical
+  value preservation. Durable purpose-specific index/fingerprint keys are required
+  independently of service tokens; rotation regressions protect stored hashes.
+- **Compatibility decision:** the deployed source lacked the new approval fields.
+  Rather than invent owner approval or hide previously published items, a guarded
+  bridge records only verified existing publication revisions. Unknown contents
+  remain unknown; new publication remains strict. Product changes or unpublishing
+  retire the exemption. The historical quantity rule is retained only while its
+  original eligibility remains valid. This is an explicit temporary policy, not a
+  general bypass for missing metadata.
+- **Data-minimization correction:** source review found private invoice notes
+  duplicated in operational events. Exact matching notes reuse immutable invoice
+  evidence; differing notes receive their own immutable evidence before removal.
+  New events use a generic reference. This does not classify every arbitrary
+  operational note or photo as free of personal data. A build of an old frontend
+  repository was also rejected as release evidence; the feature delta and checks
+  were moved to the actual deployed consumer.
+- **Verification and limits:** isolated PostgreSQL tests, exact source/row checks,
+  guarded/repeated backfills, authorization/key regressions, and local gateway
+  catalogue, quote, photo and historical-invoice comparisons passed. Browser stock,
+  POS invoice and demo renewal checks passed on the first rehearsal. In the actual
+  source rehearsal, local fixture passwords did not match source hashes; imported
+  sessions were validated using preserved signing material and a separate new
+  synthetic account exercised password login. Original-password login was not
+  claimed. No real payment/refund/settlement/email, final public deployment or
+  production writer switch is established by these results.
+- **Further acceptance correction:** catalogue quotes and owner invoices passed,
+  but an existing customer receipt link failed under the real service role. A new
+  invoice-line column had no privilege in the older source's explicitly exported
+  column ACLs; the development source already had that grant. A narrow additive
+  successor migration preserved the earlier checksum. The regression now proves
+  denial before the grant, actual restricted-role read/insert afterward, and no
+  update privilege. Existing customer links/invoices and invalid/cross-tenant
+  capability denials subsequently passed. Source-specific ACLs and every affected
+  consumer path must be in the acceptance matrix; a successful quote is not a
+  successful receipt.
+- **Build portability correction:** the first successor image build failed an
+  exact gzip archive hash. macOS Node 22.22/zlib 1.2.12 and Linux Node
+  22.23.3/zlib 1.3.1 produced identical decompressed tar bytes, including file
+  contents and metadata, but different compression bytes. Core fix `f1369c7`
+  pins the uncompressed tar hash and retains repeated-export checks; published
+  consumer archives and their integrity checks remain unchanged. Targeted tests
+  passed on both toolchains. This resolves the tested packaging defect, not the
+  full hosted build or live cutover: the successor release was still pending at
+  this checkpoint. Detailed run IDs and release identities stay in the app's
+  private release draft and eventual owner record.
+- **Reuse:** adopt source-specific rehearsals, authority-bound minimization and
+  purpose-key separation. Adapt compatibility policies to the real earlier
+  behavior, with reviewed expiry conditions. Reject auto-approval, permissive SQL
+  stubs, reused privileged test roles and silent acceptance of unplanned writes.
+  Final production import must use a new fenced source, not a rehearsal already
+  modified by successful tests.
+
+Reusable procedure: the
+[database operations reference](../../custom/skills/reliable-web-app-operations/references/database-operations.md#independent-domain-cutover-rehearsals-and-compatibility).
+Owner evidence: `panyora-docs/docs/database-separation-progress-2026-09-28.md`,
+`panyora-docs/docs/runtime-acceptance-five-databases-2026-09-28.md`, and bounded
+review `panyora-core/docs/database-boundary-review-2026-09-28.md`. Reviewed worktrees
+were based on core `b53dda5` and DB-ops `2555ff8`; pending DB-ops personal-reference
+helper SHA-256 `1548d2527aab10d5f6a43142fb48ca0667c95a9c1c223eb86c51541839c93a9f`
+identifies that reviewed implementation. Private evidence stays with the app.
+This sanitized update is canonical authoring content only; no automatic memory
+ingestion, client update, commit or publication is implied.
+
+### Later 28 September checkpoint: image execution and lock handoff
+
+The actual frozen-source VM import exposed a nested-lock defect: the CLI held all
+import target locks while normalization tried to acquire its own exclusive lock.
+The guard stopped execution; it was not evidence of data corruption. DB-ops fix
+`6d2bd16` retains locked import/preflight, releases those locks before normalization,
+and lets each normalizer revalidate source/receipts under its own lock. A regression
+executes the actual CLI boundary with real OS locks and proves both exclusion and
+handoff. The resumed owner-image migrations/backfills then passed, followed by
+restricted-principal/foreign-domain denial checks and five isolated restores with
+cleanup. The image release became healthy and its first billing one-shot passed.
+Expanded public workflows and final source/scheduler retirement were still pending
+at this checkpoint; no live provider financial outcome is implied. Exact source,
+image, restore and deployment evidence stays in the application's progress/runtime
+acceptance records. This successor preserves the earlier local-only evidence rather
+than relabeling it as a live test.
+
+### Final 28 September checkpoint: bounded public acceptance
+
+The successor deployment passed imported owner/employee/admin access and
+cost/location/tenant restrictions, historical customer/subscription invoice
+comparisons, existing customer capability links and invalid-token denial. A new
+browser signup completed trial onboarding, stock entry, cash POS with replay and
+manual pickup payment/fulfilment with replay, with the expected stock changes.
+Imported sessions were validated; original imported password login was not tested.
+New signup authentication was exercised. These were demo/manual ledger journeys,
+not provider collection, refunds, settlement or email delivery.
+
+The original database had no remaining clients and was stopped with data retained;
+its old backup timer was disabled. Billing scheduling was restored and all five
+domain backup jobs succeeded. All application and domain database containers
+were healthy. This completes the bounded VM handoff, superseding the earlier
+pending checkpoints without deleting their failure history. Normal development
+cutover requires its own verification. The domains still share one host; forced
+production recovery, independent-host resilience and broad performance/security
+guarantees are not established by these results.

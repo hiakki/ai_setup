@@ -84,3 +84,78 @@ do not overwrite earlier evidence or let a reused report filename mask failure.
 Similarly, a running container does not prove initialization committed: verify
 extensions, role restrictions, public revocations and saved-credential login on
 provisioning retries before reporting success.
+
+## Independent-domain cutover rehearsals and compatibility
+
+Treat the source schema and actual runtime configuration as migration inputs.
+A development snapshot can contain unreleased features that the running source
+does not have. Rehearse both supported source shapes; reject partial/unknown
+shapes instead of silently baselining them. A schema migration must not fabricate
+business approval or silently revoke earlier publication. If a compatibility
+bridge is necessary, bind it to verified source IDs and revisions, make it
+read-only to runtime callers, define its retirement trigger, and keep new writes
+on the current policy. Unknown historical facts remain unknown.
+
+- PostgreSQL roles are cluster-wide. A fresh database does not make a reused
+  login fresh: memberships from another test can invalidate default-deny staging.
+  Use rehearsal-specific logins with no initial memberships, then grant only the
+  verified domain capability. Preserve unrelated roles/databases. Login settings
+  such as identity's search path must be configured on the actual login; group
+  membership alone does not inherit role configuration. Readiness should check
+  the intended principal/capabilities, database and actual privileges rather than
+  accepting a familiar name or rejecting an otherwise valid isolated login.
+- Keep durable equality-index and idempotency-fingerprint keys separate from
+  rotatable inter-service bearer credentials. Require explicit purpose keys and
+  test that bearer rotation leaves persisted hashes unchanged. A durable-key
+  rotation needs its own verified reindex/reconciliation plan; do not silently
+  fall back to the current service token. Existing rehearsals need the old logical
+  hash key retained while changing its configuration ownership.
+- Parse private environment files with the runtime's real dotenv semantics.
+  Quote delimiters, comments and encoding can change signing/encryption keys.
+  Compare logical values privately without printing them; configured files and
+  actual process environments are separate evidence. Development dotenv fallback
+  can inject old authority credentials into an otherwise scoped test environment;
+  use an isolated artifact or explicitly prevent undeclared fallback values.
+- Verify immutable source snapshots and original operational rows before writing
+  opaque references or purging sensitive copies. Preserve differing historical
+  notes as independent evidence instead of assuming equality. Retry only from the
+  original or exact intended state. A multi-database interruption may leave an
+  unused immutable snapshot, but must not remove the sole original value first.
+- Prefer offline, source-bound financial/reference backfills before application
+  writers start. Do not make a final migration depend on a cyclic set of live
+  services or allow test-generated rows to be ignored during exact reconciliation.
+  Keep irreversible provider actions and historical event publication disabled.
+- Review OS lock ownership across the actual CLI-to-helper call chain. A second
+  descriptor acquiring the same exclusive `flock` is not a reentrant nested lock.
+  Keep import/preflight checks under the import locks, release them before a
+  normalizer that owns its own lock, and revalidate immutable source/receipts after
+  the handoff. Preserve the outer deployment/writer fence. A regression must use
+  actual OS locks through the CLI boundary; mocked successful lock calls can hide
+  a release-stopping self-conflict. Resume from verified durable receipts without
+  dropping targets or weakening exclusion.
+- Distinguish existing-password login, imported-session validation and a new
+  synthetic-account login. If a local fixture's credentials differ from the actual
+  source, investigate the mismatch; do not reset the source password or claim
+  original login success from a reconstructed test cookie. Preserve those limits
+  alongside the successful invoice/catalogue/data comparisons.
+- Verify the active UI source and deployment manifest. Passing a retired frontend
+  repository's build does not validate the deployed consumer. Migrate only the
+  intended feature delta and retest the actual app.
+- Separate reproducible package contents from compression-toolchain identity.
+  If an exact compressed-archive test passes locally but fails on the image build
+  platform, compare decompressed bytes and archive metadata before changing the
+  source or replacing published packages. Identical tar bytes can have different
+  gzip encodings across Node/zlib versions. Pin the uncompressed tar hash for the
+  cross-toolchain content regression, retain same-toolchain repeatability checks,
+  and keep published consumer archive integrity hashes and image digest checks
+  exact. Never treat this distinction as permission to accept modified content,
+  retag an immutable artifact, skip verification or claim a failed build deployed.
+
+These rules originated in local source-specific rehearsals. The later
+[reviewed live handoff](../../../../docs/case-studies/panyora-service-extraction.md#final-28-september-checkpoint-bounded-public-acceptance)
+added actual owner-image migration, restricted access, isolated restore, public
+workflow and scheduler/source-retirement evidence; it did not certify live provider
+transactions or every recovery race. A new target still needs its own fenced
+fresh source, checked owner artifacts/history, observed runtime destinations,
+real public workflows and explicit recovery path. Another project's pass is not
+inherited proof.
