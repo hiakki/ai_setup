@@ -47,7 +47,18 @@ If compatibility is uncertain, stop the unsafe cutover or roll forward with an e
 
 ## Legacy dependency proof and cleanup
 
-Before stopping or removing legacy directories, inspect actual process command lines/working directories, process units, timers/cron, compose mounts, configuration paths, symlinks, uploads/static assets, backups and migration scripts. Search only the authorized scope. A source grep and green HTTP health response are insufficient.
+Before stopping or removing legacy directories, inspect actual process identity/working directories, process units, timers/cron, compose mounts, configuration paths, symlinks, uploads/static assets, backups and migration scripts. Search only the authorized scope. A source grep and green HTTP health response are insufficient.
+
+Process inspection is a credential boundary. Start with PID-only discovery and
+explicit metadata columns (PID, parent PID, executable name); inspect cwd through
+the OS metadata interface. Do not print full argument lists, inherited environment,
+unfiltered process-manager JSON, or broad `pgrep -fl`/`ps` output: wrappers can put
+credentials in command lines, and platform-specific listings may expose inherited
+values. If arguments/environment are necessary, parse them inside the diagnostic
+process and output only an allowlisted path/key or equality result. Redacting a
+copied report afterwards does not remove the original tool transcript. If a secret
+is emitted, stop that diagnostic, do not repeat the value, disclose the exposure and
+request rotation; never claim transcript deletion or cleanup that was not possible.
 
 When authorized, quarantine/rename or stop the old application as a reversible dependency test, then exercise affected reads/writes, auth, assets, uploads, workers and recovery commands. Preserve separate backup/recovery evidence and current durable state. Do not assume renaming automatically retargets a running process.
 
