@@ -29,6 +29,16 @@ merely to follow this example. If the user selects another sequence, record it.
   If hashes disagree, stop before executing or installing; copy the exact file
   through another authorized path and verify again. Do not diagnose a universal
   Docker bug from one mismatch or treat matching filenames as matching content.
+- Bind archive contents to the requested source revision before naming a release.
+  A checksum proves byte identity, not the claimed Git commit. Verify the Git
+  archive commit header or an equivalent trusted manifest. Exclude personal agent
+  tooling and generated outputs explicitly at archive creation; preserve source
+  files and do not relax traversal/symlink checks to accommodate unrelated inputs.
+- If Git object/ref reads disagree across an authorized container bind mount,
+  verify the local commit and remote ref independently. A checked Git bundle copied
+  into a temporary isolated repository can provide a consistent transfer without
+  rewriting history. Verify the remote SHA afterward; never force-push merely to
+  bypass an unexplained object-type or missing-tree error.
 - Exercise the actual cross-service journeys, denied access, writes, uploads and
   workers. Compare behavior with the known working application and verify recovery.
 - Verify rollback environment removal as well as restoration. Process managers
@@ -51,6 +61,10 @@ merely to follow this example. If the user selects another sequence, record it.
   Exercise the assembled release through the actual gateway, including client
   navigation and image optimization. A fixture proxy's path rewriting can conceal
   a mismatch; compare its rules with the deployed gateway and current framework.
+- Test side effects required for operation, not only response status. An image
+  optimizer can return a valid image while failing to persist its cache under a
+  read-only release. Keep service-owned caches outside immutable source, verify
+  actual writes and inspect logs without making the whole release writable.
 
 **Exit:** the separated application works through its normal public entry point
 using ordinary commands/scripts. Empty repos, copied modules, individual health
