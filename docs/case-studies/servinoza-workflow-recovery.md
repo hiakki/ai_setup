@@ -7,7 +7,8 @@ This sanitized case derives from the application's consolidated correction
 record. It preserves failures and decision criteria, not the application's
 commercial terms, required identity documents or operating procedures. Original
 decisions and release evidence remain in the source project. No application or
-provider flow was rerun for this review.
+provider flow was rerun for the original document review. The dated extraction
+addendum below has its own observed runtime evidence and limits.
 
 ## Decisions worth transferring
 
@@ -52,3 +53,45 @@ This is a document synthesis, not a fresh implementation, security, accessibilit
 or financial audit. No private media, account records or original conversations
 are included. Follow linked owner records in an authorized checkout for current
 release status; this case remains usable without that private access.
+
+## 28 September addendum: staged extraction and journal ingestion
+
+**Problem and approach tried.** Service extraction initially advanced toward image
+and CI machinery before the separated ordinary processes were proven. The operator
+selected a staged sequence: ordinary services, local image builds, Compose, then
+automation. Existing later-stage source was retained as deferred work. Application
+docs distinguish deployed owners from the still-required compatibility host.
+
+**Why the replacement matters.** Clean detached service builds exposed undeclared
+parent dependencies; live probes separated restricted database grants, user
+journeys and worker ownership. A normal API deployment did not replace its
+background scheduler. The migration remains partial; this is not a completed
+microservice, independent-database or CI/CD claim.
+
+**Failed monitoring check.** A candidate collector configuration validated, loaded
+and reported ready with mounted host journals. Synthetic traces reached the trace
+backend, but journal line counters remained zero and no matching logs appeared.
+The candidate was rolled back and replaced with explicit journal-directory
+selection while retaining exact worker filters and the existing curated pipeline.
+Both synthetic log records then correlated with their traces. Other monitoring
+services stayed unchanged. This supports the directory-selection repair in the
+tested Alloy v1.19.2 deployment; it does not establish a universal container cause.
+
+**Reuse and limits.** Follow the target operator's stage order; use isolated
+artifacts, preserve transaction authority and verify the actual public journey.
+Before worker handover, prove both scheduler fencing and telemetry ingestion.
+Collector readiness, mounted files and valid syntax are insufficient. A synthetic
+probe must not invoke financial work and is not evidence of normal scheduled
+batch success, delivery, settlement or provider recovery.
+
+**Provenance and successor pointers.** Current application migration evidence is
+owned by `servinoza-docs/MIGRATION_EXECUTION.md` (revision `083e5b9` at this
+observation); collector attempt, rollback and replacement evidence is in
+`servinoza-ops/docs/WORKER_HANDOVER_REVIEW.md` (revision `4bfd74c`). Older parent
+records above remain historical evidence. Current releases may advance; resolve
+those owners before reuse. No customer records, infrastructure credentials or raw
+release logs are included here.
+
+The generic rules are maintained in
+[staged extraction](../../custom/skills/service-architecture-and-extraction/references/staged-extraction-to-cicd.md)
+and [observability checks](../../custom/skills/reliable-web-app-operations/references/observability-and-incidents.md).
