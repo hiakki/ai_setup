@@ -19,8 +19,23 @@ merely to follow this example. If the user selects another sequence, record it.
 - Run and verify the extracted services on the authorized VM before introducing
   a new container delivery path. Keep source checkouts there temporarily if this
   stage requires them, even when the final goal is an image-only application host.
+- Prove dependency independence from an isolated source archive outside the
+  monolith's directory tree. A nested service can silently resolve undeclared
+  packages from a parent's `node_modules`, including type-only UI dependencies.
+  Clean-install, typecheck, build and exercise the archive without parent mounts;
+  remove accidental dependencies or declare genuinely required ones explicitly.
+- Verify SHA-256 at each artifact handoff. A local file, a container bind mount
+  and a transferred file can expose different bytes during filesystem problems.
+  If hashes disagree, stop before executing or installing; copy the exact file
+  through another authorized path and verify again. Do not diagnose a universal
+  Docker bug from one mismatch or treat matching filenames as matching content.
 - Exercise the actual cross-service journeys, denied access, writes, uploads and
   workers. Compare behavior with the known working application and verify recovery.
+- Verify rollback environment removal as well as restoration. Process managers
+  may merge new environment variables on restart instead of deleting keys absent
+  from the old configuration. Preserve private launch metadata, use the manager's
+  verified replacement semantics, and inspect the actual listener environment.
+  Never print environment objects or secret-bearing assertion diffs to prove it.
 
 **Exit:** the separated application works through its normal public entry point
 using ordinary commands/scripts. Empty repos, copied modules, individual health
