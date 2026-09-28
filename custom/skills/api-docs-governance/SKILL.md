@@ -17,6 +17,14 @@ reference project before proposing a documentation platform. For example,
 its source/evidence limits and identify which decisions apply to this project;
 do not assume sibling docs or previous conversations are automatically searched.
 
+For current implementation reuse, search `ai-setup search "project catalog"` and
+read the referenced owner's current docs/source within authorized scope. Keep
+architecture, cron/worker responsibilities, CI/CD and operating evidence with the
+app. The catalog is a locator with a review baseline, not a current runtime model.
+After a significant correction or architectural switch, search `"learning workflow"`
+and amend the existing central case with what was tried, why it changed, outcome,
+successor and limits; preserve original records with the app.
+
 - Separate research/proposal, bounded audit and implementation. Research does not authorize repository creation, source moves, portal publication, deployment, new subscriptions or tool installation.
 - Inspect the existing documentation index, contracts, route registration, package exports, compatibility/deployment records and applicable repository instructions. Preserve user changes and working consumers.
 - Use configured code-discovery tools according to project rules. Verify graph freshness/coverage before relying on absence; use exact source where coverage is missing. Documentation/configuration inspection does not require building a code graph for an unrelated workspace.

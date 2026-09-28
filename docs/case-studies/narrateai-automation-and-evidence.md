@@ -44,7 +44,33 @@ for recovery and provider evidence, and
 for a current asset-specific assessment. Adopt, adapt or reject each relevant
 pattern against the target's actual provider and output contract.
 
-## Source map and limits
+## Audio experiment follow-up
+
+A separate offline speech audition preserved identical spoken words and voice
+identity across delivery variants, with loudness-normalized comparison copies
+and original outputs retained. It reported actual synthesis and decodable audio,
+but explicitly left subjective listening and pronunciation approval pending.
+Warmed synthesis time, model loading, first-run initialization and normalization
+were different measurements; the Mac result was not a production-VM benchmark.
+
+The first directed pass combined model sentence-tail silence with added pauses,
+creating excessive gaps. The recorded change trims only outer quiet padding
+before applying the intended pause once; it preserves silence inside a spoken
+beat. Later captions use actual segment timings, without claiming word alignment.
+An experiment remained optional and did not switch the production provider.
+
+Reuse the controlled comparison, timing decomposition and explicit rollout gate;
+do not infer perceptual quality from finite samples or a successfully encoded
+file. A runtime compatibility workaround also needs its own narrow provenance
+and tests rather than silently becoming a fork of the provider.
+
+Source S4: `NarrateAI/docs/OPENVOICE_AUDITION.md`, read in full, clean at
+`7ca599dcd98e056d0f9077d8cedb781793ff79cc`, SHA-256
+`48db5bffbc7cc21348bb6f47415610aa0799b1b0244183e4cc182c58f3c8fbc2`.
+Recorded experiment: 18 September 2026; central review: 28 September.
+No audio generation, listening approval or new provider verification occurred here.
+
+## Original source map and limits
 
 All sources were clean tracked files at
 `NarrateAI@7ca599dcd98e056d0f9077d8cedb781793ff79cc`.

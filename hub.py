@@ -17,7 +17,7 @@ import time
 import uuid
 
 DEFAULT_SOURCE = 'https://github.com/hiakki/ai_setup.git'
-SHARED = ('skills', 'agents', 'custom', 'rules', 'docs', 'hub')
+SHARED = ('skills', 'agents', 'custom', 'rules', 'docs', 'hub', 'hindsight')
 HELD_LOCKS = {}
 
 
@@ -220,8 +220,10 @@ class Hub:
             paths.update(('.local/share/ai-setup/git-hooks', '.local/state/ai-setup/library.json', '.gitconfig'))
             for name in ('AI_READY_PROJECTS.md', 'PROJECT_INSTRUCTIONS_TEMPLATE.md', 'CENTRAL_LIBRARY.md', 'ai-local.gitignore', 'WINDOWS.md'):
                 paths.add('.local/share/ai-setup/reference/' + name)
-        if set(selected) & {'rules', 'hub'}:
+        if set(selected) & {'rules', 'hub', 'hindsight'}:
             paths.update(('.codex/AGENTS.md', '.claude/CLAUDE.md'))
+        if 'hindsight' in selected:
+            paths.update(('.codex/config.toml', '.claude.json'))
         if 'rules' in selected:
             paths.update(('.gitconfig', '.config/git/ignore', '.profile', '.bashrc', '.zshrc'))
         return paths
@@ -443,6 +445,17 @@ docs/case-studies and their linked skill references. Explain adopt/adapt/reject
 decisions against the target's requirements. Cases retain sanitized lessons and
 source/evidence limits; full project docs stay with their owner. Search is literal
 and does not read arbitrary sibling repositories or past conversations.
+
+Find current app documentation with `ai-setup search "project catalog"`. Resolve
+owner-relative pointers within authorized access and inspect current docs/source
+before borrowing an implementation. Keep architecture, crons/background work,
+CI/CD and operations current in the app; a central refresh does not refresh app
+checkouts. Before closing a significant failure, correction, migration, switch
+or release with a reusable lesson, follow `ai-setup search "learning workflow"`.
+Amend the existing central case/skill with what was tried, what passed/failed,
+why it changed, replacement/status, provenance and verification limits. Preserve
+superseded reasoning and original app evidence. Report pending promotion when
+central writing is unavailable or unauthorized; never claim automatic sync.
 
 Use `ai-setup check-project --project PATH` before committing. A Git guard can reject
 commits, but unrestricted filesystem tools can still create files. Do not claim

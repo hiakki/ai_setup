@@ -1,6 +1,6 @@
 # Make a repository or directory AI-ready
 
-Updated 2026-09-27. Scope: **central AI guidance, project-owned application docs, global Claude Code and Codex tooling**.
+Updated 2026-09-28. Scope: **central AI guidance, project-owned application docs, global Claude Code and Codex tooling**.
 
 ## The request to use in any project
 
@@ -54,6 +54,18 @@ Read and maintain application context in the project's own documentation. Use
 actual gaps; do not create a second version of existing architecture or runbooks.
 Application docs require no private central-library binding. Do not copy private
 project facts to the public AI library when improving a reusable skill.
+
+Search `ai-setup search "project catalog"` for relevant existing apps and
+`ai-setup search "learning workflow"` for the capture process. Read matching
+historical cases before recommendations; inspect the referenced owner's current
+docs/source within authorized access when borrowing an implementation. Do not
+assume central search or refresh reads sibling repos.
+
+Locate the target's current architecture, cron/background-work, CI/CD and
+operating docs; report missing or stale coverage. Fill actual documentation gaps
+only within the task's scope, distinguishing unknown from not applicable. Do not
+invent jobs or pipelines to complete a template. Retain original decisions with
+the app and capture reusable failures/switches centrally after significant work.
 
 Keep only minimal routing in ignored `AGENTS.override.md` and/or `CLAUDE.local.md` when
 needed: the instruction to search the library, pointers to the project's own

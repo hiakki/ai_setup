@@ -22,7 +22,7 @@ class HubTests(unittest.TestCase):
         self.root = Path(self.temp.name)
         self.source = self.root / 'central source'
         self.source.mkdir()
-        for name in ('setup.py', 'runtime.py', 'hub.py', 'library.py'):
+        for name in ('setup.py', 'runtime.py', 'hub.py', 'library.py', 'hindsight_runtime.py'):
             shutil.copy2(ROOT / name, self.source / name)
         for name in ('custom/skills/example', 'docs', 'config'):
             (self.source / name).mkdir(parents=True)
@@ -84,6 +84,26 @@ class HubTests(unittest.TestCase):
         self.assertIn('Local improvement', local.read_text())
         self.hub.rollback()
         self.assertIn('Local improvement', local.read_text())
+
+    def test_hindsight_update_and_rollback_restore_guidance_and_preserve_auth(self):
+        result = subprocess.run([sys.executable, str(self.source / 'setup.py'), 'install',
+                                 '--home', str(self.home), '--only', 'hindsight'],
+                                env=dict(os.environ, HINDSIGHT_MCP_URL='https://memory.example/mcp/shared/'),
+                                text=True, capture_output=True)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        path = self.home / '.claude/CLAUDE.md'
+        original = path.read_bytes()
+        config = (self.home / '.claude.json').read_bytes()
+        source = self.source / 'hindsight_runtime.py'
+        source.write_text(source.read_text().replace('# Shared Hindsight memory',
+                                                    '# Shared Hindsight memory revision two'))
+        self.commit('Update shared memory guidance')
+        self.hub.update(str(self.source), 'main', 'hindsight')
+        self.assertIn('memory revision two', path.read_text())
+        self.assertEqual((self.home / '.claude.json').read_bytes(), config)
+        self.hub.rollback()
+        self.assertEqual(path.read_bytes(), original)
+        self.assertEqual((self.home / '.claude.json').read_bytes(), config)
 
     def test_rollback_refuses_edits_after_update(self):
         self.revise()

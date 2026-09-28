@@ -43,6 +43,11 @@ deployment evidence. Read [release-versioning-and-hotfixes.md](release-versionin
 for version calculation and [portable-deployment.md](portable-deployment.md) for
 promotion without rebuilding.
 
+For example, `git log -1 --format=%h <selected-source-commit>` asks Git for the
+abbreviation of the revision actually being built. Do not hardcode seven/eight
+characters or accidentally query the ops checkout's HEAD. Verify the result
+against the selected full source revision and retain the digest for deployment.
+
 ## Measure size and verify the runtime
 
 - Use staged builds and copy the needed runtime output. Keep source caches, test

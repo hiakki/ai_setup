@@ -11,6 +11,7 @@ Keep live data, dumps and private credentials outside Git and application artifa
 ## Access and schema verification
 
 - Separate administrator/migration credentials from runtime roles. Check actual grants and denied operations, including expected schema/table/sequence privileges and narrowly justified cross-domain reads.
+- When adding a column consumed across domains, inspect explicit column grants as well as table/schema changes. A migration can succeed as administrator while the real service role still cannot read the new field. Add the narrow grant through a reviewed migration and exercise the query using that service's connection.
 - Verify required columns, tables, constraints, indexes and migration checksums against the application's actual database connection. Migration history alone does not prove schema shape or environment identity.
 - Repair drift with reviewed, appropriately additive migrations. Do not hide it by baselining history automatically, destructive synchronization or copying one service's full admin environment.
 - Coordinate one authoritative ordering strategy and locks. Independent domain migration chains can be valid, but shared objects/dependencies need defined ordering and compatibility. Test old/new application compatibility during staged rollout.
@@ -45,3 +46,41 @@ For a host migration, inventory database version/extensions, roles, schema/data,
 Dry runs must not mutate data or implicitly start/stop services. Locks should prevent overlapping backup/restore/lifecycle operations where necessary and have a documented interaction with deployment locks. Never reset shared, customer or durable demo data to conceal a failure. Explicitly disposable test databases may be recreated through their documented lifecycle.
 
 State exactly which recovery evidence exists: archive check, isolated restore, application verification, measured recovery time or actual failover. Do not label an untested runbook as disaster-recovery readiness.
+
+## Exact data transport and independent reconciliation
+
+Preserve both numeric precision and JSON types during migration. Parsing decimal
+tokens as strings can preserve a scalar SQL numeric insert while corrupting
+numbers nested inside JSON/JSONB. Parsing them as binary floats can round money or
+stock quantities. Use a native database transport, or an exact decimal decoder
+and encoder that emits numeric tokens. Include a nested high-precision decimal
+regression; do not use `default=str` as a precision workaround.
+
+An importer and verifier sharing the same faulty decoder can agree on corrupted
+data. Check counts plus actual values/types, then add an independent database-side
+comparison or row digest and a restore rehearsal. Preserve failed-run evidence;
+only discard a staging target after proving its identity, unchanged contents and
+absence of application writes. Never reset the live source to hide a failed test.
+
+Keep staged backfills visibly separate from active writer authority. New database
+containers, copied tables and successful restores do not remove shared locks,
+cross-domain authorization functions or duplicated sensitive fields. Enumerate
+these contracts, deny premature runtime access, and report application cutover as
+unfinished until the real workflows and final writer handoff are verified.
+
+Preserve identity-sequence options and allocation state, not just table rows or
+`MAX(id)`. Deleted rows, rolled-back inserts and cached allocations can consume
+identifiers beyond surviving rows. Sequence allocation is not an MVCC snapshot;
+observe it after the data snapshot and repeat under the final writer fence. Test
+nondefault increments/cache, descending sequences and never-called empty
+sequences through real SQL, including the next generated value.
+
+Make multi-target migration retries reconcile durable per-target receipts before
+advancing. A committed target followed by a lost response is not an empty target
+to recreate. Bind source, schema, run and expected transform identities; verify
+actual normalized and retained rows, access restrictions and unexpected objects.
+Preserve attempt-specific phase journals, including the uncertain-commit phase;
+do not overwrite earlier evidence or let a reused report filename mask failure.
+Similarly, a running container does not prove initialization committed: verify
+extensions, role restrictions, public revocations and saved-credential login on
+provisioning retries before reporting success.

@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "reviewed_date": "2026-09-28",
+  "scope": "Nine reviewed central case documents plus five navigation pointers; not all project history or private app docs.",
+  "transport": "MCP only; existing gateway authentication; no model-provider credentials",
+  "profile": "chunks-only retain, no observations/auto consolidation, no temporal/graph/reranking stages, no reflect or generated pages",
+  "update_policy": "Explicit reviewed apply only. Verify source hashes before writing; replace stable document IDs. No automatic install-time ingestion.",
+  "entries": [
+    {
+      "document_id": "ai-setup-reviewed-lesson-execution-host-provenance",
+      "source_path": "docs/case-studies/bulkbuyer-data-provenance.md",
+      "mode": "reviewed_document",
+      "probe": "Downloads work on a laptop but scheduled server reports are stale. How do we verify source freshness and dependent report recovery?",
+      "reviewed_sha256": "7e295648b7efc660b75d05863ba53258750c4e749f7433f40da2aae191b5a6a0"
+    },
+    {
+      "document_id": "ai-setup-case-card-savvy",
+      "source_path": "docs/case-studies/card-savvy-calculation-and-comparison.md",
+      "mode": "reviewed_document",
+      "probe": "Refund credits become positive purchases and a preference bonus changes cash totals. Which calculation and comparison mistakes should we avoid?",
+      "reviewed_sha256": "026fa71cf0165f64a86ff674dbb0f64ed8cbeb1643eb0bb8a4d78f5fba195ab5"
+    },
+    {
+      "document_id": "ai-setup-reviewed-lesson-uncertain-mutations",
+      "source_path": "docs/case-studies/delx-durable-execution.md",
+      "mode": "reviewed_document",
+      "probe": "A provider may have accepted a request before timeout and listing fails. How should durable intent and reconciliation work?",
+      "reviewed_sha256": "3686b032c8b09f21b0dba77de2944f36fc19d727f270742b3cf81f80ea023468"
+    },
+    {
+      "document_id": "ai-setup-case-elvique",
+      "source_path": "docs/case-studies/elvique-operational-workflows.md",
+      "mode": "reviewed_document",
+      "probe": "The dashboard health check passes but the browser receives a truncated JavaScript plugin through the proxy. What should we investigate?",
+      "reviewed_sha256": "75ff608625efc434f2870bb2bbfc3c3984d00ad46eb1fd164130722301efe21a"
+    },
+    {
+      "document_id": "ai-setup-case-infrastructure",
+      "source_path": "docs/case-studies/infrastructure-cost-and-drift.md",
+      "mode": "reviewed_document",
+      "probe": "A storage-based database cost estimate missed tiny inserts, merge work and write amplification. How do we review cost assumptions and runtime drift?",
+      "reviewed_sha256": "7374b9fe0b4fd65e1ab9f6af094d1923e9bd30fbf178956e4b81cd367ca966e6"
+    },
+    {
+      "document_id": "ai-setup-case-native-audio",
+      "source_path": "docs/case-studies/metronome-native-audio-evidence.md",
+      "mode": "reviewed_document",
+      "probe": "The native metronome passes helper tests but produces no audible clicks. What acceptance evidence is still required?",
+      "reviewed_sha256": "38ec87101947841f59b097ed8f94a487f631ef681e2db00236ca113693331a6b"
+    },
+    {
+      "document_id": "ai-setup-case-narrateai",
+      "source_path": "docs/case-studies/narrateai-automation-and-evidence.md",
+      "mode": "reviewed_document",
+      "probe": "One rescued video demo passed but fresh unattended drafts still fail at asset recognition and provider refusal. Is automation ready?",
+      "reviewed_sha256": "10f3a7ee5904a0b57d7f197fe7985b81e52df444e6944286154caff8d2a062f4"
+    },
+    {
+      "document_id": "ai-setup-reviewed-lesson-artifact-identity",
+      "source_path": "docs/case-studies/panyora-service-extraction.md",
+      "mode": "reviewed_document",
+      "probe": "An unchanged app revision uses a changed shared container build recipe. How do we identify the exact artifact to promote?",
+      "reviewed_sha256": "8eaaf91731c757b9a473813fedafea9e3c266cd3b9f20cb67873cf8ed2545366"
+    },
+    {
+      "document_id": "ai-setup-case-servinoza",
+      "source_path": "docs/case-studies/servinoza-workflow-recovery.md",
+      "mode": "reviewed_document",
+      "probe": "After extracting a page, its GET works but the first browser save returns 404. What gateway and mutation-route test did the mock miss?",
+      "reviewed_sha256": "a0d02044d25d94865f190c67cd927f430686116f16b892538574afee2b039f61"
+    },
+    {
+      "document_id": "ai-setup-guide-case-catalog",
+      "source_path": "docs/case-studies/README.md",
+      "mode": "reviewed_pointer",
+      "summary": "Historical cross-project engineering cases are indexed in docs/case-studies/README.md. It routes to Panyora extraction and CI/CD, Elvique operational UX and observability, Servinoza workflow recovery and extraction, NarrateAI unattended automation, bulkBuyer provenance, DelX durable execution, card-savvy calculations, infrastructure cost/drift and native audio acceptance. Choose by failure mechanism, read each case and its linked skills, preserve evidence limits and decide adopt/adapt/reject. These are historical cases, not current app architecture. Current owner pointers are in docs/PROJECT_CATALOG.md; remaining review backlog is in docs/LEARNING_COVERAGE.md.",
+      "probe": "Where is the index of historical engineering mistakes across our different projects?",
+      "reviewed_sha256": "4edaeb537cd6666f167e769ab780e7b6c395800b2b3475fb2bfc20b2c1e9d1cb"
+    },
+    {
+      "document_id": "ai-setup-guide-project-catalog",
+      "source_path": "docs/PROJECT_CATALOG.md",
+      "mode": "reviewed_pointer",
+      "summary": "Current project architecture, cron and worker ownership, CI/CD, deployment and operational documentation are located through docs/PROJECT_CATALOG.md. Resolve the named owner's repository and owner-relative path within authorized access. Panyora uses panyora-docs and panyora-ops. Servinoza's current migration record belongs to servinoza-docs and worker handovers to servinoza-ops; Servinoza_in is historical/compatibility context. The catalog also points to Elvique, NarrateAI, bulkBuyer, DelX and card-savvy docs. Reopen current owner files, check revision and running-state evidence; the catalog's dated baselines do not certify current deployments. Do not automatically clone private sources or assume sibling access. Central refresh does not refresh app checkouts.",
+      "probe": "Where do I find existing projects' current architecture, cron ownership, CI/CD and operational documentation?",
+      "reviewed_sha256": "5762a01adaf789d100d8c8b0fd13a0b7e91d5842341aefd0655c3323e2fd19bd"
+    },
+    {
+      "document_id": "ai-setup-guide-engineering-playbook",
+      "source_path": "docs/REUSABLE_ENGINEERING_PLAYBOOK.md",
+      "mode": "reviewed_pointer",
+      "summary": "Use docs/REUSABLE_ENGINEERING_PLAYBOOK.md to route engineering work to maintained skills and specialist roles. custom/skills/service-architecture-and-extraction/SKILL.md covers boundaries and staged extraction; custom/skills/reliable-web-app-operations/SKILL.md covers CI/CD, container builds, releases, database recovery, telemetry and provider delivery; custom/skills/api-docs-governance/SKILL.md covers contracts and discovery; custom/skills/build-usable-apps/SKILL.md covers operational UI; custom/skills/auditable-business-workflows/SKILL.md covers money, transitions and historical evidence; custom/skills/sre-incident-investigation/SKILL.md covers active causal investigation. Read linked references selectively. manifest.json selects provider-owned agents and revisions; installation is not invocation or authorization. Preserve original providers, do not duplicate their agent libraries. Central cases supply evidence and application docs remain with their owners.",
+      "probe": "Which shared skills and specialist roles should I select for service extraction, CI/CD, security, database recovery and operational user interfaces?",
+      "reviewed_sha256": "8d33c2db4b64d58ed09f7c8c7e31f0d2a967483ba6b00babfd4c0907b442ecf8"
+    },
+    {
+      "document_id": "ai-setup-guide-learning-workflow",
+      "source_path": "docs/LEARNING_WORKFLOW.md",
+      "mode": "reviewed_pointer",
+      "summary": "Follow docs/LEARNING_WORKFLOW.md after a meaningful failure, correction, migration, switch or release. Update current application docs and retain original evidence there. Search by topic/project, use ai-setup library to locate the canonical checkout, and amend the existing central case/skill with problem, attempted approach, observed result, reason for switching, replacement/status, verification limits, reuse gate and source revision/hash/date. Preserve superseded reasoning with successor pointers. Sanitize private context; use a private authorized destination when needed. If central writes are out of scope, report pending promotion. Reviewed Hindsight memory is secondary to canonical files, and Git publication and other-machine refresh require their normal authorization. No automatic transcript capture, guaranteed compliance or model retraining is implied.",
+      "probe": "After a failed approach and a verified fix, where should the reasoning be captured so another project does not repeat the mistake?",
+      "reviewed_sha256": "7a75e372976c28e69140005c1db640106ea00c732ae2ab229c3e31e210f01fd2"
+    },
+    {
+      "document_id": "ai-setup-guide-global-skills",
+      "source_path": "docs/GLOBAL_SKILLS.md",
+      "mode": "reviewed_pointer",
+      "summary": "Use docs/GLOBAL_SKILLS.md for shared skill ownership and client discovery. Installed skills are under ~/.agents/skills/<name>/SKILL.md; Claude links under ~/.claude/skills and Codex discovers the shared catalog. Canonical custom skills are in custom/skills/; custom/skills/README.md catalogs them. manifest.json identifies original providers and pinned revisions for third-party skills and agent roles; fetch them from their providers rather than caching their payloads in ai_setup or Hindsight. Read the engineering playbook to select relevant skills/roles, and reload a stale client catalog when needed. App-specific architecture, policies, runbooks, discussions and test evidence stay with the app. Global availability means the current OS user's supported clients can discover skills; it does not make every tool/application worker execute them. Historical migration counts are dated; inspect the current manifest and installed catalog.",
+      "probe": "Where are reusable skills and agents maintained and how can existing or new projects use the same global library?",
+      "reviewed_sha256": "54674580a3d3b2c22d451c4156ebb5b762751758e4d90cd8b8592f53d2c68f9c"
+    }
+  ]
+}

@@ -15,6 +15,76 @@ A repo split can improve parallel context without requiring a physical database 
 
 For each component, document owner, responsibilities and exclusions; interfaces and consumers; authoritative writes and permitted reads; secrets/configuration; durable/ephemeral resources; tests/observability; deployment/rollback needs. Do not infer independence from a name or directory.
 
+When the user requests separate documentation or database-operations ownership,
+evaluate that boundary directly. Being technically possible inside an ops repo is
+not a reason to dismiss it, and a previously recommended repository count is not
+an invariant. A dedicated repository can own documentation publication or runnable
+database tooling without becoming an HTTP service. Keep domain contracts and
+migrations with their authorities; specify who imports, validates and publishes
+the former, and who builds, schedules and executes the latter. Record one owner
+for each environment setting and runtime credential. Verify the resulting workflow,
+not just a renamed repository table; label proposed jobs and untested recovery
+separately from implemented automation.
+
+## Frontend ownership and shared-package release boundaries
+
+Choose source access, package dependencies and runtime releases separately. A
+frontend monorepo can contain independently deployed apps; a separate design-system
+repo can own generic components/tokens when maintainer permissions justify it.
+Ordinary screen engineers can then use one clone, while foundation maintainers
+need a second. State that tradeoff rather than promising all UI edits in one repo.
+Keep domain-specific components with their app and authoritative permissions,
+stock, tax and payment decisions with backend services.
+
+Direct workspace links consume shared source on the consumer's next build. A
+package version field alone does not isolate that source. For explicit upgrades,
+publish immutable artifacts, pin exact versions per consumer, commit lockfiles
+and prohibit production sibling-directory links and mutable-branch shortcuts. A monorepo can
+also use this publication discipline; repo separation alone is not the safeguard.
+Version token/style dependencies too and prevent global asset updates from
+bypassing package pins. Verify registry capabilities and read/publish permissions.
+
+CODEOWNERS with required review rules provides governance, not directory-level
+read/write isolation. Verify effective rules, account-plan support and bypasses
+before claiming enforcement. Run affected-consumer checks against candidate
+packages, but promote apps only through their own approved dependency upgrade and
+release. Broad tests must not imply broad deployments. Root lockfiles/tooling can
+affect multiple apps even with exact package pins; record that residual coupling.
+
+Acceptance: fresh consumer-only clone installs without sibling source; two apps
+resolve different package versions; publishing leaves existing consumers
+unchanged; one upgrade deploys only that app; previous image/artifact rollback
+works. Track security-update deadlines so version isolation does not retain
+vulnerable dependencies indefinitely. CI stays with its existing platform owner;
+do not introduce service-owned pipeline copies to enable package publishing.
+
+Repo layout does not establish throughput. Evaluate workload mix, cache hit rate,
+fanout, transaction contention and per-replica connection budgets before scaling
+claims. Team/access boundaries may justify future source splits independently of
+requests per minute. See the dated frontend corrections in the central extraction
+case for provenance; target-specific acceptance tests remain required.
+
+When relocating Next standalone apps, inspect the generated server, asset and
+writable-cache paths. A nested server can move its cache outside an existing
+container mount; prove write-through using the final read-only runtime contract,
+not only a development build. Keep rollback artifacts compatible with the old
+source URL while binding new releases to their actual source owner and app path.
+
+Versioned release assets may be vendored with integrity receipts when a separate
+package registry adds unnecessary credentials. A vendored artifact is not a live
+sibling-source link: verify packed identity, exact consumer pin, lockfile integrity
+and publication provenance. Candidate packing may differ across npm versions or
+hosts. In a disposable compatibility checkout, re-resolve only the candidate's
+lock entry; never overwrite an immutable release, disable integrity checks or
+rewrite production locks merely to accept different bytes at the same version.
+
+Pinned deployment tooling must not be compared only with a moving branch tip.
+Fetch the approved branch freshly, verify the pinned commit remains reachable,
+and archive that exact commit without moving the checkout. Reject unpublished
+commits, rewritten-away history and failed fetches; test all four cases. When
+source ownership changes, review image validators, cleanup allowlists and every
+deployment adapter as well as build labels. Keep runtime identities independent.
+
 ## Financial and personal-data boundaries
 
 Separate identity/session authority from business membership and authorization. An authenticated actor is not automatically entitled to every tenant, location, field or action.

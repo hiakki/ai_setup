@@ -7,6 +7,11 @@ for the target and how to verify it. Original project decisions and release
 records remain authoritative. These cases are maintained AI learning, not model
 training or automatic access to sibling repositories and past conversations.
 
+For current implementations, follow the [project catalog](../PROJECT_CATALOG.md).
+After a meaningful correction, failure, migration or switch, use the
+[learning-capture workflow](../LEARNING_WORKFLOW.md) to amend the relevant case
+without losing the earlier result or reason for changing direction.
+
 ## Case catalog
 
 | Origin and case | Find it with `ai-setup search` | Useful for | Evidence ceiling |
@@ -18,6 +23,8 @@ training or automatic access to sibling repositories and past conversations.
 | [bulkBuyer](bulkbuyer-data-provenance.md) | `"bulkbuyer provenance"` | Data freshness, scoring semantics, point-in-time evidence, caches and dependent reports | Dated access incident and documented controls; predictive performance remains unvalidated |
 | [DelX](delx-durable-execution.md) | `"delx reconciliation"` | Durable intent, uncertain requests, cancellation races and recovery ownership | Source audit and fake-provider regressions; no real external execution verified |
 | [card-savvy-india](card-savvy-calculation-and-comparison.md) | `"card-savvy comparison"` | Signed imports, unknown values, score versus money, mobile comparison context | Reproduced calculation findings remained open; separate UI checks do not close them |
+| [logging_cost and istio_issues](infrastructure-cost-and-drift.md) | `"logging_cost drift"` | Workload-shaped cost estimates, configuration drift and limits of incident hypotheses | Attributed retrospective/drift reports; no new savings, rollout or causal verification |
+| [musician-metronome-macos](metronome-native-audio-evidence.md) | `"metronome audio"` | Platform adapters, native build integration and audible acceptance | Repair notes and test instructions; no completed native/listening result established |
 
 Choose by failure mechanism, not only by similar business type. For example,
 DelX's uncertain-request lesson can inform a provisioning job, and NarrateAI's
@@ -25,6 +32,11 @@ missing-versus-zero distinction can inform an operational dashboard. Such reuse
 still requires the target's actual contract and verification.
 
 ## What was checked in the 28 September review
+
+The later [learning coverage audit](../LEARNING_COVERAGE.md) extends this initial
+pass with additional sources, cases, a local delta checker and explicit remaining
+gaps. The disposition table below describes the earlier pass, not final clearance
+of every document in those directories.
 
 The local `contrib` inventory covered 40 other project directories besides
 ai_setup and the already reviewed Panyora workspace. It found visible Markdown,

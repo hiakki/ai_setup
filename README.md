@@ -19,6 +19,12 @@ a global Git commit guard, preserving existing hooks. Check its effective covera
 This is not filesystem write isolation. The guard permits application documentation;
 private reusable AI material requires an authorized private source.
 
+Use the [project catalog](docs/PROJECT_CATALOG.md) to locate existing apps' current
+architecture and operations, and the [learning workflow](docs/LEARNING_WORKFLOW.md)
+to capture failed attempts, successful fixes and superseded decisions centrally.
+The [case catalog](docs/case-studies/README.md) preserves reviewed experience;
+apps retain their current architecture, cron, CI/CD and release docs.
+
 [Hermes Agent](docs/HERMES.md) is included in the normal one-click setup:
 `bash install.sh` or `.\install.ps1`. Its shared agent skill is included in `custom`;
 its runtime is downloaded directly from pinned NousResearch source. Use
@@ -133,9 +139,14 @@ ai-setup update                           # Fetch central revision; update insta
 
 Default components: `runtime,skills,agents,custom,blog,gstack,integrations,context7,rules,figma,hermes,docs,hub`.
 Both entry points select `all` by default, using the shared default profile in
-`setup.py`. Optional components are `strix,skillui`; `all` does not install them.
+`setup.py`. Optional components are `strix,skillui,hindsight`; `all` does not install them.
 Use `--only all,strix,skillui` or `-Only 'all,strix,skillui'` for the default profile plus both tools.
 Hermes provisions its own upstream runtime.
+`hindsight` connects Claude/Codex to your selected remote memory bank through MCP.
+Set `HINDSIGHT_MCP_URL` and select `--only all,hindsight` / `-Only 'all,hindsight'`,
+or add only `hindsight,docs,hub` to an existing setup. Authentication uses an
+environment-variable reference; no key or personal server is bundled. See
+[Hindsight setup](docs/HINDSIGHT.md) for credential loading and live verification.
 `docs` installs the shared Markdown reference bundle; `hub` installs the central
 search/update/contribution command, client guidance and global Git commit guard.
 The guard forwards existing hooks and preserves an explicit operator disable.

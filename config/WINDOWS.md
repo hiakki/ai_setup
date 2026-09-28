@@ -16,6 +16,10 @@ selected upstream UI skills. Strix and SkillUI are optional:
 ```
 
 `all` means the default profile, including Hermes; optional tools must be named.
+For remote Hindsight memory, set `$env:HINDSIGHT_MCP_URL` to the full bank MCP URL
+and run `.\install.ps1 -Only 'hindsight,docs,hub'`. Claude/Codex read the bearer key
+from `LLM_GATEWAY_KEY` in their launch environment. No WSL or local Hindsight
+server is needed. See the installed `HINDSIGHT.md` guide for verification.
 The default profile uses the current Windows user profile. Selective Context7,
 Strix and SkillUI setup does not require Microsoft C++ build tools or the full
 runtime's disk-space allowance. SkillUI needs Node.js 18+ and npm, supplied by

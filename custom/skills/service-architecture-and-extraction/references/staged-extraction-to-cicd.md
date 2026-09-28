@@ -11,6 +11,19 @@ merely to follow this example. If the user selects another sequence, record it.
 
 ## 1. Extract directories and run ordinary processes on the target VM
 
+- If the operator requests code separation before rollout, treat that as an
+  explicit gate within this stage: reconcile every API/method, private capability,
+  webhook, stream and framework server action; map each to an authoritative owner;
+  finish the selected source separation and local contract checks; then freeze one
+  compatible revision set before VM handovers. Do not keep discovering the API
+  surface while repeatedly rebuilding/deploying incomplete slices. Preserve and
+  audit existing working extraction rather than starting it over.
+- Keep one current migration plan, with a supporting operation inventory and
+  acceptance matrix. Distinguish source ready, pushed, running and API verified.
+  Every operation needs its own positive/negative evidence or an explicit missing
+  result; an aggregate test count or expected unauthorized response is not full
+  acceptance. After rollout, reproduce failures locally and redeploy only the
+  responsible component plus explicitly affected contract consumers.
 - Put each agreed domain in its owning directory/repository. Preserve API,
   transaction, authentication, payment and private-data boundaries.
 - Provide the smallest repeatable build/start/stop/status scripts or process
@@ -34,6 +47,12 @@ merely to follow this example. If the user selects another sequence, record it.
   archive commit header or an equivalent trusted manifest. Exclude personal agent
   tooling and generated outputs explicitly at archive creation; preserve source
   files and do not relax traversal/symlink checks to accommodate unrelated inputs.
+- Test the final runtime after dependency pruning or other packaging changes.
+  If a privileged controller promotes unprivileged build output, quiesce build
+  descendants and take a validated protected snapshot under the build identity;
+  checking paths and later copying their still-writable contents as root is a race.
+  Keep post-success record repair separate from runtime rollback, and reject reused
+  handover attempts before stopping a healthy process.
 - If Git object/ref reads disagree across an authorized container bind mount,
   verify the local commit and remote ref independently. A checked Git bundle copied
   into a temporary isolated repository can provide a consistent transfer without
@@ -58,11 +77,22 @@ merely to follow this example. If the user selects another sequence, record it.
   from the old configuration. Preserve private launch metadata, use the manager's
   verified replacement semantics, and inspect the actual listener environment.
   Never print environment objects or secret-bearing assertion diffs to prove it.
+  In multi-owner controllers, client imports can load environment files into the
+  parent process. Explicitly select each child check's pinned environment; an
+  env-file argument may lose to inherited values. If a handover fails after
+  stopping the old worker, resume only after proving that stop, unchanged pins,
+  no replacement processes and fresh telemetry. Do not blindly rerun a drain or
+  revive the old scheduler. Keep safe executable/exit diagnostics for recovery.
 - Before switching a process working directory, inspect its configured log,
   cache and temporary paths. Ignored runtime directories are absent from clean
   source artifacts. Prepare their owned directories or explicitly relocate them
   before restarting; a healthy candidate does not prove an existing process
   manager can launch it with historical metadata. Test the rollback independently.
+- Before moving an operational-history reader, inspect the actual writer paths,
+  retained rotations and service-user access. The extracted service's new log may
+  omit older application failures. Preserve bounded merge/correlation and distinguish
+  unavailable history from a genuine empty result; do not rewrite live append logs
+  or grant broad system-log access merely to make the new endpoint return success.
 - Preserve explicitly configured public frontend settings through a reviewed
   allowlist at both build and runtime. Do not copy backend environments into a
   frontend to preserve branding, public-launch or pricing display settings.
@@ -73,6 +103,32 @@ merely to follow this example. If the user selects another sequence, record it.
   Exercise the assembled release through the actual gateway, including client
   navigation and image optimization. A fixture proxy's path rewriting can conceal
   a mismatch; compare its rules with the deployed gateway and current framework.
+  Inventory every browser mutation when replacing server actions with HTTP calls:
+  a working page GET does not establish that its new POST path exists publicly.
+  Bind and test each exact method/path before moving its page, preserving original
+  cookies/origin, body limits and retry policy. Include the actual gateway in the
+  fixture and perform a reversible authorized edit with persisted readback. If the
+  new path fails, restore the page binding and check stored state before retrying;
+  an attempted restore is unnecessary when the first write never changed state.
+  Compare the page's accepted roles with every owner API it calls. A legacy page
+  may admit an administrator with a customer or provider profile while its new
+  private-data API correctly permits only the profile's normal role. Preserve a
+  deliberate non-error page or redirect for that combination; do not broaden
+  private-data access to make rendering pass. Test the uncommon role/profile
+  combinations as well as the ordinary customer and provider journeys.
+  Check print/export modes separately when moving pages between application
+  shells. Exclude navigation and unrelated account-review notes from shareable
+  receipts, while retaining QA/test markers and payment, refund and reconciliation
+  warnings. Inspect
+  actual generated output for ordinary and held/pending accounts; a clean screen
+  screenshot does not establish that the printable document has the right scope.
+- When extracting account classification and financial lifecycle operations,
+  inspect delayed terminal-to-active transitions, not only creation and current
+  active-work checks. Historical work may retain an immutable classification
+  after its participant changes status. Serialize supported conversion and
+  reactivation on the participant, reject mismatches atomically, and exercise
+  both lock orders plus raw status-update paths under the real restricted role.
+  Distinguish these guarantees from arbitrary privileged database edits.
 - Test side effects required for operation, not only response status. An image
   optimizer can return a valid image while failing to persist its cache under a
   read-only release. Keep service-owned caches outside immutable source, verify
@@ -137,3 +193,23 @@ work and return to the earliest unmet gate. Stop scheduling new out-of-order job
 do not erase useful changes or stop unrelated services. Record the selected order
 and per-stage status in the application's own migration document. Keep this shared
 reference generic and never copy application credentials or private infrastructure.
+
+## 28 September 2026 clarification: identity and verification scope
+
+- Record exact committed runtime and documentation revisions separately. When
+  only documentation changed, compare all declared build inputs and reuse the
+  verified artifact if they are identical; do not relabel its original source pin.
+- Derive anonymous denial expectations from reviewed handler contracts. A passing
+  401/403 check proves that denial path, not an authorized workflow. Probe the
+  temporary listener actually launched, then exercise the actual public sidebar
+  links and their methods through the deployed gateway.
+- Before retiring an application checkout, detach deployment-only credentials
+  into an explicit operations-owned protected file. Verify canonical location,
+  file and parent ownership/permissions, preserved settings and database identity;
+  never expose credential values in evidence.
+- Quiesce only the task's build process group and descendants before snapshotting.
+  Concurrent unrelated builds may share a Unix identity; do not require all
+  processes for that UID to disappear or terminate them to satisfy a local gate.
+
+These clarify stage-one checks. Partial owner activation does not satisfy the
+public acceptance or legacy-retirement exit criteria above.

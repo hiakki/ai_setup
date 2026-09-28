@@ -16,9 +16,9 @@ import tomllib
 
 ROOT = Path(__file__).resolve().parent
 DEFAULT_COMPONENTS = ('runtime', 'skills', 'agents', 'custom', 'blog', 'gstack', 'integrations', 'context7', 'rules', 'figma', 'hermes', 'docs', 'hub')
-OPTIONAL_COMPONENTS = ('strix', 'skillui')
+OPTIONAL_COMPONENTS = ('strix', 'skillui', 'hindsight')
 COMPONENTS = DEFAULT_COMPONENTS + OPTIONAL_COMPONENTS
-SHARED_COMPONENTS = ('skills', 'agents', 'custom', 'rules', 'docs', 'hub')
+SHARED_COMPONENTS = ('skills', 'agents', 'custom', 'rules', 'docs', 'hub', 'hindsight')
 
 
 def select_components(value):
@@ -526,7 +526,7 @@ class Installer:
         if 'hermes' in self.state['completed']:
             from hermes_runtime import verify
             verify(self)
-        for component in ('context7', 'strix', 'skillui'):
+        for component in ('context7', 'strix', 'skillui', 'hindsight'):
             if component in self.state['completed']:
                 import importlib
                 importlib.import_module(component + '_runtime').verify(self)
@@ -577,7 +577,8 @@ def main():
     if args.command == 'update':
         if args.only.strip() == 'all':
             completed = set(installer.state['completed'])
-            selected = [name for name in SHARED_COMPONENTS if not completed or name in completed]
+            selected = [name for name in SHARED_COMPONENTS
+                        if name in completed or (not completed and name in DEFAULT_COMPONENTS)]
         elif not set(selected).issubset(SHARED_COMPONENTS):
             parser.error('update supports shared content only: ' + ', '.join(SHARED_COMPONENTS))
     if args.command == 'plan':
@@ -606,7 +607,7 @@ def main():
             else:
                 from runtime import runtime, gstack, integrations, figma
             actions.update(runtime=runtime, gstack=gstack, integrations=integrations, figma=figma)
-        for component in ('context7', 'strix', 'skillui'):
+        for component in ('context7', 'strix', 'skillui', 'hindsight'):
             if component in selected:
                 import importlib
                 actions[component] = importlib.import_module(component + '_runtime').install

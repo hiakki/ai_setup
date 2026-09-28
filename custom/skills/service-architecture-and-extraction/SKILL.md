@@ -16,6 +16,13 @@ reference project the user names. The curated Panyora case is discoverable with
 state which decisions fit, need adaptation or should be rejected for this project.
 Do not infer repository count, live readiness or business authority from analogy.
 
+Use `ai-setup search "project catalog"` to locate current owner docs when borrowing
+an existing implementation; verify relevant source/configuration and freshness
+within authorized access. After a meaningful extraction or switch, follow the
+central `"learning workflow"`: update the app's current operating picture and
+preserve attempted approaches, failure/success evidence, reasons and superseding
+decisions in the existing case. A pointer or old case is not current runtime proof.
+
 1. Determine whether the request is an assessment, plan, implementation, deployment or cleanup. Honor existing authorization; a plan or reusable skill grants no additional deployment, deletion, provider-spending or source-publication permission.
 2. Read applicable instructions and inspect the actual code, routes, contracts, configuration ownership, tests and runtime/deployment records. Prefer configured graph tools when required; verify project/generation/coverage and read missed source. Do not use unrelated graph matches simply because they contain words such as gateway or ops.
 3. Record current, proposed, implemented and observed deployed architecture separately. Include workers, external providers, databases, uploads, caches, backups, secrets/configuration ownership and host infrastructure—not only repositories.
@@ -26,6 +33,14 @@ Do not infer repository count, live readiness or business authority from analogy
 For each proposed component, identify responsibility, transaction/state authority, interface, consumers, data read/write privileges, configuration/secrets, resource lifecycle, tests and deployment owner. Distinguish module boundaries, repository boundaries, runtime processes and physical infrastructure.
 
 Avoid repo-per-folder extraction and an unowned shared bucket. A shared library can be legitimate when it has a narrow purpose, owner, version, dependency policy and compatibility tests. Generic leftovers need classification, not cosmetic renaming.
+
+For frontend consolidation, separate ordinary screen ownership from shared visual
+foundations and backend authority. Assess direct workspace-source coupling versus
+immutable published packages with exact consumer pins. Review ownership is not
+directory-level access isolation; affected-consumer testing is not automatic
+multi-app deployment. Read the frontend/package section in
+[boundaries-and-gateway.md](references/boundaries-and-gateway.md) before promising
+one-repo handoff or independent releases.
 
 Preserve invariants that require atomicity. If a split crosses a transaction, design idempotency, concurrency, failure/compensation and reconciliation first; use an outbox or another mechanism only when the workflow needs it. Do not move authoritative money or stock state into a provider-transport wrapper merely because it handles payments.
 

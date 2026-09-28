@@ -39,7 +39,63 @@ and [provider delivery](../../custom/skills/reliable-web-app-operations/referenc
 For each adopted pattern, identify the target's authority, durable identity,
 recovery owner, unresolved state and test through the real application boundary.
 
-## Source and evidence limits
+## Cache, replay and UI follow-up
+
+Two additional source audits preserve related failures worth reusing:
+
+- A cached score omitted cost inputs from its identity. Shared mutable cached
+  rows let another request alter audit values without changing their timestamp.
+  Include material inputs in cache identity and isolate per-request results;
+  test changed parameters and backward clock movement.
+- Chunked time-series acquisition assumed inclusive endpoints and could miss a
+  boundary. The recorded fix overlaps/deduplicates identical records and rejects
+  conflicting duplicates; only completed intervals are eligible. Requesting a
+  window does not prove complete coverage.
+- A screening template was treated as evidence for another deployment's inputs.
+  Bind evidence to the effective configuration and disclose simulation/runtime
+  differences. Freeze acceptance criteria before comparing outcomes and retain
+  losses, inactivity and incomplete cases.
+- Historical closed records locked settings and displayed old unrealized values
+  as though they represented current exposure. Preserve history separately from
+  active, closing and unresolved work; test the actual UI against each state.
+- A protection check validated identity but missed whether a changed target
+  still met the saved constraint. Validate the relevant semantic invariant, not
+  just that a related external object exists.
+
+These lessons do not establish investment performance. The source records describe
+simulations, a public-data diagnostic and browser checks with intercepted data;
+none validates real execution in a new app. Existing green tests had missed the
+UI/protection defects until targeted regressions were added.
+
+Additional sources, read in full and clean at the same DelX revision below:
+
+| Source | SHA-256 |
+| --- | --- |
+| `research/quant-pipeline-audit-2026-09-19.md` | `53b5a9465ffdc8a5ee65e921db5cd5e141d041c9e72c5b99ea5c250208e9c448` |
+| `research/cross-engine-audit-2026-09-19.md` | `b2b6033206c10505c5354eefb4faa3e859aed6243becbb808b72e2a02bae3465` |
+
+## Earlier failed assumptions retained
+
+An earlier audit reproduced a requested-duration gate accepting a much shorter
+observed replay and counted the same favorable evidence twice. It also found a
+public-data fetch failure could prevent otherwise available safety/reconciliation
+checks from running. Test actual observed coverage, trace each evidence
+contribution once, and keep critical supervision independent of optional data.
+
+The dated follow-up records repairs but retained limitations. Later reporting
+requests exposed contention between differently scoped history caches; the
+record describes separate caches, bounded refresh outside request locks and
+unknown loading states rather than fabricated zero values. Read the later audit
+sections above before treating an early unresolved finding as current behavior.
+
+Source: `DelX/research/profitability-audit-2026-09-15.md`, clean at the revision
+below, SHA-256 `1955651dd6e351609bd9ccc4a5ee50fe8b58dd85a36731baefa042ceec88a67d`.
+Reviewed assessment, live-path findings, verification and remediation follow-up;
+the intervening legacy-engine/remediation-order sections were not reviewed in
+this pass. Source-reported reproductions used synthetic or frozen public inputs,
+not live account verification. No account facts are exported here.
+
+## Original source and evidence limits
 
 Source: `DelX/research/execution-risk-audit-2026-09-19.md`, read in full, clean
 tracked at `DelX@bbcab5684ac3bddee22b110ca6a45a75fb6b1950`.

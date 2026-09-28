@@ -35,7 +35,31 @@ Adopt, adapt or reject the data controls for the target's sources and freshness
 contract. Test wrong-date successful responses, changed bytes, missing fields,
 cutoff violations, retries and the final downstream report.
 
-## Source and limits
+## Export and interaction follow-up
+
+The dated data audit found that empty report columns reflected insufficient
+source history, not absent exporter fields. A newer export improved coverage,
+but optional long-window metrics remained unavailable for some eligible rows.
+Coverage, eligibility and model validity are different claims. Another correction
+changed a displayed percentage's denominator to match its label; deployed code
+did not retroactively rewrite old spreadsheet cells or change the underlying
+score. Inspect the actual saved/exported artifact before diagnosing missing data.
+
+A UI audit records browser checks using simulated notification providers:
+selection across pages, exact-destination review, same-request retry after a lost
+response, and preserved focus/disclosure state. Preserve uncertain outcomes and
+make batch limits visible; a disabled/pending button alone is not delivery
+idempotency. Those checks did not send real broadcasts or establish accessibility
+certification or measured user-task improvement.
+
+Additional sources, read in full and clean at the same revision below:
+
+| Source | SHA-256 |
+| --- | --- |
+| `docs/SCORING_DATA_AUDIT_2026-09-17.md` | `f76f50667a0a360699795f8acdaebd1d97ae1375f712bc7fc776b6088d607de8` |
+| `docs/UI_UX_AUDIT.md` | `92d2cf58f8e0ef7dc2221335819bfe68e5a29aca02de8cf548f8332235805465` |
+
+## Original source and limits
 
 Source: `bulkBuyer/docs/RESEARCH_RELIABILITY.md`, read in full as a clean tracked
 file at `bulkBuyer@1e41dd7aa47d0d174fd5d8c1efda882e1333fb33`.

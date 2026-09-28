@@ -110,7 +110,7 @@ Invoke-AISetup $env:SETUP_TEST_ACTION $env:SETUP_TEST_HOME $selection $env:SETUP
             calls = [json.loads(line) for line in log.read_text().splitlines()]
             assert calls[-1] == [str(checkout / 'setup.py'), 'plan', '--home', str(home), '--only', 'all'], calls
             print(f'PASS simulated: {mode} default PowerShell selection forwards all components')
-            for selection in ('context7', 'strix,skillui'):
+            for selection in ('context7', 'strix,skillui', 'hindsight'):
                 home = temp / f'optional home {mode} {selection}'
                 log = temp / f'optional-{mode}-{selection}.jsonl'
                 result = subprocess.run([str(args.pwsh.resolve()), '-NoLogo', '-NoProfile', '-File', str(harness)],
@@ -139,13 +139,14 @@ function Find-SetupPython { return $env:SETUP_REAL_PYTHON }
 Invoke-AISetup $env:SETUP_PLAN_ACTION $env:SETUP_PLAN_HOME $env:SETUP_PLAN_ONLY (Get-Location).Path
 ''')
         plan_home = temp / 'plan home'
-        for selection in ('all', 'all,strix,skillui', 'context7'):
+        for selection in ('all', 'all,strix,skillui', 'context7', 'hindsight'):
             result = subprocess.run([str(args.pwsh.resolve()), '-NoLogo', '-NoProfile', '-File', str(real_plan)],
                 cwd=ROOT, env=dict(os.environ, SETUP_REAL_PYTHON=sys.executable, SETUP_PLAN_HOME=str(plan_home),
                     SETUP_PLAN_ACTION='plan', SETUP_PLAN_ONLY=selection), capture_output=True, text=True, timeout=30)
             assert result.returncode == 0, result.stdout + result.stderr
             components = next(line for line in result.stdout.splitlines() if line.startswith('Components:'))
-            assert 'context7' in components, result.stdout
+            assert ('context7' in components) == (selection != 'hindsight'), result.stdout
+            assert ('hindsight' in components) == (selection == 'hindsight'), result.stdout
             if selection.startswith('all'):
                 assert 'hermes' in components and 'runtime' in components, result.stdout
             assert ('strix' in components) == ('strix' in selection), result.stdout

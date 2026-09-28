@@ -34,6 +34,21 @@ For a report that “the website is slow,” first separate one-user network/dev
 
 ## Incident Workflow
 
+### Cost and configuration evidence
+
+Before endorsing an observability migration's cost, measure ingest shape and
+background work as well as stored bytes: batch frequency, physical write targets,
+derived writes, merging, active replicas and representative queries. Separate
+live debugging, hot search and archive needs. Verify which billing dimension an
+optimization changes; a revised estimate is not measured savings.
+
+Before applying desired configuration, compare source, selected release inputs
+and effective runtime state. Identify intentional out-of-band changes and their
+owners, then review the planned diff. A stale checked-in production file is not
+evidence of current deployment. Drift alone does not prove incident causality.
+
+### Investigation steps
+
 1. Record impact, start time, affected journey, environment, and release.
 2. Confirm telemetry freshness before trusting empty charts.
 3. Correlate external, proxy, app, storage, host, and provider evidence.

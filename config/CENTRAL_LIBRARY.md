@@ -20,6 +20,28 @@ implemented versus proposed status, verification limits and links to the relevan
 skills. Do not publish raw discussions, transcripts, secrets or private product
 details. A source project name is a discovery key, not permission to mirror it.
 
+## Current app state and accumulated experience
+
+Applications maintain their current architecture, cron/background-job ownership
+and schedules, CI/CD, operations and release evidence in their own docs. Update
+the relevant current-state section when the task changes it; keep original ADRs
+and dated evidence with the app. Mark proposals and superseded instructions so
+readers can identify the active approach.
+
+The central `docs/PROJECT_CATALOG.md` holds portable owner-source pointers and
+review baselines, not duplicate architectures. Find it with
+`ai-setup search "project catalog"`. Before adopting an existing implementation,
+read its current authorized docs/source and record freshness and target fit.
+Central `--refresh` does not refresh referenced app repositories.
+
+Before closing a significant correction, failure, migration, switch or release
+that teaches a reusable lesson, follow `docs/LEARNING_WORKFLOW.md` (search
+`"learning workflow"`). Preserve approach tried, result, reason for switching,
+replacement/status, verification limits, provenance and reuse conditions in the
+existing case. Retain failed/superseded decisions, not just successful outcomes.
+Improve the relevant existing skill when a general rule is missing. This is
+agent workflow guidance, not an automatic transcript collector or publishing job.
+
 ## Search before authoring
 
 ```sh
@@ -84,6 +106,7 @@ ai-setup library --checkout /path/to/ai_setup
 | Original-provider skills/roles | Provider source; selections and pins in `manifest.json` |
 | Generic AI learning, reusable discussions and shared documentation | Existing canonical entry, or `docs/shared/<topic>.md` for a new topic |
 | Curated, sanitized project case studies | `docs/case-studies/<origin>-<topic>.md`, linked from the engineering playbook and relevant skills |
+| Current app documentation discovery | `docs/PROJECT_CATALOG.md`: owner-relative pointers, aliases, review baselines and gaps; details remain with the app |
 | Application architecture, decisions, design, runbooks and release evidence | The application's own repository and existing docs conventions |
 | Private reusable AI skills, roles or learning | A separately authorized private library, never the public ai_setup repository |
 

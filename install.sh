@@ -30,6 +30,8 @@ fi
 setup_python=python3
 if [[ "$setup_action" == install ]]; then
   # `all` installs defaults; add optional tools with --only all,strix,skillui.
+  # Remote Hindsight: set HINDSIGHT_MCP_URL and --only hindsight,docs,hub.
+  # Credentials stay in the client environment; see docs/HINDSIGHT.md.
   # Validate against setup.py's canonical component list before package changes
   # whenever a compatible Python is already available.
   setup_validated=false

@@ -1,9 +1,10 @@
 # Panyora: service extraction, central CI/CD, security and QA
 
-Reviewed: 27 September 2026. Type: curated engineering case study for cross-project
+Reviewed: 27 September 2026; extended 28 September 2026. Type: curated engineering case study for cross-project
 learning. Search terms: Panyora, microservices, monolith segregation, service
 extraction, cicd, CI/CD, DevOps, gateway, database operations, security, QA,
-containers, Docker, Kubernetes, versioning, hotfix, promotion, rollback.
+containers, Docker, Kubernetes, versioning, hotfix, promotion, rollback,
+monolith to microservices, API gateway, DB ops, backups, shellless, catalogue review.
 
 This case preserves reusable decisions and failure lessons from local source
 records. It is not Panyora's current architecture, operating runbook or deployment
@@ -25,6 +26,27 @@ Compare relevant decisions below with the target's actual code and requirements.
 Record **adopt, adapt or reject**, the reason and the target's verification gate.
 Do not copy repository counts, service names, cloud topology, provider assumptions
 or rollout commands from the source project.
+
+## Reuse map: lesson, owning skill and acceptance gate
+
+This map is the entry point for another project's agent. Follow the linked
+reference for the reusable procedure; keep that project's implementation and
+runtime evidence with its owner.
+
+| Work | Reusable reference | Target-specific proof |
+| --- | --- | --- |
+| Monolith boundaries, gateway, PII and payment separation | [Authority and gateway](../../custom/skills/service-architecture-and-extraction/references/boundaries-and-gateway.md) | Identify authoritative writes and credentials; preserve transactions; prove the normal journey without the retired parent checkout. |
+| Central Dockerfile, root manifests, build executor and cleanup | [Central builds](../../custom/skills/reliable-web-app-operations/references/central-container-builds.md) | Build a declared app from identified revisions; exercise HTTP and job entrypoints inside the final image without source mounts. |
+| SemVer, Git-derived tags and hotfixes | [Versioning and hotfixes](../../custom/skills/reliable-web-app-operations/references/release-versioning-and-hotfixes.md) | Bind version, source, platform and digest; test the actual release track rather than assuming a branch or tag implements one. |
+| Compose on one/multiple hosts or Kubernetes | [Portable deployment](../../custom/skills/reliable-web-app-operations/references/portable-deployment.md) | Render and preflight the chosen target, discovery and secrets; exercise rollout/recovery there. A configuration flag is not migration evidence. |
+| Database ownership, backups, retention and recovery | [Database operations](../../custom/skills/reliable-web-app-operations/references/database-operations.md) | Verify live role/schema, successful scheduled execution and a disposable restore; preserve data during code rollback. |
+| Security and browser QA | [Security and QA](../../custom/skills/service-architecture-and-extraction/references/security-and-qa.md) | Exercise allowed and denied actors through public and direct-service boundaries; verify persisted outcomes and mobile controls. |
+| Central API discovery and contract ownership | [API documentation governance](../../custom/skills/api-docs-governance/SKILL.md) | Trace a workflow to its owner, exact contract and tests; detect stale source snapshots. Route discovery alone is not authorization evidence. |
+
+Adopt the ownership and verification rules; adapt the tooling and number of
+services to the target. Reject blanket repo-per-folder extraction, an unowned
+shared directory, automatic publication of private artifacts and claims that
+microservices establish security, scaling or regulatory readiness.
 
 ## What changed, and what stayed coupled
 
@@ -61,6 +83,9 @@ one historical report alone gives the wrong picture of the later setup. [S1–S4
 | QA evidence | Browser flows, local DB tests, denied-role requests and provider mocks supported different claims. Parallel browser runs collided in one output directory; login bursts hit legitimate throttling. | Use allowed and denied journeys with isolated fixtures/artifacts. Fix test orchestration without weakening security limits. Preserve failed attempts and skipped-case distinctions. | S1/S8; demo actions and mocks did not verify real settlement, refunds or email delivery. |
 | Deployment portability | Compose and Kubernetes needed different discovery, secrets, job and recovery behavior. A selector did not migrate data or stop an old scheduler. | Find hardcoded loopback assumptions, provision the target, verify data connectivity and drain old jobs before cutover. Require target-specific runtime evidence. | S5: local adapter/rendering and hosted inspection evidence; new fleet/cluster deployment remained untested. |
 | Documentation discovery | A docs entry point composed owner-maintained sources with revision/hash snapshots and a bounded operation inventory. | Keep contracts with owners; provide a small index with freshness/coverage limits. Generated route inventory is not reviewed authorization or automatically OpenAPI. | S9 describes an internal local artifact; publication/access controls are separate. |
+| Database runtime ownership | DB tooling owned container/data paths, backup scheduling and guarded recovery; ordered domain migrations stayed with their existing authority. | Include stateful resources and recovery dependencies in diagrams, even when they have no HTTP route. A container name is not a repo or data owner. | S10 records local/VM relocation and disposable restores; no new runtime audit was performed for this extension. |
+| Backup retention | Scheduled archives rotated only after successful dump validation/publication; protected release backups were kept separately. | Serialize lifecycle/backup/migration operations with compatible locks; failed backups must preserve older good copies. Keep off-host storage, roles and encryption keys in the recovery plan. | S10 distinguishes archive checks, isolated restore, timer execution and live failover. Five retained archives and a daily timer were project choices, not universal recovery guarantees. |
+| Image hardening and size | A later release used a verified shellless base and a narrow job dependency closure instead of copying whole production dependency trees. | Probe the actual runtime UID, native dependencies, worker imports, entrypoints and health checks; measure image size separately from shared host disk usage. | S11 reports final-image and deployed probes. It does not establish zero vulnerabilities or future base-image eligibility. |
 
 For detailed reusable checks, read
 [central builds](../../custom/skills/reliable-web-app-operations/references/central-container-builds.md),
@@ -98,6 +123,15 @@ These identify the documents, not necessarily the deployed implementation.
 | S7 | `panyora-ops/docs/hotfixes.md` | Main-based release versus unimplemented isolated hotfixes |
 | S8 | `panyora-ops/docs/security/extended-review-2026-09-27.md` | Extraction regression, security/QA scope and remaining conditions |
 | S9 | `panyora-docs/README.md` | Owner-composed docs, snapshot checks and access limits |
+| S10 | `panyora-db-ops/README.md` | DB runtime ownership, daily successful-backup retention and guarded disposable recovery |
+| S11 | `panyora-ops/docs/image-hardening-2026-09-27.md` | Later shellless packaging, actual runtime probes, size and Git-derived tag correction |
+
+The 28 September extension read S10 at
+`panyora-db-ops@14d9fcdc4f1c3a8f80bec9c97903627d89bb50a5` and S11 from
+the same ops revision named above. These are maintained source records, not fresh
+VM observations. S11 supersedes S2's early full-SHA human-readable tag description:
+later tags use app version plus Git's own abbreviation, while full provenance and
+digest-based deployment remain required.
 
 Locate these within an already authorized Panyora workspace. Do not clone private
 repositories or expose raw documents merely to follow a case reference. The case
@@ -118,3 +152,244 @@ adopt, adapt or reject, why the target differs, and what would prove the propose
 change works. Keep that target-specific assessment in the target's docs. Search
 does not automatically read sibling projects or old conversations; retrieving
 this case does not itself prove a better design.
+
+## 28 September 2026: reviewed catalogue data and browser evidence
+
+This later addition is a local implementation observation, separate from the
+historical extraction evidence above. The reusable problem is preserving an
+approved customer-facing record while staff propose new structured facts and
+media. Product-specific design and rollout details stay in the owner's
+`panyora-docs/docs/workflows/catalog-quality.md`.
+
+- **Approach corrected:** checking a draft revision alone did not guarantee that
+  published media matched the reviewed bytes if the approval path re-encoded the
+  image. Preserve already-normalized media through an internal trusted path;
+  never expose a client-controlled normalization bypass. Add byte-equality
+  regressions for both new-record approval and edits.
+- **Quantity lesson:** contents per sellable unit, quantity ordered and physical
+  stock are separate facts. Reuse precise server-side rules across sales
+  channels. A sale increment need not constrain a measured physical count.
+  Photographs support a human review; they do not prove weight or live stock.
+- **Review discovery:** a newest-first bounded history can hide old pending
+  requests. Prioritize actionable oldest requests and disclose truncation. A
+  mobile table that merely avoids page overflow can still hide the proposed
+  value offscreen; inspect screenshots and stack current/proposed evidence when
+  needed.
+- **Observed browser failure and recovery:** initial dev-through-gateway checks
+  could not hydrate while HMR requests failed. An unguarded auth form performed a
+  native GET before hydration. Native POST plus readiness gating addressed the
+  credential submission risk; isolated production builds then passed the actual
+  owner/staff and commerce browser flows. HMR was an observed environmental
+  correlation, not a completed gateway root-cause audit. Do not weaken product
+  checks to make a development harness appear green.
+- **Evidence and limits:** 43 focused core checks, seven workspace checks and
+  local production-build browser flows passed; synthetic photo fixtures test
+  transport/review mechanics only. No deployment, real product verification or
+  live payment is established by this entry. Other projects must re-run their
+  role, stale-revision, byte-integrity and responsive-review acceptance checks.
+
+Provenance: 28 September 2026, uncommitted local changes above
+`panyora-core@1f0ad880547d7ec820dda2ec94c29786511db844`.
+Reviewed `src/modules/inventory/catalog-drafts.ts` SHA-256:
+`67a93173afbd06526fb0aea92f63599271e7c278e7bac7b103c9799f0736363c`;
+`tests/catalog.test.ts` SHA-256:
+`53309e8deb995993f25fc807be37a6758ad66417a7119d6c09850f991ffd0285`.
+These identify local source evidence, not a released or deployed revision.
+
+## 28 September 2026: database backfill precision correction
+
+- **Problem/attempt:** a staged database extraction decoded decimal JSON tokens
+  as strings to avoid binary-float rounding. SQL numeric columns accepted those
+  strings, but numbers nested in JSON documents changed type. The comparison used
+  the same decoder and could falsely accept this result.
+- **Observed correction:** independent review identified the shared-decoder
+  failure; a nested high-precision-number regression failed. Exact Decimal
+  decoding plus numeric-token encoding replaced the workaround. The rejected
+  staged import was preserved in protected evidence and replaced only after
+  fingerprint checks; the live source was untouched.
+- **Verification/status:** corrected row comparisons, actual runtime credential
+  denial, and independent PostgreSQL-side row digests after local and VM
+  disposable restores passed. Containers/backfills remain staging targets;
+  application authority has not switched. No real provider payment/refund was
+  performed. This is migration-rehearsal evidence, not completed service or
+  personal-data isolation.
+- **Reuse:** adopt exact typed transport and an independent verification path.
+  Do not infer success from matching row counts, two tools sharing one decoder,
+  or healthy containers. Complete shared-lock/authorization/payment contracts
+  and a final writer handoff before enabling a separated database.
+
+Owner evidence: `panyora-docs/docs/database-separation-progress-2026-09-28.md` and
+`panyora-db-ops/README.md`. The uncommitted DB-ops implementation was based on
+`14d9fcdc4f1c3a8f80bec9c97903627d89bb50a5`; `migrate-domains.py` SHA-256 was
+`9bd6bd1fb40ed5857ae639bbdd72a000367ce66fbd9614489c63b30df763c09c` and the
+regression file `tests/test_domain_migration.py` SHA-256 was
+`61a582cc8a55348c0688909fabf8d24d3cac00014da144df2c3256bb3bb14f27`.
+Private dumps, identities, financial amounts and runtime credentials are retained
+only with the application, not this library. See the amended database-operations
+reference for the generic rule; applying this lesson elsewhere still requires
+that project's own regression and recovery proof.
+
+### Same-day follow-up: retry safety and sequence state
+
+The finish review found that partial multi-target normalization could not resume,
+one report filename could hide retry errors, and an existing container could be
+accepted before role bootstrap had committed. Receipt-bound, read-only recovery
+now verifies normalized/retained rows and access restrictions; independent phase
+journals preserve uncertain commit outcomes. Provision retries verify extensions,
+restricted roles, public revocations and real saved-credential authentication.
+Actual retries passed locally and on the demo deployment without reapplying SQL.
+
+The review also found that reconstructed identity sequences used surviving row
+maxima, losing consumed/cached allocation state. New snapshots preserve options
+and observe allocation state after the MVCC row snapshot; a final writer fence
+is still required. Real PostgreSQL synthetic tests passed for nondefault options,
+allocated high-water marks, descending and never-called sequences, exact next
+values and mismatch rejection. Historical staging receipts remain unchanged and
+do not inherit this new verification. Application cutover is still incomplete.
+
+The revised DB-ops suite passed 78 unit tests. New implementation provenance above
+the same base revision: `migrate-domains.py` SHA-256
+`b002976fcabedb78d99dc1255c669e172235c4cb4b24e89ad27d225247cc2bbb`,
+`normalize-domains.py` SHA-256
+`fc847040a060dd07af4df86ac079ca12c3babd54e2eadacebf4245ca30d61e55`.
+This supplements the earlier numeric-transport evidence rather than rewriting
+it. No provider transaction or completed domain isolation is established.
+
+## 28 September 2026: frontend handoff boundary correction
+
+Historical proposal: its directly shared UI/token placement is superseded by the
+approved release-boundary correction below. Keep the original reasoning as context.
+
+- **Problem and earlier approach:** source extraction placed four frontend apps
+  in separate repositories to accompany separate deployments. A later handoff
+  requirement needed one frontend engineer to own the complete UI through one
+  clone. Prior advice naming only two repositories did not cover all UI surfaces.
+- **Observed evidence:** source review found repeated global styles and separate
+  consumer contract versions. UI-side server rendering called backend APIs;
+  this did not establish mixed database/business-backend ownership. Documentation
+  from Next.js explicitly permits independently deployed zones in one repository.
+- **Replacement/status:** propose a frontend-only monorepo with explicit app,
+  UI-component, token and consumer-contract package ownership. Keep backend and
+  platform responsibilities separate. This remains a researched proposal, not an
+  implemented move or evidence that one repository is universally preferable.
+- **Independent review:** central build/release code assumed one source repo and
+  root package per runtime, root standalone output and repository-wide latest
+  release selection. Consolidation therefore needs explicit app paths, workspace
+  dependency builds, component version/tag lookup and provenance compatibility.
+  Shared-package changes must select every affected app, not only changed app
+  folders. Retain independent image rollback while changing source ownership.
+- **Reuse and acceptance:** choose source boundaries for team collaboration and
+  access needs separately from deployment units. A complete frontend handoff
+  should support a fresh single clone and isolated design fixtures without backend
+  source/secrets; integration still needs a development API and real workflow tests.
+  Component stories are useful design evidence, not payment/security certification.
+
+Owner proposal: `panyora-docs/docs/frontend-repository-design.md`, reviewed on
+28 September 2026 against local worktrees above ops `b0a6d5b` and the four UI
+revisions recorded there. Graph gaps were supplemented with current source reads.
+Official pattern references: [Next.js multi-zones](https://nextjs.org/docs/app/guides/multi-zones),
+[npm workspaces](https://docs.npmjs.com/cli/v11/using-npm/workspaces/), and
+[Storybook](https://storybook.js.org/docs/get-started/why-storybook).
+No source move, runtime change, Figma design or new monorepo build was performed.
+
+## 28 September 2026: shared frontend package release boundary correction
+
+- **Problem:** a single frontend clone helps screen work, but directly linked
+  shared packages can affect multiple apps on their next build. More teams raised
+  a legitimate ownership and release-containment concern; this was a design review,
+  not evidence of a measured production incident caused by a monorepo.
+- **Earlier approach:** the preceding proposal located common UI/tokens alongside
+  four apps. It was not implemented. Preserve that proposal's reasons, but do not
+  present its package placement as the active decision.
+- **Replacement/status:** approved target is a frontend application monorepo plus
+  a separately owned design-system repository, immutable package releases, exact
+  per-app dependency pins and deliberate upgrade PRs. Ordinary screen work needs
+  one clone; shared-foundation maintainers need another. Backend and platform
+  ownership remains separate. No source consolidation or package publication has
+  been performed by this documentation correction.
+- **Controls and limits:** repository separation alone does not isolate consumers.
+  CODEOWNERS with required reviews is governance, not directory permissions. A
+  workspace package version field does not prevent source coupling. Consumer
+  tests may run broadly; deployments remain individually approved. Root tooling,
+  lockfiles, peer dependencies and global styles still need impact analysis.
+- **Reuse:** adapt source boundaries to team/access needs, not traffic numbers.
+  Keep generic visual foundations out of domain logic. Published packages may
+  also be authored in a monorepo if explicit consumption boundaries are enforced;
+  the additional repo is appropriate when permissions/maintenance warrant it.
+- **Acceptance gates:** fresh consumer-only clone; two consumers resolve different
+  package versions; candidate publication does not change existing apps; one
+  upgrade promotes only one app; prior immutable image rollback; actual required
+  review checks; security-fix adoption tracking. These are forward checks, not
+  completed runtime evidence.
+- **Provenance/evidence:** owner-approved decision on 28 September 2026 in
+  `panyora-docs/docs/frontend-repository-design.md`; earlier source revisions and
+  bounded inspection remain recorded there. Official GitHub CODEOWNERS and npm
+  dependency documentation were rechecked. Current work updates application docs,
+  this sanitized case and the existing service-architecture skill/reference only.
+  No migration, enforcement configuration, deployment or scaling certification.
+
+References: [GitHub CODEOWNERS](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners),
+[npm dependency specifications](https://docs.npmjs.com/cli/v11/configuring-npm/package-json/).
+Reusable guidance lives in `service-architecture-and-extraction` and its
+`references/boundaries-and-gateway.md` frontend ownership section. This record is
+maintained library content, not automatic distribution or guaranteed agent recall.
+
+## 28 September 2026: implementing frontend release isolation
+
+- **Implementation:** four committed UI baselines were consolidated into one
+  frontend repository. Uncommitted feature work stayed in its original checkouts
+  and was inventoried rather than silently released without matching backend work.
+  A separate design-system source owns visual tokens and a generic button; private
+  versioned release assets are consumed as checksummed vendor artifacts. Existing
+  runtime identities remain separate. Central ops owns builds and package checks.
+- **Release correction:** repository-wide latest-release lookup was replaced by
+  component-specific stable tags, package paths and isolated pinned checkouts.
+  Shared root dependency/configuration commits are classified for affected apps;
+  their original commit identity/message remains intact. Broader testing does not
+  authorize deploying every consumer. Root lock updates change only the selected
+  app version. Hosted version automation produced four independent patch releases.
+- **Runtime finding:** nested standalone output changed the cache path while the
+  production image remained read-only. The assembler connects the nested cache
+  to the existing writable mount with a relative symlink. Tests exercised cache
+  writes, relocated assets/health and computed browser tokens, not merely builds.
+- **Provider findings:** new private repository scopes were missing from dedicated
+  source/release CI credentials; user-updated scopes allowed versioning to succeed.
+  Branch protection was unavailable on the account's private-repository plan;
+  ownership files must not be reported as enforced approval gates. Existing SSH
+  push or personal CLI access did not establish dedicated CI-token access.
+- **Package-check recovery:** Actions used the canonical remote URL without a
+  `.git` suffix, exposing an overly strict source allowlist. Exact-owner URL
+  variants now pass while other owners/hosts fail. Candidate package bytes then
+  differed across packing environments, but npm retained the old same-path file
+  dependency checksum. Only the disposable candidate lock entry is re-resolved;
+  npm integrity checks and production artifacts remain unchanged. Publication
+  rejects existing versions and verifies tag SHA rather than trusting `--target`
+  to move an already-existing tag.
+- **Deployment correction:** comparing a pinned tooling revision with the latest
+  branch tip failed when main advanced during a successful image build. The
+  uploader now freshly fetches the approved branch and checks pinned ancestry,
+  preserving the exact archive SHA. Real Git fixtures reject unpublished commits,
+  rewritten history and failed fetches. Source-owner changes also require updating
+  fleet image verification and bounded cleanup, not only build labels.
+- **Bootstrap parity failure:** the next deployment reached the host but its
+  Python bootstrap still accepted only profile-only service declarations. The
+  Node validator already handled nested app paths. Both now accept only exact
+  approved layouts; regressions execute the actual bootstrap with new and legacy
+  manifests and reject traversal/wrong owners. Test every validator in the
+  deployment chain, including dependency-free bootstraps, using compatible fixtures.
+- **Evidence boundary:** local consumer tests/typechecks/builds, platform tests,
+  relocated HTTP/browser checks and hosted component release creation passed.
+  Corrected hosted candidate-consumer validation passed without publication.
+  Two deployment attempts exposed the tooling and bootstrap checks above; their
+  corrected successor passed image publication and single-host deployment.
+  Post-deployment checks verified public login/tenant isolation/admin journeys,
+  cart interaction, existing invoice print handlers and actual non-root read-only
+  cache writes. Unselected backends retained their start times. Original evidence
+  and exact digests remain in the owner's migration record. No live provider
+  payment, OS printer output, mixed-version rollout or rollback drill was exercised.
+
+Provenance: owner records `panyora-docs/docs/frontend-repository-design.md`,
+`panyora-frontend/docs/migration-2026-09-28.md` and ops migration evidence; source
+baseline `7bc9622`, visual extraction `406592f`, central packaging `6cfd9f3`,
+candidate/release follow-ups `ca49191`, `87dac59`, `dfe4121`, `daa3afa`, `b8beb6b`. This is a sanitized
+engineering case, not an application runbook or distributed memory update.

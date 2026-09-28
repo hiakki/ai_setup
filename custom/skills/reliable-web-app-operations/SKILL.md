@@ -35,6 +35,13 @@ for execution-host data access and dependent-report freshness, search
 An intervened demo, one manual transfer or fake-provider tests do not establish
 unattended operation through the destination's real application path.
 
+Use `ai-setup search "project catalog"` for current owner documentation, then
+inspect relevant authorized configuration before borrowing a pipeline or schedule.
+Keep the app's architecture, cron/worker owner, timezone, overlap/retry behavior,
+CI/CD and recovery docs current when changing them. After a significant failure,
+switch or release with reusable learning, follow `"learning workflow"` and update
+the existing central case with the reason, replacement and exact evidence limits.
+
 1. Identify the supported operating systems, runtime, process manager, reverse proxy, data store, and external providers.
 2. Separate command intent: prerequisite setup, application deployment, monitoring setup, health/status, proxy reload, backup, and restore must not silently invoke one another.
 3. Define one environment contract. Sync missing example keys without overwriting operator values, validate URL and credential shapes, and fail before mutating runtime state.
@@ -43,6 +50,10 @@ unattended operation through the destination's real application path.
 6. Report evidence levels separately: static checks, local runtime, sandbox provider, deployment, and live end to end.
 
 ## Non-Negotiable Invariants
+
+For cost-POC assumptions or source/runtime drift, search
+`ai-setup search "logging_cost drift"`. Its case preserves observed versus
+attributed/proposed evidence; do not reuse old provider prices or tuning values.
 
 - Monitoring setup must not deploy or restart the application.
 - A deploy must preserve explicit environment flags and existing secrets.

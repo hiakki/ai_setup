@@ -33,6 +33,13 @@ Record exact commands supported by this repository; do not invent commands from 
 
 ## Discovery
 
+Current app documentation: `<existing architecture, cron/worker, CI/CD, operations
+and release-evidence paths; mark unknown/not applicable>`. Keep those sections
+current as behavior changes and retain historical decisions with successor links.
+Find prior lessons and current-source pointers through
+`ai-setup search "project catalog"`; read the relevant case and authorized source
+before adopting another app's approach. Record target fit and verification.
+
 Use configured graph tools first when project rules require them. Confirm the project and freshness, inspect source for material claims, and check relevant coverage. Fall back to direct source for unsupported or missed areas. Use text search for literals and non-code files. Record any evidence limitations.
 
 Available tools and their purpose: `<only tools confirmed available in this project>`.
@@ -45,6 +52,7 @@ Available tools and their purpose: `<only tools confirmed available in this proj
 - For UI changes, inspect relevant viewport sizes and states, keyboard use, and browser errors as applicable.
 - Existing hot reload may be used. Ask before restarting servers unless explicitly authorized already.
 - Review the final diff for unrelated changes and accidental sensitive data.
+- For a significant correction, failed approach, migration or switch with reusable learning, follow `ai-setup search "learning workflow"`: update current app docs and the existing central case/skill within authorized scope. Preserve why we changed, evidence and limits; report pending central promotion when writing there is unavailable. No automatic commit/push is implied.
 - Report what changed, checks and results, and any remaining limitations. Do not call unverified behavior complete.
 
 ## Optional specialist use

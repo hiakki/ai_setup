@@ -5,6 +5,8 @@ param(
     [string]$HomeDirectory = [Environment]::GetFolderPath('UserProfile'),
     # Defaults include Context7 and Hermes; opt in with -Only 'all,strix,skillui'.
     # setup.py owns the component list and expands all to the default components.
+    # Remote Hindsight: set HINDSIGHT_MCP_URL, then -Only 'hindsight,docs,hub'.
+    # LLM_GATEWAY_KEY must be in the client environment; see docs/HINDSIGHT.md.
     [string]$Only = 'all',
     [string]$RepositoryDirectory = ''
 )

@@ -8,6 +8,11 @@ learning belongs here; see the [central authoring policy](../config/CENTRAL_LIBR
 
 ## Choose the relevant skill
 
+The [project catalog](PROJECT_CATALOG.md) points to current owner-maintained
+architecture, operations and schedule/deployment docs. Follow the
+[learning workflow](LEARNING_WORKFLOW.md) after significant changes to retain
+failed attempts, passed checks, switches and their reasons in the relevant case.
+
 Start with the [cross-project case catalog](case-studies/README.md) for concrete
 failures, source evidence and review coverage. Alongside Panyora and Elvique it
 routes to Servinoza's workflow recovery, NarrateAI's automation trial, bulkBuyer's

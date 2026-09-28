@@ -59,7 +59,7 @@ elif name.startswith('python'):
         return [json.loads(line) for line in self.log.read_text().splitlines()]
 
     def test_lightweight_linux_selections_skip_browser_prerequisites(self):
-        for selection in ('context7', 'strix,skillui'):
+        for selection in ('context7', 'strix,skillui', 'hindsight'):
             with self.subTest(selection=selection):
                 result = self.launch('install', '--only', selection)
                 self.assertEqual(result.returncode, 0, result.stdout + result.stderr)

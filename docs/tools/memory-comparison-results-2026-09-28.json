@@ -1,0 +1,938 @@
+{
+  "date": "2026-09-28",
+  "metric": "10 * expected-source hits among first 3 distinct sources / 14; not answer quality",
+  "sort": "score descending; ties by first-place hits descending",
+  "hardware_local": {
+    "cpu": "Apple M4 Pro",
+    "physical_cores": 14,
+    "ram_gib": 48,
+    "os": "macOS arm64"
+  },
+  "remote_hindsight_hardware_and_embedding_identity": "not exposed in tested MCP responses; unknown",
+  "protocol": {
+    "corpus": "nine reviewed central cases and five navigation summaries, exact stored Hindsight payloads copied to local tools",
+    "queries": "existing known queries, not a held-out benchmark",
+    "repetitions": 3,
+    "index_readiness": "Basic Memory explicit full reindex: 14 indexed and embedded, zero errors; QMD 43 embedded chunks; Hindsight 14 stored documents",
+    "generation": "no answer generation or query expansion requested; embeddings still used",
+    "limits": [
+      "different native ranking/chunking and output budgets",
+      "local cache versus remote network/service latency",
+      "no concurrency/load or cross-platform benchmark",
+      "lexical lifecycle checks do not prove semantic refresh",
+      "Basic Memory global installation unrepaired; isolated compatible runtime tested"
+    ]
+  },
+  "corpus_manifest_sha256": "bccb5009ddb327e17a2788d024d37ad94bf2f45ec8305b3594840fe32913512d",
+  "entries": [
+    {
+      "source_path": "docs/case-studies/bulkbuyer-data-provenance.md",
+      "query": "Downloads work on a laptop but scheduled server reports are stale. How do we verify source freshness and dependent report recovery?",
+      "payload_sha256": "bb58ad60280a30caf1b27fff91dd77b495f526f75e2664ea93a20ff1f973676d"
+    },
+    {
+      "source_path": "docs/case-studies/card-savvy-calculation-and-comparison.md",
+      "query": "Refund credits become positive purchases and a preference bonus changes cash totals. Which calculation and comparison mistakes should we avoid?",
+      "payload_sha256": "daeb7242be4829b858164ae031ac2864ab1bf8c3d846fd6f1c55a008f52eaf5d"
+    },
+    {
+      "source_path": "docs/case-studies/delx-durable-execution.md",
+      "query": "A provider may have accepted a request before timeout and listing fails. How should durable intent and reconciliation work?",
+      "payload_sha256": "2db2a2a3cfd2f8d36306575f919be2b3fbc611e31365ff18faa293e9267df0d9"
+    },
+    {
+      "source_path": "docs/case-studies/elvique-operational-workflows.md",
+      "query": "The dashboard health check passes but the browser receives a truncated JavaScript plugin through the proxy. What should we investigate?",
+      "payload_sha256": "d8f9fd9d702d7fb6d8852eb94773ab9f0cd8b7a36b0dc257ba98fa3ea4eed45d"
+    },
+    {
+      "source_path": "docs/case-studies/infrastructure-cost-and-drift.md",
+      "query": "A storage-based database cost estimate missed tiny inserts, merge work and write amplification. How do we review cost assumptions and runtime drift?",
+      "payload_sha256": "26f78f3a1ea0621e6232de73cec5ab7970d85153d7a3f267153835894968574a"
+    },
+    {
+      "source_path": "docs/case-studies/metronome-native-audio-evidence.md",
+      "query": "The native metronome passes helper tests but produces no audible clicks. What acceptance evidence is still required?",
+      "payload_sha256": "939aea2583c29dbca94809dbe52fb89d381d97fd3723601e629b5a036c0a3415"
+    },
+    {
+      "source_path": "docs/case-studies/narrateai-automation-and-evidence.md",
+      "query": "One rescued video demo passed but fresh unattended drafts still fail at asset recognition and provider refusal. Is automation ready?",
+      "payload_sha256": "f6ee94c698db7e3006d6afea4b8c090d69657b9c152d8934fdefd512eb3dbb77"
+    },
+    {
+      "source_path": "docs/case-studies/panyora-service-extraction.md",
+      "query": "An unchanged app revision uses a changed shared container build recipe. How do we identify the exact artifact to promote?",
+      "payload_sha256": "1a1b878cc7795c443a9ea5b3408206e17aabc4ae749bda9bd9b54882658542c7"
+    },
+    {
+      "source_path": "docs/case-studies/servinoza-workflow-recovery.md",
+      "query": "After extracting a page, its GET works but the first browser save returns 404. What gateway and mutation-route test did the mock miss?",
+      "payload_sha256": "4aa8a17ff5e34e49e1de062e04668fb1e86eb3e44e3d97e3521e17018790510e"
+    },
+    {
+      "source_path": "docs/case-studies/README.md",
+      "query": "Where is the index of historical engineering mistakes across our different projects?",
+      "payload_sha256": "a8a9a08bfafa31697eb2ac933c51a0f76acff446ab47b2e76265138f04bf5047"
+    },
+    {
+      "source_path": "docs/PROJECT_CATALOG.md",
+      "query": "Where do I find existing projects' current architecture, cron ownership, CI/CD and operational documentation?",
+      "payload_sha256": "75b53a412d7100f283094913a9c0df5aadc1ce6babddc8bde0bbfb6132c6ffd6"
+    },
+    {
+      "source_path": "docs/REUSABLE_ENGINEERING_PLAYBOOK.md",
+      "query": "Which shared skills and specialist roles should I select for service extraction, CI/CD, security, database recovery and operational user interfaces?",
+      "payload_sha256": "8f20871ecd14a7c4b1b711813434c9d5534d7b6549d3ca41aee981bb949ca1fb"
+    },
+    {
+      "source_path": "docs/LEARNING_WORKFLOW.md",
+      "query": "After a failed approach and a verified fix, where should the reasoning be captured so another project does not repeat the mistake?",
+      "payload_sha256": "10784588fd6b03ee59ad3c2d3f1a8e8f1eb38b2cf30bcf1e6e02097befeb7a8f"
+    },
+    {
+      "source_path": "docs/GLOBAL_SKILLS.md",
+      "query": "Where are reusable skills and agents maintained and how can existing or new projects use the same global library?",
+      "payload_sha256": "39f09ff0a64860cda2dfe9886ee0af59ea719ab30e8d0c389b6b301b5da7c991"
+    }
+  ],
+  "results": [
+    {
+      "product": "hindsight",
+      "version": "0.10.1",
+      "source_finding_score_out_of_10": 10.0,
+      "trials": [
+        {
+          "trial": 1,
+          "top3": 14,
+          "top1": 12
+        },
+        {
+          "trial": 2,
+          "top3": 14,
+          "top1": 12
+        },
+        {
+          "trial": 3,
+          "top3": 14,
+          "top1": 12
+        }
+      ],
+      "median_seconds": 1.2617635414935648,
+      "p95_nearest_rank_seconds": 1.834424417000264,
+      "first_request_seconds": 0.9918429579702206,
+      "runs": [
+        {
+          "trial": 1,
+          "source_path": "docs/case-studies/bulkbuyer-data-provenance.md",
+          "rank": 2,
+          "seconds": 0.9918429579702206
+        },
+        {
+          "trial": 1,
+          "source_path": "docs/case-studies/card-savvy-calculation-and-comparison.md",
+          "rank": 1,
+          "seconds": 2.2168456250219606
+        },
+        {
+          "trial": 1,
+          "source_path": "docs/case-studies/delx-durable-execution.md",
+          "rank": 1,
+          "seconds": 1.2296785830403678
+        },
+        {
+          "trial": 1,
+          "source_path": "docs/case-studies/elvique-operational-workflows.md",
+          "rank": 1,
+          "seconds": 1.1953122499980964
+        },
+        {
+          "trial": 1,
+          "source_path": "docs/case-studies/infrastructure-cost-and-drift.md",
+          "rank": 1,
+          "seconds": 1.3483323749969713
+        },
+        {
+          "trial": 1,
+          "source_path": "docs/case-studies/metronome-native-audio-evidence.md",
+          "rank": 1,
+          "seconds": 1.252678582968656
+        },
+        {
+          "trial": 1,
+          "source_path": "docs/case-studies/narrateai-automation-and-evidence.md",
+          "rank": 1,
+          "seconds": 1.375547292002011
+        },
+        {
+          "trial": 1,
+          "source_path": "docs/case-studies/panyora-service-extraction.md",
+          "rank": 1,
+          "seconds": 1.174612833012361
+        },
+        {
+          "trial": 1,
+          "source_path": "docs/case-studies/servinoza-workflow-recovery.md",
+          "rank": 1,
+          "seconds": 1.3586065000272356
+        },
+        {
+          "trial": 1,
+          "source_path": "docs/case-studies/README.md",
+          "rank": 1,
+          "seconds": 1.2905352090019733
+        },
+        {
+          "trial": 1,
+          "source_path": "docs/PROJECT_CATALOG.md",
+          "rank": 1,
+          "seconds": 1.1609193330514245
+        },
+        {
+          "trial": 1,
+          "source_path": "docs/REUSABLE_ENGINEERING_PLAYBOOK.md",
+          "rank": 3,
+          "seconds": 1.2342135829967447
+        },
+        {
+          "trial": 1,
+          "source_path": "docs/LEARNING_WORKFLOW.md",
+          "rank": 1,
+          "seconds": 1.2120132500422187
+        },
+        {
+          "trial": 1,
+          "source_path": "docs/GLOBAL_SKILLS.md",
+          "rank": 1,
+          "seconds": 1.2336896249908023
+        },
+        {
+          "trial": 2,
+          "source_path": "docs/case-studies/bulkbuyer-data-provenance.md",
+          "rank": 2,
+          "seconds": 0.9001261669909582
+        },
+        {
+          "trial": 2,
+          "source_path": "docs/case-studies/card-savvy-calculation-and-comparison.md",
+          "rank": 1,
+          "seconds": 1.256072249962017
+        },
+        {
+          "trial": 2,
+          "source_path": "docs/case-studies/delx-durable-execution.md",
+          "rank": 1,
+          "seconds": 1.345578208041843
+        },
+        {
+          "trial": 2,
+          "source_path": "docs/case-studies/elvique-operational-workflows.md",
+          "rank": 1,
+          "seconds": 1.278642542019952
+        },
+        {
+          "trial": 2,
+          "source_path": "docs/case-studies/infrastructure-cost-and-drift.md",
+          "rank": 1,
+          "seconds": 1.9863657500245608
+        },
+        {
+          "trial": 2,
+          "source_path": "docs/case-studies/metronome-native-audio-evidence.md",
+          "rank": 1,
+          "seconds": 1.221635417023208
+        },
+        {
+          "trial": 2,
+          "source_path": "docs/case-studies/narrateai-automation-and-evidence.md",
+          "rank": 1,
+          "seconds": 1.3926410830463283
+        },
+        {
+          "trial": 2,
+          "source_path": "docs/case-studies/panyora-service-extraction.md",
+          "rank": 1,
+          "seconds": 1.2069886669632979
+        },
+        {
+          "trial": 2,
+          "source_path": "docs/case-studies/servinoza-workflow-recovery.md",
+          "rank": 1,
+          "seconds": 1.2220052919583395
+        },
+        {
+          "trial": 2,
+          "source_path": "docs/case-studies/README.md",
+          "rank": 1,
+          "seconds": 1.7627923339605331
+        },
+        {
+          "trial": 2,
+          "source_path": "docs/PROJECT_CATALOG.md",
+          "rank": 1,
+          "seconds": 1.7861089169746265
+        },
+        {
+          "trial": 2,
+          "source_path": "docs/REUSABLE_ENGINEERING_PLAYBOOK.md",
+          "rank": 3,
+          "seconds": 1.2674548330251127
+        },
+        {
+          "trial": 2,
+          "source_path": "docs/LEARNING_WORKFLOW.md",
+          "rank": 1,
+          "seconds": 1.2354969159932807
+        },
+        {
+          "trial": 2,
+          "source_path": "docs/GLOBAL_SKILLS.md",
+          "rank": 1,
+          "seconds": 1.3077657499816269
+        },
+        {
+          "trial": 3,
+          "source_path": "docs/case-studies/bulkbuyer-data-provenance.md",
+          "rank": 2,
+          "seconds": 1.8078042079578154
+        },
+        {
+          "trial": 3,
+          "source_path": "docs/case-studies/card-savvy-calculation-and-comparison.md",
+          "rank": 1,
+          "seconds": 0.9380699580069631
+        },
+        {
+          "trial": 3,
+          "source_path": "docs/case-studies/delx-durable-execution.md",
+          "rank": 1,
+          "seconds": 1.834424417000264
+        },
+        {
+          "trial": 3,
+          "source_path": "docs/case-studies/elvique-operational-workflows.md",
+          "rank": 1,
+          "seconds": 1.3640053749550134
+        },
+        {
+          "trial": 3,
+          "source_path": "docs/case-studies/infrastructure-cost-and-drift.md",
+          "rank": 1,
+          "seconds": 1.1217340829898603
+        },
+        {
+          "trial": 3,
+          "source_path": "docs/case-studies/metronome-native-audio-evidence.md",
+          "rank": 1,
+          "seconds": 1.3404155419557355
+        },
+        {
+          "trial": 3,
+          "source_path": "docs/case-studies/narrateai-automation-and-evidence.md",
+          "rank": 1,
+          "seconds": 1.1316502909758128
+        },
+        {
+          "trial": 3,
+          "source_path": "docs/case-studies/panyora-service-extraction.md",
+          "rank": 1,
+          "seconds": 1.7860163750010543
+        },
+        {
+          "trial": 3,
+          "source_path": "docs/case-studies/servinoza-workflow-recovery.md",
+          "rank": 1,
+          "seconds": 1.8309913749690168
+        },
+        {
+          "trial": 3,
+          "source_path": "docs/case-studies/README.md",
+          "rank": 1,
+          "seconds": 1.2071519159944728
+        },
+        {
+          "trial": 3,
+          "source_path": "docs/PROJECT_CATALOG.md",
+          "rank": 1,
+          "seconds": 1.3300491669797339
+        },
+        {
+          "trial": 3,
+          "source_path": "docs/REUSABLE_ENGINEERING_PLAYBOOK.md",
+          "rank": 3,
+          "seconds": 1.1616252500098199
+        },
+        {
+          "trial": 3,
+          "source_path": "docs/LEARNING_WORKFLOW.md",
+          "rank": 1,
+          "seconds": 1.370686415990349
+        },
+        {
+          "trial": 3,
+          "source_path": "docs/GLOBAL_SKILLS.md",
+          "rank": 1,
+          "seconds": 1.1661160420044325
+        }
+      ]
+    },
+    {
+      "product": "basic",
+      "version": "0.23.2",
+      "source_finding_score_out_of_10": 10.0,
+      "trials": [
+        {
+          "trial": 1,
+          "top3": 14,
+          "top1": 10
+        },
+        {
+          "trial": 2,
+          "top3": 14,
+          "top1": 10
+        },
+        {
+          "trial": 3,
+          "top3": 14,
+          "top1": 10
+        }
+      ],
+      "median_seconds": 0.02786987498984672,
+      "p95_nearest_rank_seconds": 0.050137541024014354,
+      "first_request_seconds": 0.5042617919971235,
+      "runs": [
+        {
+          "trial": 1,
+          "source_path": "docs/case-studies/bulkbuyer-data-provenance.md",
+          "rank": 1,
+          "seconds": 0.5042617919971235
+        },
+        {
+          "trial": 1,
+          "source_path": "docs/case-studies/card-savvy-calculation-and-comparison.md",
+          "rank": 1,
+          "seconds": 0.029734999989159405
+        },
+        {
+          "trial": 1,
+          "source_path": "docs/case-studies/delx-durable-execution.md",
+          "rank": 2,
+          "seconds": 0.027789249958004802
+        },
+        {
+          "trial": 1,
+          "source_path": "docs/case-studies/elvique-operational-workflows.md",
+          "rank": 1,
+          "seconds": 0.028373749984893948
+        },
+        {
+          "trial": 1,
+          "source_path": "docs/case-studies/infrastructure-cost-and-drift.md",
+          "rank": 2,
+          "seconds": 0.02883554104482755
+        },
+        {
+          "trial": 1,
+          "source_path": "docs/case-studies/metronome-native-audio-evidence.md",
+          "rank": 1,
+          "seconds": 0.028102500014938414
+        },
+        {
+          "trial": 1,
+          "source_path": "docs/case-studies/narrateai-automation-and-evidence.md",
+          "rank": 3,
+          "seconds": 0.0282359590055421
+        },
+        {
+          "trial": 1,
+          "source_path": "docs/case-studies/panyora-service-extraction.md",
+          "rank": 2,
+          "seconds": 0.026880667021032423
+        },
+        {
+          "trial": 1,
+          "source_path": "docs/case-studies/servinoza-workflow-recovery.md",
+          "rank": 1,
+          "seconds": 0.02533341699745506
+        },
+        {
+          "trial": 1,
+          "source_path": "docs/case-studies/README.md",
+          "rank": 1,
+          "seconds": 0.03410708298906684
+        },
+        {
+          "trial": 1,
+          "source_path": "docs/PROJECT_CATALOG.md",
+          "rank": 1,
+          "seconds": 0.027282874973025173
+        },
+        {
+          "trial": 1,
+          "source_path": "docs/REUSABLE_ENGINEERING_PLAYBOOK.md",
+          "rank": 1,
+          "seconds": 0.028339042037259787
+        },
+        {
+          "trial": 1,
+          "source_path": "docs/LEARNING_WORKFLOW.md",
+          "rank": 1,
+          "seconds": 0.028103040996938944
+        },
+        {
+          "trial": 1,
+          "source_path": "docs/GLOBAL_SKILLS.md",
+          "rank": 1,
+          "seconds": 0.02774229203350842
+        },
+        {
+          "trial": 2,
+          "source_path": "docs/case-studies/bulkbuyer-data-provenance.md",
+          "rank": 1,
+          "seconds": 0.02695808303542435
+        },
+        {
+          "trial": 2,
+          "source_path": "docs/case-studies/card-savvy-calculation-and-comparison.md",
+          "rank": 1,
+          "seconds": 0.027817292022518814
+        },
+        {
+          "trial": 2,
+          "source_path": "docs/case-studies/delx-durable-execution.md",
+          "rank": 2,
+          "seconds": 0.028978458023630083
+        },
+        {
+          "trial": 2,
+          "source_path": "docs/case-studies/elvique-operational-workflows.md",
+          "rank": 1,
+          "seconds": 0.028194000013172626
+        },
+        {
+          "trial": 2,
+          "source_path": "docs/case-studies/infrastructure-cost-and-drift.md",
+          "rank": 2,
+          "seconds": 0.028398957976605743
+        },
+        {
+          "trial": 2,
+          "source_path": "docs/case-studies/metronome-native-audio-evidence.md",
+          "rank": 1,
+          "seconds": 0.02739962498890236
+        },
+        {
+          "trial": 2,
+          "source_path": "docs/case-studies/narrateai-automation-and-evidence.md",
+          "rank": 3,
+          "seconds": 0.027989500027615577
+        },
+        {
+          "trial": 2,
+          "source_path": "docs/case-studies/panyora-service-extraction.md",
+          "rank": 2,
+          "seconds": 0.02756766602396965
+        },
+        {
+          "trial": 2,
+          "source_path": "docs/case-studies/servinoza-workflow-recovery.md",
+          "rank": 1,
+          "seconds": 0.02642225002637133
+        },
+        {
+          "trial": 2,
+          "source_path": "docs/case-studies/README.md",
+          "rank": 1,
+          "seconds": 0.02502091700443998
+        },
+        {
+          "trial": 2,
+          "source_path": "docs/PROJECT_CATALOG.md",
+          "rank": 1,
+          "seconds": 0.026457375031895936
+        },
+        {
+          "trial": 2,
+          "source_path": "docs/REUSABLE_ENGINEERING_PLAYBOOK.md",
+          "rank": 1,
+          "seconds": 0.027538292051758617
+        },
+        {
+          "trial": 2,
+          "source_path": "docs/LEARNING_WORKFLOW.md",
+          "rank": 1,
+          "seconds": 0.027643334004096687
+        },
+        {
+          "trial": 2,
+          "source_path": "docs/GLOBAL_SKILLS.md",
+          "rank": 1,
+          "seconds": 0.03167033300269395
+        },
+        {
+          "trial": 3,
+          "source_path": "docs/case-studies/bulkbuyer-data-provenance.md",
+          "rank": 1,
+          "seconds": 0.029165124986320734
+        },
+        {
+          "trial": 3,
+          "source_path": "docs/case-studies/card-savvy-calculation-and-comparison.md",
+          "rank": 1,
+          "seconds": 0.02855441701831296
+        },
+        {
+          "trial": 3,
+          "source_path": "docs/case-studies/delx-durable-execution.md",
+          "rank": 2,
+          "seconds": 0.0608818749897182
+        },
+        {
+          "trial": 3,
+          "source_path": "docs/case-studies/elvique-operational-workflows.md",
+          "rank": 1,
+          "seconds": 0.029497999988961965
+        },
+        {
+          "trial": 3,
+          "source_path": "docs/case-studies/infrastructure-cost-and-drift.md",
+          "rank": 2,
+          "seconds": 0.02939141698880121
+        },
+        {
+          "trial": 3,
+          "source_path": "docs/case-studies/metronome-native-audio-evidence.md",
+          "rank": 1,
+          "seconds": 0.02700754103716463
+        },
+        {
+          "trial": 3,
+          "source_path": "docs/case-studies/narrateai-automation-and-evidence.md",
+          "rank": 3,
+          "seconds": 0.050137541024014354
+        },
+        {
+          "trial": 3,
+          "source_path": "docs/case-studies/panyora-service-extraction.md",
+          "rank": 2,
+          "seconds": 0.027064041001722217
+        },
+        {
+          "trial": 3,
+          "source_path": "docs/case-studies/servinoza-workflow-recovery.md",
+          "rank": 1,
+          "seconds": 0.02470541698858142
+        },
+        {
+          "trial": 3,
+          "source_path": "docs/case-studies/README.md",
+          "rank": 1,
+          "seconds": 0.025333500001579523
+        },
+        {
+          "trial": 3,
+          "source_path": "docs/PROJECT_CATALOG.md",
+          "rank": 1,
+          "seconds": 0.02660925005329773
+        },
+        {
+          "trial": 3,
+          "source_path": "docs/REUSABLE_ENGINEERING_PLAYBOOK.md",
+          "rank": 1,
+          "seconds": 0.02792245795717463
+        },
+        {
+          "trial": 3,
+          "source_path": "docs/LEARNING_WORKFLOW.md",
+          "rank": 1,
+          "seconds": 0.027055707992985845
+        },
+        {
+          "trial": 3,
+          "source_path": "docs/GLOBAL_SKILLS.md",
+          "rank": 1,
+          "seconds": 0.02715891698608175
+        }
+      ]
+    },
+    {
+      "product": "qmd",
+      "version": "2.8.3 facd35e",
+      "source_finding_score_out_of_10": 9.3,
+      "trials": [
+        {
+          "trial": 1,
+          "top3": 13,
+          "top1": 11
+        },
+        {
+          "trial": 2,
+          "top3": 13,
+          "top1": 11
+        },
+        {
+          "trial": 3,
+          "top3": 13,
+          "top1": 11
+        }
+      ],
+      "median_seconds": 0.011356895527569577,
+      "p95_nearest_rank_seconds": 0.015000667015556246,
+      "first_request_seconds": 1.1739693330018781,
+      "runs": [
+        {
+          "trial": 1,
+          "source_path": "docs/case-studies/bulkbuyer-data-provenance.md",
+          "rank": 1,
+          "seconds": 1.1739693330018781
+        },
+        {
+          "trial": 1,
+          "source_path": "docs/case-studies/card-savvy-calculation-and-comparison.md",
+          "rank": 2,
+          "seconds": 0.014657208987046033
+        },
+        {
+          "trial": 1,
+          "source_path": "docs/case-studies/delx-durable-execution.md",
+          "rank": 1,
+          "seconds": 0.011751791986171156
+        },
+        {
+          "trial": 1,
+          "source_path": "docs/case-studies/elvique-operational-workflows.md",
+          "rank": 1,
+          "seconds": 0.012209291046019644
+        },
+        {
+          "trial": 1,
+          "source_path": "docs/case-studies/infrastructure-cost-and-drift.md",
+          "rank": 1,
+          "seconds": 0.015382957994006574
+        },
+        {
+          "trial": 1,
+          "source_path": "docs/case-studies/metronome-native-audio-evidence.md",
+          "rank": 1,
+          "seconds": 0.011696417001076043
+        },
+        {
+          "trial": 1,
+          "source_path": "docs/case-studies/narrateai-automation-and-evidence.md",
+          "rank": 1,
+          "seconds": 0.012133290991187096
+        },
+        {
+          "trial": 1,
+          "source_path": "docs/case-studies/panyora-service-extraction.md",
+          "rank": 8,
+          "seconds": 0.01196770800743252
+        },
+        {
+          "trial": 1,
+          "source_path": "docs/case-studies/servinoza-workflow-recovery.md",
+          "rank": 2,
+          "seconds": 0.015000667015556246
+        },
+        {
+          "trial": 1,
+          "source_path": "docs/case-studies/README.md",
+          "rank": 1,
+          "seconds": 0.010271209001075476
+        },
+        {
+          "trial": 1,
+          "source_path": "docs/PROJECT_CATALOG.md",
+          "rank": 1,
+          "seconds": 0.011330041044857353
+        },
+        {
+          "trial": 1,
+          "source_path": "docs/REUSABLE_ENGINEERING_PLAYBOOK.md",
+          "rank": 1,
+          "seconds": 0.01294591702753678
+        },
+        {
+          "trial": 1,
+          "source_path": "docs/LEARNING_WORKFLOW.md",
+          "rank": 1,
+          "seconds": 0.012569499958772212
+        },
+        {
+          "trial": 1,
+          "source_path": "docs/GLOBAL_SKILLS.md",
+          "rank": 1,
+          "seconds": 0.01058654097141698
+        },
+        {
+          "trial": 2,
+          "source_path": "docs/case-studies/bulkbuyer-data-provenance.md",
+          "rank": 1,
+          "seconds": 0.010785000049509108
+        },
+        {
+          "trial": 2,
+          "source_path": "docs/case-studies/card-savvy-calculation-and-comparison.md",
+          "rank": 2,
+          "seconds": 0.010245207988191396
+        },
+        {
+          "trial": 2,
+          "source_path": "docs/case-studies/delx-durable-execution.md",
+          "rank": 1,
+          "seconds": 0.011408958991523832
+        },
+        {
+          "trial": 2,
+          "source_path": "docs/case-studies/elvique-operational-workflows.md",
+          "rank": 1,
+          "seconds": 0.011443291965406388
+        },
+        {
+          "trial": 2,
+          "source_path": "docs/case-studies/infrastructure-cost-and-drift.md",
+          "rank": 1,
+          "seconds": 0.011564832995645702
+        },
+        {
+          "trial": 2,
+          "source_path": "docs/case-studies/metronome-native-audio-evidence.md",
+          "rank": 1,
+          "seconds": 0.011271041992586106
+        },
+        {
+          "trial": 2,
+          "source_path": "docs/case-studies/narrateai-automation-and-evidence.md",
+          "rank": 1,
+          "seconds": 0.010473083006218076
+        },
+        {
+          "trial": 2,
+          "source_path": "docs/case-studies/panyora-service-extraction.md",
+          "rank": 8,
+          "seconds": 0.011145375028718263
+        },
+        {
+          "trial": 2,
+          "source_path": "docs/case-studies/servinoza-workflow-recovery.md",
+          "rank": 2,
+          "seconds": 0.011665457976050675
+        },
+        {
+          "trial": 2,
+          "source_path": "docs/case-studies/README.md",
+          "rank": 1,
+          "seconds": 0.010210625012405217
+        },
+        {
+          "trial": 2,
+          "source_path": "docs/PROJECT_CATALOG.md",
+          "rank": 1,
+          "seconds": 0.010651208984199911
+        },
+        {
+          "trial": 2,
+          "source_path": "docs/REUSABLE_ENGINEERING_PLAYBOOK.md",
+          "rank": 1,
+          "seconds": 0.01124620798509568
+        },
+        {
+          "trial": 2,
+          "source_path": "docs/LEARNING_WORKFLOW.md",
+          "rank": 1,
+          "seconds": 0.011603916995227337
+        },
+        {
+          "trial": 2,
+          "source_path": "docs/GLOBAL_SKILLS.md",
+          "rank": 1,
+          "seconds": 0.010437917022500187
+        },
+        {
+          "trial": 3,
+          "source_path": "docs/case-studies/bulkbuyer-data-provenance.md",
+          "rank": 1,
+          "seconds": 0.009935999987646937
+        },
+        {
+          "trial": 3,
+          "source_path": "docs/case-studies/card-savvy-calculation-and-comparison.md",
+          "rank": 2,
+          "seconds": 0.011060209013521671
+        },
+        {
+          "trial": 3,
+          "source_path": "docs/case-studies/delx-durable-execution.md",
+          "rank": 1,
+          "seconds": 0.011383750010281801
+        },
+        {
+          "trial": 3,
+          "source_path": "docs/case-studies/elvique-operational-workflows.md",
+          "rank": 1,
+          "seconds": 0.011110417020972818
+        },
+        {
+          "trial": 3,
+          "source_path": "docs/case-studies/infrastructure-cost-and-drift.md",
+          "rank": 1,
+          "seconds": 0.012978458020370454
+        },
+        {
+          "trial": 3,
+          "source_path": "docs/case-studies/metronome-native-audio-evidence.md",
+          "rank": 1,
+          "seconds": 0.012400417006574571
+        },
+        {
+          "trial": 3,
+          "source_path": "docs/case-studies/narrateai-automation-and-evidence.md",
+          "rank": 1,
+          "seconds": 0.011322499951347709
+        },
+        {
+          "trial": 3,
+          "source_path": "docs/case-studies/panyora-service-extraction.md",
+          "rank": 8,
+          "seconds": 0.01129387499531731
+        },
+        {
+          "trial": 3,
+          "source_path": "docs/case-studies/servinoza-workflow-recovery.md",
+          "rank": 2,
+          "seconds": 0.011400749965105206
+        },
+        {
+          "trial": 3,
+          "source_path": "docs/case-studies/README.md",
+          "rank": 1,
+          "seconds": 0.01120470801834017
+        },
+        {
+          "trial": 3,
+          "source_path": "docs/PROJECT_CATALOG.md",
+          "rank": 1,
+          "seconds": 0.010684542008675635
+        },
+        {
+          "trial": 3,
+          "source_path": "docs/REUSABLE_ENGINEERING_PLAYBOOK.md",
+          "rank": 1,
+          "seconds": 0.01112641702638939
+        },
+        {
+          "trial": 3,
+          "source_path": "docs/LEARNING_WORKFLOW.md",
+          "rank": 1,
+          "seconds": 0.011895665957126766
+        },
+        {
+          "trial": 3,
+          "source_path": "docs/GLOBAL_SKILLS.md",
+          "rank": 1,
+          "seconds": 0.010405832959804684
+        }
+      ]
+    }
+  ]
+}
