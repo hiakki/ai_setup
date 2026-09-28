@@ -36,6 +36,21 @@ merely to follow this example. If the user selects another sequence, record it.
   from the old configuration. Preserve private launch metadata, use the manager's
   verified replacement semantics, and inspect the actual listener environment.
   Never print environment objects or secret-bearing assertion diffs to prove it.
+- Before switching a process working directory, inspect its configured log,
+  cache and temporary paths. Ignored runtime directories are absent from clean
+  source artifacts. Prepare their owned directories or explicitly relocate them
+  before restarting; a healthy candidate does not prove an existing process
+  manager can launch it with historical metadata. Test the rollback independently.
+- Preserve explicitly configured public frontend settings through a reviewed
+  allowlist at both build and runtime. Do not copy backend environments into a
+  frontend to preserve branding, public-launch or pricing display settings.
+  Browser-bundled variables may be fixed at build time; runtime injection alone
+  is not evidence that the rendered value changed.
+- For multiple frontend applications sharing one origin, verify public page
+  ownership, asset prefixes and full navigation across application boundaries.
+  Exercise the assembled release through the actual gateway, including client
+  navigation and image optimization. A fixture proxy's path rewriting can conceal
+  a mismatch; compare its rules with the deployed gateway and current framework.
 
 **Exit:** the separated application works through its normal public entry point
 using ordinary commands/scripts. Empty repos, copied modules, individual health
