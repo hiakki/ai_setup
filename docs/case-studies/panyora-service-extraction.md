@@ -111,6 +111,9 @@ Sources were clean tracked files at review time. Ops source revision:
 `panyora-ops@b0a6d5be83b6c0eeff4221bbaaede1e2a4164106`.
 Docs source revision: `panyora-docs@bf60c0155d6dee768d77794509bd4f9501b74db8`.
 These identify the documents, not necessarily the deployed implementation.
+S1 and other transition-only paths cited later were removed from the current app
+tree on 29 September 2026; read them from the cited historical revision when that
+evidence is needed. Current operating guidance remains with the application owner.
 
 | ID | Repository-relative source | Read for |
 | --- | --- | --- |
@@ -411,8 +414,9 @@ maintained library content, not automatic distribution or guaranteed agent recal
   and exact digests remain in the owner's migration record. No live provider
   payment, OS printer output, mixed-version rollout or rollback drill was exercised.
 
-Provenance: owner records `panyora-docs/docs/frontend-repository-design.md`,
-`panyora-frontend/docs/migration-2026-09-28.md` and ops migration evidence; source
+Provenance: owner record `panyora-docs/docs/frontend-repository-design.md`, the
+historical path `panyora-frontend/docs/migration-2026-09-28.md` at the cited
+source revision, and ops migration evidence; source
 baseline `7bc9622`, visual extraction `406592f`, central packaging `6cfd9f3`,
 candidate/release follow-ups `ca49191`, `87dac59`, `dfe4121`, `daa3afa`, `b8beb6b`. This is a sanitized
 engineering case, not an application runbook or distributed memory update.
@@ -604,7 +608,8 @@ Detailed run/port evidence stays in the application's acceptance record.
 
 Provenance: owner records `panyora-frontend/docs/engineer-onboarding.md`,
 `panyora-ops/development/README.md`, and
-`panyora-docs/docs/developer-handoff-2026-09-29.md`; initial frontend source
+the historical path `panyora-docs/docs/developer-handoff-2026-09-29.md` at the
+cited source revision; initial frontend source
 `88a1d8e`, API runner correction `3045bdd`, gateway `4a419f8`, design catalogue
 `43269ab`, identity `80bfc28`. Sanitized learning only; credentials and detailed
 runtime evidence stay with the application. This entry does not certify future
@@ -644,8 +649,10 @@ authorities in a mock server. Storefront fixtures in this bounded implementation
 are static and do not track inventory mutations. Real financial operations and
 unsupported flows require integrated mode. Maintained source/evidence:
 `panyora-frontend/mocks/`, `docs/mock-development.md` and
-`panyora-docs/docs/developer-handoff-2026-09-29.md`; frontend implementation
-published as `13237af` on 29 September. This source publication does not deploy
+the historical handoff path `panyora-docs/docs/developer-handoff-2026-09-29.md`;
+frontend implementation published as `13237af` on 29 September. Current handoff
+guidance is in the frontend onboarding and mock-development docs. This source
+publication does not deploy
 mocks to a server or change the shared backend's verification status.
 
 ### Same-day correction: mock support must cover a coherent journey
