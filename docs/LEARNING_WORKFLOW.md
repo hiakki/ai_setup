@@ -27,9 +27,13 @@ owner and any implementation-versus-deployment difference.
 Mark not applicable or unknown explicitly. Documentation does not authorize
 creating missing cron jobs, pipelines or infrastructure. A configured schedule
 does not prove a job ran; a green pipeline does not prove the customer journey.
-Retain original ADRs and dated release/incident evidence with the app even after
-their approach is superseded. Update the current overview so old instructions
-cannot masquerade as the active design.
+Retain accepted ADRs and dated release/incident evidence with the app when they
+still explain a decision, support recovery, satisfy an audit need or establish a
+claim. Do not retain every completed transition diary merely because it is dated.
+When a diary is superseded, has no active recovery/compliance use and remains in
+Git history, remove it from the current documentation set after repairing inbound
+links. Update the current overview so old instructions cannot masquerade as the
+active design.
 
 ## Capture meaningful experience before closing the task
 

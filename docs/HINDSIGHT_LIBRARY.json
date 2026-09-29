@@ -60,7 +60,7 @@
       "source_path": "docs/case-studies/panyora-service-extraction.md",
       "mode": "reviewed_document",
       "probe": "An unchanged app revision uses a changed shared container build recipe. How do we identify the exact artifact to promote?",
-      "reviewed_sha256": "c9637b18b35b090218b9d1b2a76e732a11d3cef3da02769600a4b5e74ceebb2a"
+      "reviewed_sha256": "cc576692db6bd4fb8b8cab4e10ec8e635626d8a6486e5814a09852e483918b1c"
     },
     {
       "document_id": "ai-setup-case-servinoza",
@@ -89,17 +89,17 @@
       "document_id": "ai-setup-guide-engineering-playbook",
       "source_path": "docs/REUSABLE_ENGINEERING_PLAYBOOK.md",
       "mode": "reviewed_pointer",
-      "summary": "Use docs/REUSABLE_ENGINEERING_PLAYBOOK.md to route engineering work to maintained skills and specialist roles. custom/skills/service-architecture-and-extraction/SKILL.md covers boundaries and staged extraction; custom/skills/reliable-web-app-operations/SKILL.md covers CI/CD, container builds, releases, database recovery, telemetry and provider delivery; custom/skills/api-docs-governance/SKILL.md covers contracts and discovery; custom/skills/build-usable-apps/SKILL.md covers operational UI; custom/skills/auditable-business-workflows/SKILL.md covers money, transitions and historical evidence; custom/skills/sre-incident-investigation/SKILL.md covers active causal investigation. Read linked references selectively. manifest.json selects provider-owned agents and revisions; installation is not invocation or authorization. Preserve original providers, do not duplicate their agent libraries. Central cases supply evidence and application docs remain with their owners.",
+      "summary": "Use docs/REUSABLE_ENGINEERING_PLAYBOOK.md to route engineering work to maintained skills and specialist roles. custom/skills/service-architecture-and-extraction/SKILL.md covers boundaries and staged extraction; custom/skills/reliable-web-app-operations/SKILL.md covers CI/CD, container builds, releases, database recovery, telemetry and provider delivery; custom/skills/api-docs-governance/SKILL.md covers contracts, discovery and document lifecycle; custom/skills/build-usable-apps/SKILL.md covers operational UI; custom/skills/auditable-business-workflows/SKILL.md covers money, transitions and historical evidence; custom/skills/sre-incident-investigation/SKILL.md covers active causal investigation. Classify docs as current, retained evidence, superseded or duplicate; validate tracked cross-repository links after moves. Read linked references selectively. manifest.json selects provider-owned agents and revisions; installation is not invocation or authorization. Preserve original providers, do not duplicate their agent libraries. Central cases supply evidence and application docs remain with their owners.",
       "probe": "Which shared skills and specialist roles should I select for service extraction, CI/CD, security, database recovery and operational user interfaces?",
-      "reviewed_sha256": "8d33c2db4b64d58ed09f7c8c7e31f0d2a967483ba6b00babfd4c0907b442ecf8"
+      "reviewed_sha256": "3dab2b1fdcda73a93d7e8b19da5995a5beed28bdf3b7a729910517b2cb00f9c6"
     },
     {
       "document_id": "ai-setup-guide-learning-workflow",
       "source_path": "docs/LEARNING_WORKFLOW.md",
       "mode": "reviewed_pointer",
-      "summary": "Follow docs/LEARNING_WORKFLOW.md after a meaningful failure, correction, migration, switch or release. Update current application docs and retain original evidence there. Search by topic/project, use ai-setup library to locate the canonical checkout, and amend the existing central case/skill with problem, attempted approach, observed result, reason for switching, replacement/status, verification limits, reuse gate and source revision/hash/date. Preserve superseded reasoning with successor pointers. Sanitize private context; use a private authorized destination when needed. If central writes are out of scope, report pending promotion. Reviewed Hindsight memory is secondary to canonical files, and Git publication and other-machine refresh require their normal authorization. No automatic transcript capture, guaranteed compliance or model retraining is implied.",
+      "summary": "Follow docs/LEARNING_WORKFLOW.md after a meaningful failure, correction, migration, switch or release. Update current application docs and retain accepted ADRs or release/incident/recovery evidence when they still support a decision, claim, audit or restoration path. Remove a superseded transition diary from the current tree when its facts have a canonical owner, it has no active recovery/compliance use, Git retains history and inbound links are repaired. Search by topic/project, use ai-setup library to locate the canonical checkout, and amend the existing central case/skill with problem, attempted approach, observed result, reason for switching, replacement/status, verification limits, reuse gate and source revision/hash/date. Preserve reusable superseded reasoning with successor pointers. Sanitize private context; use a private authorized destination when needed. If central writes are out of scope, report pending promotion. Reviewed Hindsight memory is secondary to canonical files, and Git publication and other-machine refresh require their normal authorization. No automatic transcript capture, guaranteed compliance or model retraining is implied.",
       "probe": "After a failed approach and a verified fix, where should the reasoning be captured so another project does not repeat the mistake?",
-      "reviewed_sha256": "7a75e372976c28e69140005c1db640106ea00c732ae2ab229c3e31e210f01fd2"
+      "reviewed_sha256": "b59373b744cca3bc0528de1acad62ddc276a380b82d701a13931d5581fe34354"
     },
     {
       "document_id": "ai-setup-guide-hindsight",

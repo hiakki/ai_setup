@@ -24,6 +24,23 @@ Keep an entry small and link details:
 
 Declare facts once. The central registry may contain discovery locations while component descriptors own detailed facts. Generated projections should name their origin; do not hand-edit them. Existing Backstage descriptors or another established project schema can be reused instead of adding a new format.
 
+Treat lifecycle as part of ownership:
+
+- **Current:** required to understand, build, operate or consume the present system.
+- **Evidence:** an ADR, release, incident, security or recovery record that still
+  supports a decision, claim, audit or restoration path; keep it dated and out of
+  the ordinary start path.
+- **Superseded:** a migration diary, handoff or plan whose facts are now owned by
+  current documentation and whose history remains available in Git; remove it
+  from the current tree after checking inbound references.
+- **Duplicate:** an editable copy of another owner's document; remove it and link
+  the canonical source. Do not let retired repositories retain shadow copies.
+
+Run link checks from every changed tracked Markdown file, including links that
+cross repository boundaries. Moving an otherwise identical document deeper in a
+tree changes its relative links; byte equality before the move does not prove the
+retained copy is usable afterward.
+
 Use source permalinks or imported pages when sibling checkout links would break on a website. A component relationship is a declared dependency, not proof of runtime calls or permission to access that component.
 
 ## Distinct version records

@@ -820,6 +820,41 @@ ownership guides, `mocks/README.md` and four `apps/*/README.md` files. The
 documentation was not tested by a newly onboarded engineer when this central
 lesson was recorded.
 
+### Same-day correction: dated files need a lifecycle decision
+
+The first documentation pass kept every dated migration and research file. A
+subsequent all-repository audit showed that this was too broad: completed
+transition diaries and handoffs still appeared beside current guidance, while
+retired UI repositories held editable copies of documents already owned by the
+active frontend repository.
+
+The correction classified tracked documents as current guidance, retained
+decision/release/security/recovery evidence, superseded transition material or
+duplicate content. Transition-only files and duplicate copies were removed only
+after confirming current facts had an owner and Git retained the history. Active
+runbooks, security evidence, database acceptance evidence and product research
+were preserved. The first isolated audits missed links from other repositories;
+a workspace-wide tracked-Markdown check then found and repaired both inbound
+links to retired repositories and relative links broken by the deeper canonical
+location.
+
+Reuse the lifecycle classification rather than deleting files because their names
+contain dates. Validate the final documentation graph across the whole authorized
+workspace, not merely each changed repository. The source audit covered all 16
+Panyora repositories; 25 obsolete or duplicate documents were removed across
+nine repositories. Link and diff checks passed, alongside the affected frontend,
+core-unit, subscriptions, docs and ops test suites. Core environment acceptance
+was not rerun because its required cutover environment was unavailable; this was
+a documentation maintenance change, not runtime cutover evidence.
+
+Provenance: pushed source revisions `panyora-frontend@163378d`,
+`panyora-core@4746eb3`, `panyora-docs@1ea8a14`, `panyora-ops@c870b67`,
+`panyora-admin@363c2ea`, `panyora-web@2925962`,
+`panyora-workspace@beb582b`, `panyora-storefront@7097531` and
+`panyora-subscriptions@0874c34`, reviewed 29 September 2026. Git history is the
+historical source for removed files; current application documentation remains
+authoritative for present behavior.
+
 ## 29 September 2026: preserve live invariants when editing a partial draft
 
 - **Problem and context:** a reviewed product editor accepted a draft payload

@@ -36,6 +36,16 @@ Prefer a central discovery experience composed from owner-maintained contracts a
 
 Keep domain contracts with their authority, gateway routing/composition with the gateway owner, operational procedures with ops and database recovery with its operator. Schema migrations may have a different source owner from the database runtime. Every document needs a purpose and owner; no generic shared/documents dumping ground.
 
+Give documents an explicit lifecycle. Keep current tutorials, how-to guides,
+references and runbooks with their active owner. Preserve accepted ADRs and
+release, incident or recovery evidence when they still support a decision or
+claim. Remove completed migration diaries, superseded handoffs and byte-for-byte
+duplicates from the current tree when Git history is sufficient; first move any
+still-current facts to their canonical owner. After moving or deleting documents,
+search every affected repository for inbound references and validate links from
+the tracked files at their actual new depth. A clean check inside one repository
+does not establish that cross-repository links still work.
+
 For architecture, publication and adoption decisions, read [ownership-and-publication.md](references/ownership-and-publication.md). It includes an adaptable catalog, CI gates and release-state distinctions.
 
 ## Build evidence useful to people and agents

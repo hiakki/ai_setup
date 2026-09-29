@@ -66,6 +66,7 @@ certify an application's security or prove that a deployment backend was tested.
 | Database operations | [Database lifecycle](../custom/skills/reliable-web-app-operations/references/database-operations.md) | Runtime resource versus repo, least-privilege roles, live schema checks, backup rotation, disposable restore and host migration. |
 | Observability and incident response | [Operations telemetry](../custom/skills/reliable-web-app-operations/references/observability-and-incidents.md), [SRE investigation](../custom/skills/sre-incident-investigation/SKILL.md) | Layered evidence, safe logs, bounded metrics and causal investigation. |
 | Parallel specialist work | [Agent briefs and acceptance](../custom/skills/service-architecture-and-extraction/references/agents-and-acceptance.md) | Bounded ownership, graph/source handoffs, contract coordination and independent review without duplicate discovery. |
+| Documentation lifecycle and cleanup | [API documentation ownership](../custom/skills/api-docs-governance/references/ownership-and-publication.md) | One active owner, current/evidence/superseded/duplicate states, removal of transition-only files and tracked cross-repository link validation after moves. |
 
 When reporting that knowledge was shared, distinguish an edited canonical file,
 a local commit, a verified remote commit and an installed consumer revision.
