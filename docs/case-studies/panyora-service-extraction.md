@@ -712,3 +712,147 @@ or production canary run was performed for this entry. Reuse the identity and
 evidence rule, not Panyora's branch names. Verify the target provider actually
 invalidates stale approval and promotes the same artifact digests before calling
 the model implemented.
+
+## 29 September 2026: Node's event loop is not pod autoscaling
+
+- **Problem and hypothesis:** a future-scale review assumed that a Node pod could
+  not use more than one CPU and that an event-driven Node stack scaled itself.
+  This combined the single JavaScript event loop, distributed application events
+  and orchestrator replica control into one mechanism.
+- **Observed configuration:** the reviewed Kubernetes renderer allowed a two-CPU
+  container limit while its examples declared fixed replica counts. No HPA,
+  Node cluster/worker-thread process model or measured load result was found in
+  the reviewed scope. Owner documentation already warned that horizontal replica
+  gains, connection budgets and lock contention remained unverified. The demo
+  topology and staged multi-database work did not establish production capacity.
+- **Correction and decision:** a Node process normally runs JavaScript callbacks
+  on one main event-loop thread, but its pod may use additional CPU for runtime,
+  native and explicit worker work. For I/O-heavy APIs, retain Node/TypeScript and
+  prefer one request process per container with horizontal replicas. Isolate
+  demonstrated CPU-heavy work in bounded workers or a separately benchmarked
+  service. Treat Next.js as a frontend/server-rendering choice rather than proof
+  that every high-throughput API should use its route runtime.
+- **Scaling gate:** classify cacheable edge traffic, origin reads, authoritative
+  writes and background events before accepting an aggregate RPS target. Exercise
+  a representative authenticated endpoint at one, two, four and eight replicas;
+  record requests per allocated CPU, p95/p99, event-loop delay/utilization,
+  memory/GC, database-pool wait and connection totals, errors and cost. Then test
+  autoscaler burst/recovery, graceful drain, queue replay and dependency failure.
+  CPU-only autoscaling and a health response are insufficient.
+- **Data and event limit:** replica count multiplies connection pools and can move
+  the bottleneck to PostgreSQL while Node CPU stays low. Budget total connections
+  and verify lock/transaction behavior. Keep authoritative stock and payment
+  transitions transactional; use events for asynchronous consequences only with
+  ordering, idempotency, backpressure, replay and reconciliation.
+- **Status and reuse:** this is an adopted architecture decision framework and a
+  current-state configuration review, not a load test, HPA implementation or
+  million-RPS certification. Reuse the distinction between process concurrency,
+  messages and platform scaling. Choose another runtime for a hot path only after
+  a like-for-like benchmark using its real database and validation contract.
+
+Provenance: reviewed owner files on 29 September 2026:
+`panyora-ops/cd/adapters/kubernetes.mjs`,
+`panyora-ops/cd/examples/kubernetes.yaml`,
+`panyora-ops/cd/environment.mjs`, `panyora-docs/docs/architecture.md`,
+`panyora-docs/docs/database-separation-progress-2026-09-28.md` and
+`panyora-gateway/README.md`. Source/configuration review only; no representative
+load, live Kubernetes autoscaling or production capacity test was performed.
+
+## 29 September 2026: one frontend origin passed routing, not full mock coverage
+
+- **Question tested:** whether four independently running frontend applications
+  could be used from one browser address without engineers switching ports.
+- **Observed routing:** the actual root mock launcher started one loopback gateway
+  and four Next.js workers. A real browser stayed on the shared origin through
+  web home, login, authenticated workspace and storefront pages. Direct route
+  probes mapped `/` to web, `/login` to workspace, `/shop/mock-s1` to storefront,
+  `/admin` to admin and `/api/ui/session` to the API proxy. Six focused launcher
+  tests passed, including shared SSR/browser origin and credential isolation.
+- **Important distinction:** the signed-in mock owner received the intended 404
+  from the platform-admin application, which established routing and role denial,
+  not a usable admin workflow. Workspace Online Store management reached its UI
+  but displayed the explicit integrated-only API message. The standalone mock
+  storefront catalogue rendered successfully. Therefore all four processes were
+  reachable, while local mock mode still did not support every user journey.
+- **Configuration correction:** the documented default group was 3110–3114, but
+  the reviewed local environment overrode it to 3610–3614. A process-level
+  override was used to exercise the exact 3110–3114 group. Handoff instructions
+  should treat the launcher's printed public URL as effective truth and keep all
+  worker ports as implementation details.
+- **Reuse and acceptance gate:** report shared-origin routing, authorization and
+  workflow support separately. For each advertised app, navigate through an
+  ordinary UI link where available, confirm the browser origin never changes,
+  inspect asset/API routing and exercise an allowed and denied role. Inventory
+  workflows supported by mock mode; label complete integrated-only journeys
+  before entry rather than implying that process reachability makes them usable.
+
+Provenance: local source/runtime review of `panyora-frontend` on 29 September
+2026. Reviewed `scripts/development.mjs`, its pinned development-gateway package,
+launcher tests and handoff docs; exercised the real mock launcher and browser.
+No integrated backend credential, platform-admin session, provider operation or
+production gateway was tested. This is local developer-routing evidence only.
+
+## 29 September 2026: accumulated notes were not usable frontend documentation
+
+- **Problem:** current setup, security boundaries, historical migration evidence,
+  runtime observations and repeated caveats had accumulated in the same README
+  and handoff files. Facts were mostly present, but the common install/run/test
+  journey was hard to scan and the same limitations appeared in several places.
+- **Replacement:** current frontend documentation was reorganized by reader task.
+  The root README became the shortest start path and application map; a docs index
+  routes to development, onboarding, mock, API and ownership guides; four app
+  READMEs use the same compact reference structure. Dated migration and product
+  research stayed intact and were labelled as historical evidence.
+- **Observed result:** twelve current documents passed local-link, anchor, H1,
+  command-presence, Prettier and diff checks. Twenty-one root tests, five workspace
+  tests, four typechecks and four production builds passed. The current-doc set
+  fell from about 6,900 words to about 4,450 while adding the index. This is source
+  and build evidence; no external developer usability study was performed.
+- **Reuse:** do not use README files as chronological evidence stores. Separate
+  tutorial/quick start, task how-to, factual reference and explanatory history.
+  Keep security constraints near the action they govern, link each current doc
+  from one entry point, and verify commands and links mechanically. Preserve dated
+  evidence rather than deleting it merely to make current docs shorter.
+
+Provenance: `panyora-frontend@44e9749`, published 29 September 2026. Rewritten
+current paths are `README.md`, `docs/README.md`, development/onboarding/mock/API/
+ownership guides, `mocks/README.md` and four `apps/*/README.md` files. The
+documentation was not tested by a newly onboarded engineer when this central
+lesson was recorded.
+
+## 29 September 2026: preserve live invariants when editing a partial draft
+
+- **Problem and context:** a reviewed product editor accepted a draft payload
+  whose pack records intentionally omitted live `locked` metadata. It also
+  rendered every counted product with the UI default quantity step of `1`, even
+  when the approved record used a valid whole-number step such as 2, 6 or 12.
+  Saving either form could present an impossible edit or silently replace an
+  existing business rule.
+- **Approach that passed insufficient checks:** the original catalogue port had
+  unit checks, typechecks, production builds and browser coverage for the common
+  step-of-one journey. Those checks did not include a counted product with a
+  non-default step or a draft editing a pack already used by stock history.
+  Independent source review found both gaps before this release.
+- **Demonstrated cause:** the form treated a partial proposal as a complete live
+  aggregate. The draft contract had no `locked` field, and the component did not
+  rejoin it with the current product pack by stable ID. Separately, the rendered
+  input chose a type default instead of the matching approved detail value.
+- **Replacement:** use draft fields for proposed values and rejoin omitted
+  authority metadata from the current aggregate. Preserve the approved quantity
+  step when its kind still matches; use creation defaults only for a new item or
+  an explicit kind change. Keep the server as the final invariant authority.
+- **Verification:** focused regressions now cover a counted step of 12 and a
+  draft pack whose live counterpart is locked. The active frontend passed 21 root
+  tests, nine workspace checks, all four typechecks and all four production
+  builds. Preserved standalone workspace/storefront checks also passed. These are
+  source/build checks; no provider transaction or production deployment was run.
+- **Reuse:** whenever a draft, patch or projection omits fields, classify each
+  omitted field as defaultable, immutable, derived or authority-owned. Rejoin
+  authority-owned constraints by stable identity before rendering edit controls.
+  Add regressions using valid non-default values; a default-only fixture cannot
+  prove preservation.
+
+Provenance: active source `panyora-frontend@0ea3829`; preserved-source commits
+`panyora-workspace@696f814` and `panyora-storefront@45fc9b8`; workflow/status docs
+`panyora-docs@2c52531`. All were pushed on 29 September 2026. The central lesson
+does not make the preserved UI repositories active release owners.

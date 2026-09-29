@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "reviewed_date": "2026-09-28",
-  "scope": "Nine reviewed central case documents plus five navigation pointers; not all project history or private app docs.",
+  "reviewed_date": "2026-09-29",
+  "scope": "Nine reviewed central case documents plus six navigation pointers; not all project history or private app docs.",
   "transport": "MCP only; existing gateway authentication; no model-provider credentials",
   "profile": "chunks-only retain, no observations/auto consolidation, no temporal/graph/reranking stages, no reflect or generated pages",
   "update_policy": "Explicit reviewed apply only. Verify source hashes before writing; replace stable document IDs. No automatic install-time ingestion.",
@@ -60,14 +60,14 @@
       "source_path": "docs/case-studies/panyora-service-extraction.md",
       "mode": "reviewed_document",
       "probe": "An unchanged app revision uses a changed shared container build recipe. How do we identify the exact artifact to promote?",
-      "reviewed_sha256": "46f1fdf806e13bf49945b597a384525823959e4c5fe41ab5c1aa829f5f3230a1"
+      "reviewed_sha256": "c9637b18b35b090218b9d1b2a76e732a11d3cef3da02769600a4b5e74ceebb2a"
     },
     {
       "document_id": "ai-setup-case-servinoza",
       "source_path": "docs/case-studies/servinoza-workflow-recovery.md",
       "mode": "reviewed_document",
       "probe": "After extracting a page, its GET works but the first browser save returns 404. What gateway and mutation-route test did the mock miss?",
-      "reviewed_sha256": "a0d02044d25d94865f190c67cd927f430686116f16b892538574afee2b039f61"
+      "reviewed_sha256": "6ffa4b3c0529735bc26bbf5b64217a2a5e98d113a2ef9a54ffea72a723dd7c0f"
     },
     {
       "document_id": "ai-setup-guide-case-catalog",
@@ -81,9 +81,9 @@
       "document_id": "ai-setup-guide-project-catalog",
       "source_path": "docs/PROJECT_CATALOG.md",
       "mode": "reviewed_pointer",
-      "summary": "Current project architecture, cron and worker ownership, CI/CD, deployment and operational documentation are located through docs/PROJECT_CATALOG.md. Resolve the named owner's repository and owner-relative path within authorized access. Panyora uses panyora-docs and panyora-ops. Servinoza's current migration record belongs to servinoza-docs and worker handovers to servinoza-ops; Servinoza_in is historical/compatibility context. The catalog also points to Elvique, NarrateAI, bulkBuyer, DelX and card-savvy docs. Reopen current owner files, check revision and running-state evidence; the catalog's dated baselines do not certify current deployments. Do not automatically clone private sources or assume sibling access. Central refresh does not refresh app checkouts.",
+      "summary": "Current project architecture, cron and worker ownership, CI/CD, deployment and operational documentation are located through docs/PROJECT_CATALOG.md. Resolve the named owner's repository and owner-relative path within authorized access. Panyora uses panyora-docs and panyora-ops. Servinoza uses servinoza-docs for the current migration record, servinoza-ops for container CI/runtime and servinoza-db-ops for database operations; the former Servinoza_in parent is retired historical source rather than a current runtime dependency. The catalog also points to Elvique, NarrateAI, bulkBuyer, DelX and card-savvy docs. Reopen current owner files, check revision and running-state evidence; dated baselines and successful image promotion do not certify later releases, provider money movement or every workflow. Do not automatically clone private sources or assume sibling access. Central refresh does not refresh app checkouts.",
       "probe": "Where do I find existing projects' current architecture, cron ownership, CI/CD and operational documentation?",
-      "reviewed_sha256": "5762a01adaf789d100d8c8b0fd13a0b7e91d5842341aefd0655c3323e2fd19bd"
+      "reviewed_sha256": "fd917d17b04d06bf2f6c226091a6cb99a4f260be8b4cd40f15a35a5382e7bcae"
     },
     {
       "document_id": "ai-setup-guide-engineering-playbook",
@@ -100,6 +100,14 @@
       "summary": "Follow docs/LEARNING_WORKFLOW.md after a meaningful failure, correction, migration, switch or release. Update current application docs and retain original evidence there. Search by topic/project, use ai-setup library to locate the canonical checkout, and amend the existing central case/skill with problem, attempted approach, observed result, reason for switching, replacement/status, verification limits, reuse gate and source revision/hash/date. Preserve superseded reasoning with successor pointers. Sanitize private context; use a private authorized destination when needed. If central writes are out of scope, report pending promotion. Reviewed Hindsight memory is secondary to canonical files, and Git publication and other-machine refresh require their normal authorization. No automatic transcript capture, guaranteed compliance or model retraining is implied.",
       "probe": "After a failed approach and a verified fix, where should the reasoning be captured so another project does not repeat the mistake?",
       "reviewed_sha256": "7a75e372976c28e69140005c1db640106ea00c732ae2ab229c3e31e210f01fd2"
+    },
+    {
+      "document_id": "ai-setup-guide-hindsight",
+      "source_path": "docs/HINDSIGHT.md",
+      "mode": "reviewed_pointer",
+      "summary": "Use docs/HINDSIGHT.md for the shared Hindsight MCP setup and verification workflow. Hindsight is a semantic discovery layer over reviewed central files; Git remains canonical and client models perform reasoning. Use the shared-project-learnings bank through the configured MCP, preserve the chunks-only profile, and avoid reflect, generated pages, direct REST calls and model-provider credentials. For Codex, bearer_token_env_var must be the environment-variable name LLM_GATEWAY_KEY, with the value available in the newly started client process. Retain only reviewed sanitized entries with stable document IDs, source paths, hashes, revisions, dates and evidence limits; replace changed entries deliberately, read them back and test recall. There is no background synchronization, automatic transcript ingestion or guaranteed recall.",
+      "probe": "How should Claude or Codex configure, verify and safely maintain our shared Hindsight memory without a server-side model key?",
+      "reviewed_sha256": "23541808ac57121a4fe819688de29ac7b99697d4e8eb2fd4a5b9d6d334ba7ab0"
     },
     {
       "document_id": "ai-setup-guide-global-skills",
