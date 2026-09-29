@@ -82,7 +82,11 @@ does not intercept server-side reads. Use memory for simulated edits, predictabl
 reset, explicit mock labels and distinct session cookies. Never fall back to a
 real backend for an unsupported mock route. Ignore remote credentials in this
 mode and reject unintended network exposure. Keep the simulation small rather
-than reproducing stock, tax or payment authorities.
+than reproducing stock, tax or payment authorities. Define support by coherent
+user journey, not isolated route count: if a mock advertises a page, its ordinary
+read, preview/save, refresh and detail path should either work together or the UI
+should label the whole journey as integrated-only. A late generic 501 after the
+page loads is a broken handoff, even when the fallback is technically explicit.
 
 Validate fixtures and commands against the consumer's pinned producer contracts,
 not copied schemas or whichever different package version happens to be hoisted.

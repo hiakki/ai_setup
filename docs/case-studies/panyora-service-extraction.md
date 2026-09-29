@@ -1,6 +1,6 @@
 # Panyora: service extraction, central CI/CD, security and QA
 
-Reviewed: 27 September 2026; extended 28 September 2026. Type: curated engineering case study for cross-project
+Reviewed: 27 September 2026; extended 29 September 2026. Type: curated engineering case study for cross-project
 learning. Search terms: Panyora, microservices, monolith segregation, service
 extraction, cicd, CI/CD, DevOps, gateway, database operations, security, QA,
 containers, Docker, Kubernetes, versioning, hotfix, promotion, rollback,
@@ -641,12 +641,44 @@ relative trial dates at startup/reset, covered by an HTTP regression.
 Reuse this for UI teams that need fast isolated screen states. Keep real tests
 for stock, tax, invoices, payment and authorization rules; do not recreate those
 authorities in a mock server. Storefront fixtures in this bounded implementation
-are static and do not track inventory mutations. Financial operations and
+are static and do not track inventory mutations. Real financial operations and
 unsupported flows require integrated mode. Maintained source/evidence:
 `panyora-frontend/mocks/`, `docs/mock-development.md` and
 `panyora-docs/docs/developer-handoff-2026-09-29.md`; frontend implementation
 published as `13237af` on 29 September. This source publication does not deploy
 mocks to a server or change the shared backend's verification status.
+
+### Same-day correction: mock support must cover a coherent journey
+
+- **Problem and attempted boundary:** the first bounded server correctly rejected
+  unsupported routes, but Sales and subscription Billing were still reachable in
+  the UI. Their first API request fell through to the generic 501. Explicit failure
+  prevented accidental remote access, yet the frontend handoff still advertised
+  workflows that a frontend engineer could not exercise.
+- **Replacement/status:** support is now described by workflow slices rather than
+  route count. The local server handles POS read, preview, post, history, owner
+  review, recorded-payment display and related in-memory loose-stock movement. It
+  also handles owner-only demo subscription invoice issue, detail and simulated
+  receipt. Published consumer schemas validate commands. Documents say demo and
+  no real provider, database or remote fallback is involved.
+- **Verification:** the new API regressions failed against the earlier fallback,
+  then passed for preview/post/readback, stock reduction, tenant/role denial and
+  demo invoice issue/read/simulated payment. The complete frontend test suite,
+  all workspace typechecks and four production builds passed. A real browser used
+  the single local origin to sign in, issue a customer invoice, observe updated
+  stock, create a subscription invoice and simulate its payment. Console output
+  contained development/HMR messages only.
+- **Limits and reuse:** these checks establish frontend simulation behavior, not
+  backend authorization, durable accounting, GST correctness, Razorpay activity,
+  email delivery or settlement. For another app, inventory every user-visible
+  local-mode journey and test its ordinary mutation plus refresh/detail outcome.
+  Keep unsupported authorities explicit; do not make a shallow route stub appear
+  usable merely because its initial page renders.
+
+Provenance: `panyora-frontend@335533f`, published 29 September 2026. Reviewed
+owner paths: `mocks/server.mjs`, `mocks/contracts.mjs`,
+`tests/mock-api.test.mjs`, `mocks/README.md` and `docs/mock-development.md`.
+This is source and local browser evidence; the mock server was not deployed.
 
 ### Later 29 September decision: environment lanes need immutable UAT identity
 

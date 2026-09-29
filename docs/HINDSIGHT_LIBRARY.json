@@ -60,7 +60,7 @@
       "source_path": "docs/case-studies/panyora-service-extraction.md",
       "mode": "reviewed_document",
       "probe": "An unchanged app revision uses a changed shared container build recipe. How do we identify the exact artifact to promote?",
-      "reviewed_sha256": "8eaaf91731c757b9a473813fedafea9e3c266cd3b9f20cb67873cf8ed2545366"
+      "reviewed_sha256": "46f1fdf806e13bf49945b597a384525823959e4c5fe41ab5c1aa829f5f3230a1"
     },
     {
       "document_id": "ai-setup-case-servinoza",
