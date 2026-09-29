@@ -65,6 +65,15 @@ Adapt checks to risk and existing tools; avoid introducing overlapping tools sol
 
 Check representative schemas against all chosen tools; parser/render/generator/diff support can differ even for a nominally supported OpenAPI version. Avoid blind joining of independent specs: paths, operation IDs, security schemes and servers can collide. Bundling references and composing multiple APIs are different operations.
 
+Generated API-client collections can be valid JSON and reproducible while their
+embedded JavaScript is invalid. Compile generated pre-request/test scripts and
+execute the delivered artifact in the supported client/runner, including real
+session cookies. Do not count only HTTP 200s when runner scripts failed. A
+pre-request exception may not stop HTTP dispatch: use the client's explicit
+request-skip mechanism for destination guards and assert zero network requests
+for a rejected target. Keep credentials in private local variables/reports, never
+committed collections. A command-line runner pass is not a desktop-client test.
+
 ## Visibility and retrieval
 
 Use explicit publication eligibility for public output. Merely removing fields marked internal leaves accidentally unmarked data exposed. Check dependent schemas, examples, raw downloads, search indexes, Markdown exports and llms.txt—not just navigation.

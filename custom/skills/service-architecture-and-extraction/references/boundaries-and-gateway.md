@@ -64,6 +64,39 @@ claims. Team/access boundaries may justify future source splits independently of
 requests per minute. See the dated frontend corrections in the central extraction
 case for provenance; target-specific acceptance tests remain required.
 
+### Developer handoff is a runtime boundary
+
+A source-only install/typecheck is not an end-to-end handoff. For multi-zone UIs,
+provide one local browser origin routing pages, server-rendered reads, browser
+APIs, assets and explicitly allowed HMR WebSockets. Keep routing with its platform
+owner and distribute a pinned artifact, rather than requiring every frontend
+engineer to clone backend/gateway source. Verify real registration, sign-in/out,
+mutation/reload, denied access and an actual hot-reload edit in a clean consumer
+checkout. A production HTTP proxy may not support development WebSockets.
+
+For routine frontend integration, a dedicated synthetic shared backend can reduce
+laptop setup. Give individual revocable environment access and ordinary scoped
+app accounts, never internal service or database credentials. Check environment
+identity and readiness before starting the UI or sending provisioning mutations.
+Validate local Host/Origin before proxy rewriting. Preserve Secure/HttpOnly/
+SameSite; test the actual browser and API client's cookie handling. Ports do not
+isolate cookies: use distinct sandbox namespaces and filter unrelated cookies in
+both directions, especially when a development API shares an HTTPS hostname.
+
+Backend contributors should run their own service with pinned dependency images
+and fresh isolated synthetic databases, rather than attach arbitrary source to
+the shared environment using broad internal tokens. Check for orphan volumes
+before claiming initialization is fresh. Keep source listeners loopback and test
+Docker-host bridging on the actual supported OS. A Docker administrator can read
+local synthetic credentials; repository boundaries do not prevent that.
+
+A schema-only disposable bootstrap is not evidence that production migrations
+ran. Publish its provenance and compatible image set, omit customer data/history,
+and leave production migration checks intact. Distribute a versioned tooling
+bundle so onboarding does not require infrastructure repository access. Keep
+provider side effects disabled and explicit; component stories, API reads and
+simulated payments establish different levels of evidence.
+
 When relocating Next standalone apps, inspect the generated server, asset and
 writable-cache paths. A nested server can move its cache outside an existing
 container mount; prove write-through using the final read-only runtime contract,

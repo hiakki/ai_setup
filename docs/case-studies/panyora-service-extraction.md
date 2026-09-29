@@ -560,3 +560,52 @@ manual/demo results do not establish provider collection or delivery. Reuse the
 check for actual gateway upstreams and the failing public path, not an assumption
 that the expected gateway port or green owner health proves correct routing.
 Detailed run/port evidence stays in the application's acceptance record.
+
+## 29 September 2026: a usable developer boundary needs a running workflow
+
+- **Problem:** the frontend source had been consolidated, but separate UI ports
+  did not route registration, browser API calls or server-rendered reads. A
+  component preview and installation checks were insufficient handoff evidence.
+  Existing showcase credentials also did not imply access to a new backend.
+- **Replacement:** one local launcher consumes a versioned gateway artifact;
+  frontend engineers use a dedicated synthetic shared backend with individual
+  revocable environment access and ordinary owner/staff accounts. Backend
+  engineers use an artifact-only sandbox, pinned peers and five independent
+  synthetic databases, replacing only their assigned service. Shared visual
+  source stays in its own Storybook; consumers still upgrade immutable packages.
+- **Review corrections:** reject orphan Docker resources before labelling data
+  fresh; verify environment identity before provisioning; constrain credential
+  destinations; keep source listeners loopback; use per-environment cookie
+  namespaces and exact filtering. Ports do not isolate cookies. A schema-only
+  fresh bootstrap excludes tenant data and migration history, and does not prove
+  that production migrations ran. A development API can share a TLS hostname
+  while retaining separate signing keys, databases and provider settings.
+- **Observed evidence:** clean frontend and design checkouts installed; component
+  stories built; browser login preserved Secure/HttpOnly/SameSite; a stock change
+  persisted after reload; hot reload used the same browser origin. A source-only
+  backend replacement on macOS exercised dependent onboarding/profile writes,
+  then restored the pinned image. A Linux-specific bridge remained untested.
+- **Failed approach preserved:** a generated Postman collection was valid JSON
+  but embedded an incorrectly escaped regular expression. HTTP requests could
+  still succeed while pre-request scripts failed. Script compilation and actual
+  runner execution replaced JSON-only confidence. The corrected runner passed
+  sign-in/session/business/inventory/sign-out with its normal secure cookie jar;
+  a rejected destination sent zero requests. This was a command-line runner
+  check, not a desktop-client or live-payment test.
+- **Another runtime trap:** passing Node's env-file flag into a Next development
+  process was propagated through child options and rejected. Parsing a scoped
+  environment file in the owner launcher and spawning Next with explicit
+  environment values worked in the actual local replacement flow.
+- **Reuse and limits:** test the permitted checkouts and the normal browser/client
+  path, not only direct service health. Keep internal service credentials out of
+  frontend handoffs; never attach arbitrary developer backend code to a shared
+  environment with broad tokens. Local Docker administrators can inspect local
+  synthetic containers; source ownership is not a host security boundary.
+
+Provenance: owner records `panyora-frontend/docs/engineer-onboarding.md`,
+`panyora-ops/development/README.md`, and
+`panyora-docs/docs/developer-handoff-2026-09-29.md`; initial frontend source
+`88a1d8e`, API runner correction `3045bdd`, gateway `4a419f8`, design catalogue
+`43269ab`, identity `80bfc28`. Sanitized learning only; credentials and detailed
+runtime evidence stay with the application. This entry does not certify future
+images, every endpoint, provider transactions or production capacity.
