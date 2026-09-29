@@ -38,6 +38,43 @@ Keep project names, cloud identifiers, secrets and exact topology in its runbook
   reusable job identity differ. Existing cloud trust may reject a new promotion
   caller even when its code and secrets are correct.
 
+## Bind environment approval to an immutable candidate
+
+Branch names describe a source lane; they are not release identities. For a
+development → staging → UAT → production model, define the candidate carried
+between environments as the pull-request number and exact head SHA plus the
+complete source-SHA/artifact-digest set, deployment configuration identity and
+reviewed migration set. In a multi-repository system, keep one release manifest
+as the system-level compatibility record instead of treating independently
+moving branches as one candidate.
+
+Create an isolated synthetic development environment per active backend PR or
+branch when local peers would expose unrelated source, credentials or schemas.
+This can be a namespace or Compose project on shared infrastructure; it need not
+be a VM per developer. Frontend-only work can use bounded local mocks and a
+shared integration environment, reserving a per-PR environment for unreleased
+backend integration. Make Staging the default remote backend for frontend
+engineers after producer changes merge. Give frontend contributors only the
+application URL, synthetic identities and scoped diagnostics they need; do not
+grant database, container-host, VM or internal-service credentials. UAT access is
+for controlled candidate verification and defect reproduction, not a mutable
+development loop. Production access should use approved observability/support
+paths and must not become routine customer-data browsing.
+
+Use staging for continuously merged integration and UAT for one stable release
+candidate. If the UAT PR head, any artifact digest, configuration hash or
+migration set changes, dismiss previous approvals and rerun the required UAT
+checks. Do not let a moving staging branch silently change the candidate under
+QA. Production canary and full rollout must promote the UAT-tested digests
+without rebuilding; record canary success, full promotion and rollback as
+separate outcomes.
+
+Document implementation status explicitly. A branch diagram or environment
+name does not prove that per-PR provisioning, approval invalidation, artifact
+promotion, data isolation or rollback automation exists. Verify the provider's
+actual branch-protection and environment-gate behavior, then exercise a changed
+PR SHA and confirm that stale approval cannot reach production.
+
 ## Transactions, jobs and recovery
 
 - Acquire durable ownership before mutation; save original topology hash,

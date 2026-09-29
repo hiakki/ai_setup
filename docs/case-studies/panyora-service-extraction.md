@@ -647,3 +647,36 @@ unsupported flows require integrated mode. Maintained source/evidence:
 `panyora-docs/docs/developer-handoff-2026-09-29.md`; frontend implementation
 published as `13237af` on 29 September. This source publication does not deploy
 mocks to a server or change the shared backend's verification status.
+
+### Later 29 September decision: environment lanes need immutable UAT identity
+
+The product owner selected four logical delivery environments: an isolated
+backend sandbox for a custom/feature PR into `stg`, shared integration from the
+`stg` branch, UAT from the `stg` to `main` PR, and production from `main` through
+canary and full promotion. Frontend-only work normally keeps the faster local
+mock path; it needs a per-PR environment only when matching unreleased backend
+behavior is material.
+
+The frontend environment rule was made explicit: Staging is the default remote
+backend after producer changes merge; the matching Development SSI is an
+exception for unreleased backend integration. UAT is stable, time-bounded access
+for release-candidate verification or defect reproduction. Production is not a
+development target and exposes only approved observability/support paths. URLs,
+synthetic accounts and scoped diagnostics do not imply database, VM, Docker or
+internal-service access.
+
+The important correction was that a UAT environment named after a moving branch
+does not identify what QA approved. Bind approval to the PR number and exact head
+SHA, complete service source/image-digest set, deployment configuration identity
+and reviewed migrations. Any candidate change dismisses approval and requires
+redeployment and repeated acceptance. Production promotes the approved digests
+without rebuilding. For a multi-repository product, an ops-owned release manifest
+is the compatible system candidate rather than the independent branch tips.
+
+This was an architecture/documentation decision on 29 September 2026. Existing
+Panyora hosted workflows were still manual and `main`-only when recorded; no
+per-PR provisioning, staging/UAT deployment, branch protection, approval-reset
+or production canary run was performed for this entry. Reuse the identity and
+evidence rule, not Panyora's branch names. Verify the target provider actually
+invalidates stale approval and promotes the same artifact digests before calling
+the model implemented.
