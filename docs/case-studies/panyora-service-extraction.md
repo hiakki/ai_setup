@@ -609,3 +609,41 @@ Provenance: owner records `panyora-frontend/docs/engineer-onboarding.md`,
 `43269ab`, identity `80bfc28`. Sanitized learning only; credentials and detailed
 runtime evidence stay with the application. This entry does not certify future
 images, every endpoint, provider transactions or production capacity.
+
+### Later 29 September refinement: local mocks for everyday UI work
+
+The shared synthetic backend solved real integration but still required remote
+access and a complete service/database stack for ordinary screen work. The user
+requested a frontend-only, database-free path. Keep the shared backend for real
+integration; add a separately labelled local mock mode for the common UI loop.
+The frontend owns synthetic JSON and bounded memory-only handlers, reached through
+the same gateway by browser and server-rendered requests. Unsupported operations
+fail explicitly and never fall back to a remote API. Each launcher uses its own
+cookie namespace; restart/reset discards state. No new VM deployment is needed.
+
+Observed checks: three owner logins and inventory screens worked through normal
+UI forms; a quantity edit survived a page reload. A clean frontend-only source
+export installed and started without an environment file or sibling backend
+checkout. HTTP tests covered staff review, stale/replayed requests, reset,
+foreign Host/Origin denial and unsupported checkout. External browser requests
+were blocked during UI checks; the existing remote font failed and system-font
+fallback rendered, so this is not a claim that every asset is locally bundled.
+
+Two contract traps were corrected: root package hoisting can select a different
+contract version from the actual consumer, so resolve from that app; and strict
+NodeNext checking rejected extensionless imports in a package designed for a
+bundler, so the fixture check uses the consumer's module-resolution convention.
+Fixtures check published response types and commands use the published runtime
+schema. These checks detect structural drift, not changed business policies.
+Very distant fixed trial dates also produced implausible UI; the seed now sets
+relative trial dates at startup/reset, covered by an HTTP regression.
+
+Reuse this for UI teams that need fast isolated screen states. Keep real tests
+for stock, tax, invoices, payment and authorization rules; do not recreate those
+authorities in a mock server. Storefront fixtures in this bounded implementation
+are static and do not track inventory mutations. Financial operations and
+unsupported flows require integrated mode. Maintained source/evidence:
+`panyora-frontend/mocks/`, `docs/mock-development.md` and
+`panyora-docs/docs/developer-handoff-2026-09-29.md`; frontend implementation
+published as `13237af` on 29 September. This source publication does not deploy
+mocks to a server or change the shared backend's verification status.

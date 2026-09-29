@@ -74,7 +74,26 @@ engineer to clone backend/gateway source. Verify real registration, sign-in/out,
 mutation/reload, denied access and an actual hot-reload edit in a clean consumer
 checkout. A production HTTP proxy may not support development WebSockets.
 
-For routine frontend integration, a dedicated synthetic shared backend can reduce
+For everyday UI work, prefer an optional database-free local mock mode when a
+real service stack is unnecessary. Keep synthetic fixtures and bounded handlers
+with the frontend, behind the same API paths and one browser origin. Cover
+server-rendered requests as well as browser requests; a browser-only interceptor
+does not intercept server-side reads. Use memory for simulated edits, predictable
+reset, explicit mock labels and distinct session cookies. Never fall back to a
+real backend for an unsupported mock route. Ignore remote credentials in this
+mode and reject unintended network exposure. Keep the simulation small rather
+than reproducing stock, tax or payment authorities.
+
+Validate fixtures and commands against the consumer's pinned producer contracts,
+not copied schemas or whichever different package version happens to be hoisted.
+Use the same module-resolution conventions as the consumer when typechecking
+published types. Structural checks cannot infer permission or workflow changes:
+adopting a changed API also needs scenario review and real integration tests.
+Verify normal login for each documented account, a mutation/reload, reset,
+unsupported-route behavior and a fresh frontend-only checkout. Report these as
+mock UI checks, never backend authentication or financial verification.
+
+For real frontend integration, a dedicated synthetic shared backend can reduce
 laptop setup. Give individual revocable environment access and ordinary scoped
 app accounts, never internal service or database credentials. Check environment
 identity and readiness before starting the UI or sending provisioning mutations.
