@@ -125,6 +125,35 @@ or financial audit. No private media, account records or original conversations
 are included. Follow linked owner records in an authorized checkout for current
 release status; this case remains usable without that private access.
 
+## 30 September follow-up: resumable signup needs a reconstructable key
+
+**Problem and failed approach.** A resumable signup stored its cooldown and safe
+destination under an email-specific browser key. After refresh, the form no
+longer knew that email, so it could not find the otherwise valid recovery state.
+Early browser tests hid the defect by manually re-entering the email after reload.
+Another early repair cleared the visible resume action before a resend completed,
+so a throttled or temporarily failed request stranded the user on the same page.
+
+**Replacement and status.** The recovery record now includes a bounded pointer to
+the normalized lookup email as well as an allowlisted destination. Transient
+429/5xx/network failures preserve the last confirmed recovery action. Successful
+resume, successful ordinary signup, and the owner's definitive completed-account
+response clear both the pointer and per-email state. This was adopted in source;
+application release and production evidence remain with the application owner.
+
+**Verification and reuse.** Component-browser regressions reload without manually
+reconstructing form state, retry after throttling and temporary failure, and model
+completion in another session. The broader rendered onboarding suite and a
+production build also passed in the source review. These are local synthetic owner
+responses, not proof of email delivery or a deployed customer journey. For any
+resumable task, persist enough non-secret state to rediscover the authoritative
+draft, preserve it across uncertain failures, clear it on terminal transitions,
+and ensure the test performs the same reload a user does.
+
+Source reviewed 30 September 2026: current Servinoza frontend, Accounts,
+Verification and application decision docs in their owner repositories. Private
+account data and release identifiers are intentionally omitted.
+
 ## 28 September addendum: staged extraction and journal ingestion
 
 **Problem and approach tried.** Service extraction initially advanced toward image
