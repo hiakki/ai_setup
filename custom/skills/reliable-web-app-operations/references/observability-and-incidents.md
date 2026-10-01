@@ -92,6 +92,15 @@ and disk capacity. Do not raise production safety limits just to pass a test.
 Keep synthetic records distinguishable from customer activity. A collector smoke
 test does not establish that an unrestarted application emits instrumentation.
 
+Assign one intentional owner and destination for each host metric, log and trace
+stream. Do not leave a cloud agent exporting the same signals as a self-hosted
+Prometheus/log/trace stack without an explicit requirement, cost decision,
+retention policy and verified IAM. A misconfigured duplicate exporter can drop
+everything while generating enough retry logs to consume the host disk. When
+retiring it, stop and disable it first, verify the retained telemetry path, then
+remove the package and its own residual files; do not infer retained coverage
+from the replacement collectors merely being ready.
+
 Make application telemetry opt-in where the deployment contract requires it.
 Preserve operator settings and separate monitoring provisioning from app rollout.
 Validate effective in-container configuration after updates: atomic file replacement
