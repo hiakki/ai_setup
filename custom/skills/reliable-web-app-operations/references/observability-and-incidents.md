@@ -110,6 +110,25 @@ the right path for every host: verify persistent versus volatile journal storage
 and retain exact unit/identifier filters. Do not collect the whole system journal
 or grant applications extra permissions to compensate for a collector mistake.
 
+## Remote Diagnostic Endpoint Acceptance
+
+Treat a remote diagnostic or MCP connection as four separate gates: the active
+ingress route, the public adapter's enablement/credential/expiry policy, matching
+read authority on every downstream owner, and the client's credential lookup.
+Inspect the running proxy process arguments before selecting a configuration path;
+validating a retired checkout or the proxy's default path creates false evidence.
+
+For clients that accept a `bearer_token_env_var` setting, supply the environment
+variable's **name**, not the token value. Keep the value in the platform's secret
+store and effective process environment. Registration success and `tools/list`
+still do not prove useful diagnostics: call one adapter-local tool and at least one
+tool from each downstream owner family. The same sanitized error fingerprint across
+otherwise unrelated owner tools is evidence of a shared boundary failure such as
+disabled owner policy, stale authority URL or credential mismatch. Align and rotate
+the bounded read credential together, verify every real tool call, then remove
+temporary transfer files. A successful diagnostic read is operational evidence,
+not proof that the observed business or provider workflow succeeds.
+
 ## Safe Correlation And Failure Behavior
 
 - Instrument the actual framework/runtime path. A vendor-specific header hook
