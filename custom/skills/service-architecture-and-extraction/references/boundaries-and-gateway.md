@@ -153,6 +153,16 @@ Inventory PII across profiles, membership, party records, immutable documents, l
 
 The gateway owns runtime traffic behavior: route selection/composition, trusted forwarding, upstream connection behavior and any intentionally centralized edge policies. Ops owns installation, release orchestration, process definitions, configuration delivery, deployment evidence and recovery. Host TLS/DNS/proxy infrastructure may have another owner. A dedicated gateway repo is optional; select it when ownership or release needs justify it.
 
+Prefer one reviewed gateway policy source over a chain of mutation scripts that
+incrementally rewrites generated configuration. Let Ops check out an exact Gateway
+revision, test it, publish only the reviewed artifact and deployment helper, validate
+the proxy configuration, then reload with rollback. Once that path is observed in
+production, remove superseded extraction scripts, one-time cutovers, old service
+definitions and migration-specific tests from active repos; Git history and the
+application's evidence docs preserve necessary history. Before deletion, search the
+live scheduler, service manager, deployment workflows and checked-in imports so a
+historical-looking file is not still runtime authority.
+
 The gateway need not own service business logic or all API contracts. Service authorization remains enforced at the protected operation even when the edge performs authentication. Inventory direct service, worker, server-rendered and webhook access paths that can bypass browser routing.
 
 For a forwarding gateway, preserve and test the actual protocol contract:
