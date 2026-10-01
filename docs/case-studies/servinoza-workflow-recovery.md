@@ -508,3 +508,23 @@ reconciled through supported commands rather than direct database edits.
 Reuse this pattern when demo, sandbox or training cohorts bypass normal onboarding:
 define the state transition once, enforce it in every owner projection, and test the
 directory, detail page, bulk actions and review queues together. Preserve independent
+payment restrictions and audit history.
+
+### Provider-attempt truth and transient owner reads, 2 October 2026
+
+A failed provider payment attempt was presented as “confirmation pending” because
+the application retained the active retryable payment link but did not project the
+latest validated attempt outcome. The replacement keeps link lifecycle and attempt
+lifecycle separate: an active link can remain reusable while the latest attempt is
+failed. A rendered regression asserts one failure message, a retry action, no
+contradictory pending copy, and eventual capture after retry. This does not prove
+why the provider rejected the real attempt or that a later live payment succeeded.
+
+The same investigation correlated a rendered page failure with a release window in
+which the sole owner container was explicitly stopped before replacement. Direct
+health later passed, but the Web owner client had made one read attempt and exposed
+the brief disconnect as a full-page error. The bounded replacement retries only
+network-level failures for idempotent reads; mutations and authoritative HTTP
+responses remain single-attempt. Unit tests cover recovery plus both non-retry
+boundaries. Container revisions, production diagnostics and release evidence stay
+with the application; this case records the reusable state and deployment lessons.

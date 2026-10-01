@@ -27,6 +27,7 @@ read [release-versioning-and-hotfixes.md](release-versioning-and-hotfixes.md).
 - Verify builds from each repo's declared inputs. Preserve versioned packages/SDKs; undeclared sibling source imports or parent runtime files defeat independent checkout/deploy claims.
 - Keep private AI setup, caches, credentials, uploads and databases out of source archives. Check tracked/staged files and archive contents; ignore rules do not remove already tracked data.
 - Build before switching traffic or process pointers. Health checks include relevant dependencies and the actual public path, not only a static endpoint.
+- A single-instance stop/recreate deployment creates a real unavailability window even when the replacement becomes healthy. Prefer overlap or traffic switching when the platform supports it. Where that is not yet available, let caller-facing idempotent reads recover from brief network-level disconnects with a small bounded backoff; never extend that policy to mutations or retry an authoritative HTTP response.
 - Serialize changes where needed. Define release/database lock scopes and ordering, avoid nested non-reentrant locks and preserve useful failed-release evidence.
 
 Independent release means compatible changes can target one component. Breaking contracts, schema changes, gateway changes or distributed workflows may need coordinated ordering. Preserve older consumers during an additive transition. Do not promise all repos always deploy in isolation.
