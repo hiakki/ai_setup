@@ -489,3 +489,22 @@ financial locks during staged extraction. Distinguish that evidence from specula
 future products, unknown team size and unmeasured scaling benefits. The application
 adoption record preserves the specific recommendations and source references;
 this follow-up is a reviewed proposal, not another deployed migration.
+
+### Test-account cohort versus approval state, 1 October 2026
+
+A production administrator flow exposed a cross-owner invariant gap: converting a
+pending account into a nonfinancial QA cohort changed its cohort flag but preserved
+the pending approval state. The directory therefore showed both QA and Pending,
+kept review actions visible, and allowed verification owners to return it to review
+queues. Hiding one badge alone would have left the contradictory backend state.
+
+The correction treats cohort conversion as one canonical transition. Entering QA
+sets operational approval unless an explicit safety hold exists, excludes the
+account from account/document review queues, suppresses review controls, and keeps
+real collections and payouts blocked. Removing a QA hold restores QA access; leaving
+QA resets a non-held account to the ordinary onboarding state. Existing records are
+reconciled through supported commands rather than direct database edits.
+
+Reuse this pattern when demo, sandbox or training cohorts bypass normal onboarding:
+define the state transition once, enforce it in every owner projection, and test the
+directory, detail page, bulk actions and review queues together. Preserve independent
