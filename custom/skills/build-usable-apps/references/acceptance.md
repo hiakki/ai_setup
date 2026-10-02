@@ -51,6 +51,14 @@ Inspect a batch of closed/open screenshots yourself. Functional assertions can
 pass while labels, visual hierarchy, density and readable grouping remain poor.
 After a corrective batch, regenerate relevant captures; do not review stale ones.
 
+For a deployed user-visible change, completion evidence must include a current
+live-site screenshot for every claimed pointer. A shared screenshot is acceptable
+only when every supported result is plainly visible. Record the environment and
+state, and keep the capture close to the claim it supports. If the live flow cannot
+be reached or populated, mark the pointer unverified instead of substituting a
+local capture or declaring completion. The screenshot is visual evidence only;
+also verify the action, persisted state and provider outcome when those matter.
+
 For native dialogs, assert background application controls cannot receive focus,
 the modal remains open, its controls are reachable and Escape restores focus.
 Do not add a custom focus trap just because a browser temporarily reports BODY
