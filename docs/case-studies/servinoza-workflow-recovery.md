@@ -670,3 +670,44 @@ or money movement was involved. Provenance: sanitized owner Accounts release
 `da9dba0`, DB Ops migration revision `70fb4cf`, and application-owned release
 evidence dated 2 October 2026. Exact identities, screenshots and runtime receipts
 remain with the application.
+
+### Public route identity and approval-to-live timing, 2 October 2026
+
+A compact-list release passed its build and canary but still produced a React
+hydration mismatch on the authenticated public route. Two independent edge/runtime
+effects were involved. Email obfuscation first rewrote footer markup before React
+hydrated it. After removing that mutation trigger, the server still classified
+the internal `/partner/...` pathname as a workspace route while the browser
+classified the public `/in/partner/...` pathname as a public route. The two sides
+rendered different footer trees.
+
+The adopted fix normalizes supported market prefixes before any route-based
+component-tree decision and keeps edge-obfuscated content from changing the
+pre-hydration DOM. Regressions cover internal and market-prefixed workspace paths.
+Live acceptance separately navigated the authenticated desktop, mobile and detail
+states, collected browser page errors, and inspected returned HTML for edge rewrite
+markers. A green build, anonymous canary or direct-origin probe would not have
+caught the combined public-path failure.
+
+The same release also showed why one CI/CD duration is misleading. Its evidence
+records the clean final pipeline time separately from elapsed approval-to-deploy
+and approval-to-canary time. Failed runs and corrective releases remain in the
+timeline instead of being removed from the delivery measurement. Reuse these
+rules for public SSR applications and gated releases:
+
+- Normalize the externally visible route before server/client layout decisions,
+  and test both internal and public-prefixed forms against the same classification.
+- Inspect the public edge response for transformations that can alter hydration;
+  direct-origin equality is insufficient.
+- Measure automated stage duration, pipeline-start-to-deploy, approval-to-deploy
+  and approval-to-canary as distinct values.
+- Preserve failed attempts and correction overhead; the final successful run
+  describes pipeline performance, while approval-to-live describes delivery.
+- Keep exact run identifiers, application screenshots and customer-specific
+  release evidence with the owner application.
+
+Status: adopted and live-verified for the affected authenticated list/detail flow.
+The owner release explicitly retained an empty-History limitation and a blocked
+state-changing QA action rather than claiming full workflow coverage. Provenance:
+sanitized owner Frontend releases through `db360d8`, Ops release evidence merge
+`73b39aa`, and application-owned RC evidence dated 2 October 2026.
