@@ -26,17 +26,25 @@ keep release-write and deployment credentials out of that execution environment.
 Pass source/registry credentials through scoped mechanisms that do not persist
 in image layers, build arguments, logs or archived source.
 
-When an image archive crosses from an unprivileged build job to a credentialed
-publisher job, that job boundary is a security control. Do not collapse the jobs
-only to bypass CI artifact limits: application build code can leave processes or
-state behind on its runner. Compress the transient archive, give it the shortest
-useful retention, and delete it immediately after successful registry publication.
-Keep only small provenance and deployment receipts for audit/recovery. Test the
-cleanup permission through the real workflow; a reusable workflow cannot elevate
-the caller's token permissions.
+Choose the image handoff according to the actual trust boundary. For untrusted or
+third-party build input, an image archive crossing from an unprivileged build job
+to a credentialed publisher job is a security control: application build code can
+leave processes or state behind on its runner. Compress such an archive, give it
+the shortest useful retention, and delete it immediately after successful registry
+publication. A reusable workflow cannot elevate the caller's token permissions.
+
+For a protected release that builds only reviewed source from trusted repositories,
+it can be simpler to scan the locally built image and push it directly to the final
+registry from the same hosted job. Inject registry credentials only into the final
+publish step, log out on exit, and never create or upload an image tar. Document the
+weaker same-runner credential boundary and enforce protected branches/environments,
+pinned actions, immutable destination tags and short-lived or narrowly scoped
+registry credentials. Keep only small provenance and deployment receipts when the
+release coordinator needs them for audit or recovery.
 
 Treat a provider artifact-quota rejection as an account/storage incident rather
-than a build failure. Verify the provider's current accounting model: artifact
+than a build failure when artifacts are required. First remove unnecessary large
+handoffs, especially image tars already destined for a registry. Then verify the provider's current accounting model: artifact
 storage may be pooled with package storage while dependency caches use a separate
 allowance. Deleting visible artifacts may still require a documented recalculation
 window, and unavailable billing/package visibility is an evidence limit. Preserve
