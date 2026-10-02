@@ -40,6 +40,38 @@ schedule/event integration or document manual dispatch.
 - Preserve approval boundaries: generating a PR, merging it, publishing its tag,
   publishing an image and deploying it are separate actions.
 
+## Make a multi-repository release candidate reviewable
+
+Before merging, publishing or deploying a multi-repository product for a production defect,
+create one ops-owned release-candidate directory with a stable identifier such as
+`RC-YYYYMMDD-NNN`. Keep a machine-readable JSON or YAML manifest as the authority
+and generate the human-readable HTML review from it; do not maintain a second
+hand-edited release description.
+
+The candidate manifest should record:
+
+- the actually deployed production version and immutable digest of every app;
+- each affected app, its exact source revision and its calculated next version;
+- the owning repository's versioned `CHANGELOG.md` path;
+- bounded paths to issue reproduction, current screenshots and the regression's
+  before-fix failing output, plus what prior coverage missed;
+- the proposed pull requests/commits, required final checks and candidate status;
+- approval identity/time and the exact candidate hash once approval is granted.
+
+Keep implementation, changelogs and regression tests in their owning app
+repositories. The ops repository retains only cross-app coordination, references
+and review evidence. Before-fix evidence must demonstrate the reported failure;
+post-fix checks are separate and must not overwrite it. Redact secrets, customer
+data and provider identifiers from evidence.
+
+Use an explicit state transition such as `draft` → `approved` → `deploying` →
+`released` or `failed`. CI/CD must reject a draft, an incomplete manifest, a
+candidate whose source/configuration/evidence changed after approval, or a
+generated HTML view that is stale relative to the manifest. Define what approval
+authorizes for the target product. If one approval covers merge, build, publish
+and deployment, record that scope explicitly; never infer it from a comment or
+from an application/business approval flag.
+
 ## Provenance and credentials
 
 Bind published release tag → resolved commit → committed package version →
@@ -111,6 +143,9 @@ Useful checks: first/subsequent patch/minor/breaking releases; no-op retries;
 merged-but-unpublished preview; package/lockfile agreement; moved tags; auth
 denial; bounded provider failure; partial-write recovery; production hotfix with
 unrelated main features; older maintenance line versus newer main; code forward-port.
+For a review-gated multi-app fix, also test incomplete manifests, preserved
+before-fix evidence, stale generated HTML, approval invalidation after any candidate
+change, and rejection of CI/CD before approval.
 Use the pinned tool for version tests. A mock duplicate should match the actual
 SDK contract. Record local tests, real PR creation, tag publication, image/digest
 verification and live deployment separately. Documentation-only updates need
