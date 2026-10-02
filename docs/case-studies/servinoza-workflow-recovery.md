@@ -597,3 +597,38 @@ Web `89ed1ec`, `5767f78`, `561f2ad` and `24305ab`; Payments `109073d`; DB Ops
 that every hosted workflow ran after every change. MCP read success does not prove a
 provider payment, alert delivery or backup restore; those remain separate acceptance
 checks with application-owned evidence.
+
+### Reviewable release cycles for production defects, 2 October 2026
+
+A production privacy defect showed that passing suites and a successful deployment
+could coexist with a missing actor-specific regression. The operator therefore
+required every defect spanning one or more application owners to become a single
+reviewable release candidate before any CI/CD activity. Scattered pull requests,
+version previews and screenshots are insufficient because they do not describe one
+immutable system change or make the original coverage gap visible.
+
+The adopted Servinoza convention is an ops-owned
+`release-cycles/RC-YYYYMMDD-NNN/` directory. Its JSON or YAML manifest is the
+authority and its presentable HTML page is generated from that manifest. The
+manifest records every app's actually deployed production version and digest, the
+affected apps and their calculated next versions, each owner repository's
+`CHANGELOG.md` path, exact proposed revisions, and bounded paths to reproduction
+screenshots, the regression test's before-fix failing output and an explanation of
+what prior tests missed. Implementation and regression tests stay in their owner
+repositories; Ops stores only coordination, proof and references.
+
+The candidate remains `draft` until the operator reviews the generated HTML and
+gives an explicit green flag. For this product that single approval authorizes the
+approved bundle's merges, CI/CD and production deployment. Any change to source,
+version calculation, evidence, configuration or manifest content invalidates the
+approval. The pipeline must reject unapproved or incomplete candidates and verify
+that the HTML was generated from the approved manifest. Final checks and deployment
+outcomes are appended without deleting the original failing evidence.
+
+Status at capture: this is the reviewed release-control decision, not evidence that
+the Ops manifest schema, renderer or enforcement pipeline has been implemented.
+Current application versions, customer evidence, release identifiers and rollout
+results remain in Servinoza's private owner repositories. Reuse the generic
+[release versioning and hotfix guidance](../../custom/skills/reliable-web-app-operations/references/release-versioning-and-hotfixes.md)
+and verify the target actually blocks CI/CD before approval and invalidates stale
+approval before calling the gate operational.
