@@ -2,6 +2,31 @@
 
 Use a bounded threat model and risk-based test matrix. This reference captures extraction regressions and workflow lessons; it is not a full pentest methodology or a guarantee of security. For current framework/provider/security-standard specifics, consult authoritative documentation and the applicable installed specialist skill.
 
+## Keep test ownership explicit
+
+Do not use an operations repository as the default home for every test that does
+not fit a service. Assign checks by the behavior they verify:
+
+| Owner | Test source it should own |
+| --- | --- |
+| Application/service | Unit, component, service contract and domain-invariant tests |
+| Gateway/edge | Route selection, normalization, forwarding, headers, limits and protocol behavior |
+| Operations | Packaging, topology, configuration, rollout, rollback, health collection and infrastructure recovery |
+| Cross-service QA | Browser journeys, actor/tenant authorization matrices and release acceptance spanning owners |
+
+Ops may select an immutable candidate, check out a pinned QA revision and invoke
+the release gate. That orchestration does not transfer test-source ownership to
+Ops. Keep the QA repository a contract client: it should consume published or
+documented interfaces and must not import sibling application source. It should
+not contain Dockerfiles, deployment manifests, proxy installers or business-rule
+implementations.
+
+Avoid solving an Ops dump by moving every leftover check into Gateway. Retire
+one-time proxy mutation and cutover scripts only after verifying they are no
+longer referenced by the live release path; preserve dated evidence and Git
+history. Add boundary regressions so product QA, host-proxy editors and deployment
+controllers cannot silently return to the wrong owner.
+
 ## Endpoint and actor matrix
 
 Discover actual methods/handlers, generated/dynamic routes, compatibility proxies, internal APIs, webhooks and server-rendered access. A gateway prefix list does not enumerate all endpoints. Record method/path, owner, exposure, authentication, tenant/role/object/field policy and side effects.

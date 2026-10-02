@@ -1,6 +1,6 @@
 # Panyora: service extraction, central CI/CD, security and QA
 
-Reviewed: 27 September 2026; extended 29 September 2026. Type: curated engineering case study for cross-project
+Reviewed: 27 September 2026; extended 2 October 2026. Type: curated engineering case study for cross-project
 learning. Search terms: Panyora, microservices, monolith segregation, service
 extraction, cicd, CI/CD, DevOps, gateway, database operations, security, QA,
 containers, Docker, Kubernetes, versioning, hotfix, promotion, rollback,
@@ -81,6 +81,7 @@ one historical report alone gives the wrong picture of the later setup. [S1–S4
 | Security regression | Direct routing to the extracted auth service bypassed a request-size guard in the old adapter. The fix checked actual streamed bytes and declared length. | Re-test controls at the new owner and public path: body bounds, raw bytes, origins, cookies, trusted headers, revocation and service credentials. Proxy protection does not prove direct-service protection. | S8 records the regression, fix and repeated local/public checks; not a whole-application security certification. |
 | Runtime isolation | Inspection checked actual runtime DB roles and environment separation. Container hardening did not establish network isolation. | Verify running credentials and privileges. Separate nonroot/read-only execution, network policy, tenant/object authorization and secret distribution. | S2/S8 describe bounded observations, not a universal security guarantee. |
 | QA evidence | Browser flows, local DB tests, denied-role requests and provider mocks supported different claims. Parallel browser runs collided in one output directory; login bursts hit legitimate throttling. | Use allowed and denied journeys with isolated fixtures/artifacts. Fix test orchestration without weakening security limits. Preserve failed attempts and skipped-case distinctions. | S1/S8; demo actions and mocks did not verify real settlement, refunds or email delivery. |
+| QA repository ownership | Cross-service browser, security and integration suites accumulated in Ops beside retired host-Nginx mutation scripts. Moving all of them to Gateway would have created a new catch-all owner. | Keep Gateway responsible for edge protocol tests, Ops for deployment/recovery tests and a dedicated QA owner for cross-service acceptance. Ops may invoke a pinned QA revision as a release gate. | S12 records source extraction and compile/static checks; environment-backed journeys were not rerun during the ownership-only change. |
 | Deployment portability | Compose and Kubernetes needed different discovery, secrets, job and recovery behavior. A selector did not migrate data or stop an old scheduler. | Find hardcoded loopback assumptions, provision the target, verify data connectivity and drain old jobs before cutover. Require target-specific runtime evidence. | S5: local adapter/rendering and hosted inspection evidence; new fleet/cluster deployment remained untested. |
 | Documentation discovery | A docs entry point composed owner-maintained sources with revision/hash snapshots and a bounded operation inventory. | Keep contracts with owners; provide a small index with freshness/coverage limits. Generated route inventory is not reviewed authorization or automatically OpenAPI. | S9 describes an internal local artifact; publication/access controls are separate. |
 | Database runtime ownership | DB tooling owned container/data paths, backup scheduling and guarded recovery; ordered domain migrations stayed with their existing authority. | Include stateful resources and recovery dependencies in diagrams, even when they have no HTTP route. A container name is not a repo or data owner. | S10 records local/VM relocation and disposable restores; no new runtime audit was performed for this extension. |
@@ -128,6 +129,7 @@ evidence is needed. Current operating guidance remains with the application owne
 | S9 | `panyora-docs/README.md` | Owner-composed docs, snapshot checks and access limits |
 | S10 | `panyora-db-ops/README.md` | DB runtime ownership, daily successful-backup retention and guarded disposable recovery |
 | S11 | `panyora-ops/docs/image-hardening-2026-09-27.md` | Later shellless packaging, actual runtime probes, size and Git-derived tag correction |
+| S12 | `panyora-qa/README.md`; `panyora-ops/tests/ownership-boundary.test.mjs`; `panyora-docs/docs/owners.md` | QA/Gateway/Ops ownership split and regression boundary |
 
 The 28 September extension read S10 at
 `panyora-db-ops@14d9fcdc4f1c3a8f80bec9c97903627d89bb50a5` and S11 from
@@ -135,6 +137,32 @@ the same ops revision named above. These are maintained source records, not fres
 VM observations. S11 supersedes S2's early full-SHA human-readable tag description:
 later tags use app version plus Git's own abbreviation, while full provenance and
 digest-based deployment remain required.
+
+### 2 October 2026 correction: Ops, Gateway and QA are separate owners
+
+The active Ops repository still contained cross-service Playwright journeys,
+authorization and invalid-input suites, service-boundary fixtures, an API contract
+consumer and retired scripts that edited host Nginx configuration. This repeated
+the catch-all Ops pattern that the service extraction was intended to remove.
+
+The replacement created a dedicated QA repository for cross-service acceptance.
+Gateway retained route and protocol implementation/tests. Ops retained build,
+deployment, topology, promotion, rollback and infrastructure checks, and gained a
+regression that rejects product QA directories, Playwright dependencies and host
+proxy mutation scripts. The central catalogue now records twelve source owners
+while preserving ten HTTP runtime identities. QA has no container, manifest or
+deployed process.
+
+Verification covered 167 Ops tests (166 passed, one intentional skip), 20 Gateway
+tests, two QA ownership checks, compilation/listing of 36 Playwright cases and the
+12-owner documentation refresh/check/build. The environment-backed browser,
+security and service-integration suites were not executed because this change did
+not select a mutable runtime or private fixture set. No deployment or provider
+transaction occurred.
+
+Provenance: `panyora-qa@7023a29`, `panyora-ops@e1d6aab`,
+`panyora-gateway@7823341` and `panyora-docs@52da249`. Application docs remain the
+current authority.
 
 Locate these within an already authorized Panyora workspace. Do not clone private
 repositories or expose raw documents merely to follow a case reference. The case
