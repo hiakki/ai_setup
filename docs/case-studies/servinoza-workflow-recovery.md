@@ -632,3 +632,41 @@ results remain in Servinoza's private owner repositories. Reuse the generic
 [release versioning and hotfix guidance](../../custom/skills/reliable-web-app-operations/references/release-versioning-and-hotfixes.md)
 and verify the target actually blocks CI/CD before approval and invalidates stale
 approval before calling the gate operational.
+
+### Strict internal contracts and live schema capability, 2 October 2026
+
+An authenticated administrative page remained broken through several individually
+reasonable repairs. A consumer first lagged a producer's strict response schema.
+After that compatibility update, the deployed application expected a database
+function overload that its live owner database had not received. Applying the
+additive migration exposed a third defect: the producer selected a password hash
+to calculate an authorization flag and accidentally spread the hash into its
+internal response. A strict downstream schema rejected the unexpected field and
+the UI surfaced the dependency failure as a generic server error.
+
+The replacement keeps credential material inside its owning service, derives the
+authorization flag locally, and returns an explicit credential-free projection.
+The regression first failed on the presence of the hash, then passed while also
+asserting the authorization flag remained true. Deployment verification separately
+checked the running database capability, the live internal response keys, the
+authenticated page after a stable reload, and a current screenshot. Unit tests,
+image scanning, deployment success and anonymous canaries had not proved that
+combined journey.
+
+Reuse these gates when a release changes authentication or a cross-service read:
+
+- Test exact producer output against the consumer's strict schema, including a
+  negative assertion for credentials and private fields.
+- Treat a selected secret as tainted even when it is needed only for a derived
+  boolean; destructure it out before forming the response.
+- Verify required database functions, columns and grants through the running
+  application's actual connection before calling a deployment compatible.
+- Exercise the authenticated public route after deployment and preserve failures
+  encountered between partial repairs instead of replacing them with the final
+  success claim.
+
+Status: adopted and live-verified for the affected administrative read; no payment
+or money movement was involved. Provenance: sanitized owner Accounts release
+`da9dba0`, DB Ops migration revision `70fb4cf`, and application-owned release
+evidence dated 2 October 2026. Exact identities, screenshots and runtime receipts
+remain with the application.
