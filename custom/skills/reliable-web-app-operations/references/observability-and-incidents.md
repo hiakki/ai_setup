@@ -129,3 +129,25 @@ or grant applications extra permissions to compensate for a collector mistake.
   keep safe error events separately and avoid links to traces never exported.
 - Check environment parsing against the installed SDK and effective process.
   A configuration-shaped unit test is not evidence of runtime enablement.
+
+## Hosted payment failures
+
+A provider-hosted failure screen proves that checkout reached the provider; it
+does not identify who caused the failure or whether money ultimately settled.
+Correlate the application's order/link with every provider payment attempt and
+the webhook history. Re-fetch final state before advising another payment because
+a failed or delayed event can be followed by capture.
+
+Retain only bounded support categories from the provider's structured attribution
+fields, such as customer timeout, issuer bank, merchant integration, gateway,
+provider or unknown. Do not expose raw descriptions, request objects, payment
+identifiers, bank references or customer data in ordinary UI or telemetry. Keep
+the link lifecycle separate from the attempt lifecycle: one active link may have
+several failed attempts and a later successful one. A failed attempt must not be
+shown simultaneously as “confirmation pending.” Test both the correct recovery
+message and absence of contradictory status copy.
+
+Separate these conclusions in the incident record: application request health,
+provider attribution, captured/refunded state, customer-reported debit and bank
+reversal. `captured=false` is not merchant receipt; a reported debit still needs
+secure UTR/RRN reconciliation before a merchant refund is promised or initiated.

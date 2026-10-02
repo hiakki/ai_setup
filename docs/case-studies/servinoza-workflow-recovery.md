@@ -65,6 +65,36 @@ Search `ai-setup search "servinoza recovery"`. For the target, record which
 lesson to adopt, adapt or reject and the test that would establish the outcome.
 Keep the target's decisions in its own repository.
 
+## 2 October follow-up: hosted checkout failure attribution
+
+**Problem and observed result.** A hosted checkout displayed a generic temporary
+failure after multiple attempts. Application, edge, webhook and worker telemetry
+were healthy, but the application retained only link-level state and a generic
+failed-attempt flag. A read-only provider query showed separate customer-timeout
+and issuer-bank failures, all uncaptured. The screenshot alone could not establish
+that attribution, and healthy application requests did not make the provider
+attempt successful.
+
+**Replacement and status.** Reconciliation now selects the latest failed attempt
+and stores only a bounded safe category. The customer UI gives category-specific
+recovery guidance and suppresses pending-confirmation copy for a failed attempt,
+while leaving the active link reusable for a later successful attempt. Raw provider
+descriptions, customer data and payment identifiers stay outside normal responses.
+This was implemented and verified locally; deployment and a customer-controlled
+successful authorization remain separate owner evidence.
+
+**Verification and reuse.** Provider fixtures cover multiple failures, latest
+attempt selection, safe output, failure followed by capture and terminal expiry.
+A production-built browser fixture checks issuer-bank guidance and the absence of
+contradictory pending copy. The live diagnosis used the provider's structured
+source/step/reason plus webhook and reconciliation history; it did not prove why
+the customer authentication timed out or that a reported bank debit reversed.
+For hosted payments, separate link lifecycle from attempt lifecycle and classify
+only from provider records after checking final capture/refund state.
+
+Sanitized source reviewed 2 October 2026. Detailed timestamps, identifiers and
+customer support evidence remain in the application's incident record.
+
 ## Extracted-service test dependency follow-up
 
 A later mail-integration guide requires an explicitly selected, versioned service
