@@ -67,7 +67,7 @@
       "source_path": "docs/case-studies/servinoza-workflow-recovery.md",
       "mode": "reviewed_document",
       "probe": "After extracting a page, its GET works but the first browser save returns 404. What gateway and mutation-route test did the mock miss?",
-      "reviewed_sha256": "6ffa4b3c0529735bc26bbf5b64217a2a5e98d113a2ef9a54ffea72a723dd7c0f"
+      "reviewed_sha256": "3ac0fadad94367e1393a6dc6d0ce36ca89caea95a6a9a027d27a0871ae7e1d7a"
     },
     {
       "document_id": "ai-setup-guide-case-catalog",
