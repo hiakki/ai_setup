@@ -246,6 +246,19 @@ engineering playbook third. Returned passages were inspected for relevance and
 evidence limits. These are source-discovery checks on this snapshot, not a
 general retrieval benchmark or proof that every lesson will be recalled.
 
+### Servinoza reviewed resynchronization — 2 October 2026
+
+The existing `ai-setup-case-servinoza` document was replaced in place from merged
+central revision `03e1b66c65d2a2f5d1b0d387fe7937f354ad3439`; no second Servinoza
+document was created. Before retention, the bank was reset to the chunks-only
+profile described above. MCP `sync_retain` produced 55 memory units. MCP
+`get_document` then matched the submitted source bytes, SHA-256
+`3ac0fadad94367e1393a6dc6d0ce36ca89caea95a6a9a027d27a0871ae7e1d7a` and source
+metadata. A new query about a failed retryable payment and its release-blocking
+test recalled the payment-state and hosted-gate lesson. This verifies one reviewed
+document update and query, not the freshness of every indexed document or a real
+provider payment.
+
 #### Maintain the reviewed index through MCP
 
 The JSON index ships with the normal cross-platform `docs` component. It contains
