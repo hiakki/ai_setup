@@ -164,6 +164,22 @@ Provenance: `panyora-qa@7023a29`, `panyora-ops@e1d6aab`,
 `panyora-gateway@7823341` and `panyora-docs@52da249`. Application docs remain the
 current authority.
 
+### Same-day follow-up: repository ownership is not a release gate
+
+A later bounded audit confirmed that the QA ownership split and its source
+boundary tests were present, but the reviewed hosted Ops release workflow did not
+check out or execute the QA repository. The QA suite was therefore available for
+manual use, not enforced as continuous promotion evidence. Its browser suite also
+did not cover the documented provider-refusal to retry to capture journey.
+
+Reuse the ownership model, but separately prove execution: bind an immutable QA
+revision to the candidate revisions and image digests, run cross-owner acceptance
+against an isolated environment through the public origin, retain bounded failure
+evidence, and make promotion consume that exact result. A QA repository, a listed
+browser suite or passing owner tests do not establish this gate. Production
+canaries should remain read-only; provider sandbox and real financial outcomes
+remain separate evidence levels.
+
 Locate these within an already authorized Panyora workspace. Do not clone private
 repositories or expose raw documents merely to follow a case reference. The case
 and skill links work without source checkouts. If source access is missing, say so;
