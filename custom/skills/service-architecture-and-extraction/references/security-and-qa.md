@@ -7,6 +7,13 @@ Use a bounded threat model and risk-based test matrix. This reference captures e
 Do not use an operations repository as the default home for every test that does
 not fit a service. Assign checks by the behavior they verify:
 
+The default model is hybrid: keep tests for one owner's behavior beside that
+owner's code, and use a separate QA repository only for journeys and policies
+that genuinely span owners. A separate QA repository alone becomes a dumpyard;
+per-service tests alone cannot prove an end-to-end customer workflow. Do not
+duplicate the same assertion in both places—test the narrow contract at its owner
+and the composed outcome in QA.
+
 | Owner | Test source it should own |
 | --- | --- |
 | Application/service | Unit, component, service contract and domain-invariant tests |
