@@ -520,6 +520,16 @@ failed. A rendered regression asserts one failure message, a retry action, no
 contradictory pending copy, and eventual capture after retry. This does not prove
 why the provider rejected the real attempt or that a later live payment succeeded.
 
+The first verification ran that Chromium journey manually, so it could not prevent
+a later release from omitting the same check. A follow-up bound the targeted
+production-build journey to the normal Web image build before publication and added
+a platform contract test that fails if the gate is removed. Treat a regression as
+release protection only when the ordinary release path invokes it and propagates
+its failure; a passing local browser run is separate evidence. The targeted journey
+and platform tests passed locally and the workflow change passed hosted contract
+checks. No Web image release had exercised the new hosted browser step at this
+capture, and the provider outcome remained simulated.
+
 The same investigation correlated a rendered page failure with a release window in
 which the sole owner container was explicitly stopped before replacement. Direct
 health later passed, but the Web owner client had made one read attempt and exposed
