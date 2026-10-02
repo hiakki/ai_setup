@@ -259,6 +259,17 @@ test recalled the payment-state and hosted-gate lesson. This verifies one review
 document update and query, not the freshness of every indexed document or a real
 provider payment.
 
+The same stable document was reviewed again after central revision
+`5189e0ff40984394ba7942eefba86bec3d4bda03` added the observability-led deployment
+corrections. Its reviewed source SHA-256 is
+`05d789b3c81828a5a0ab3f9749e5a65de570e6c73a53b9db1bbf1b2bb3f9eb1a`. The new
+material distinguishes configuration from effective rule/target convergence,
+disabled components from missing telemetry, and MCP diagnostics from provider,
+alert-delivery and restore evidence. The existing bank document was replaced in
+place; a byte-for-byte readback matched the reviewed source and a query about
+observability exposing deployment drift recalled the new convergence and release
+gate material. No second Servinoza memory entry was created.
+
 #### Maintain the reviewed index through MCP
 
 The JSON index ships with the normal cross-platform `docs` component. It contains
