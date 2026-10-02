@@ -489,3 +489,363 @@ financial locks during staged extraction. Distinguish that evidence from specula
 future products, unknown team size and unmeasured scaling benefits. The application
 adoption record preserves the specific recommendations and source references;
 this follow-up is a reviewed proposal, not another deployed migration.
+
+### Physical storage and frontend artifact checks
+
+A same-day implementation follow-up made an explicit separate-container requirement
+observable: distinct PostgreSQL cluster identifiers, data mounts and credentials,
+plus actual wrong-domain credential rejection. Preserve the source database's major
+version during extraction; do not silently combine isolation with an upgrade.
+Synthetic multi-container bootstrap checks remain separate from application schema
+migration, shared-lock replacement and authority cutover. A staging target is not a
+completed isolated service merely because it accepts a restricted login.
+
+Provisioning must also recover from a committed bootstrap whose response was lost.
+Use the recorded container identity and durable transaction marker to verify the
+outcome before retrying. Never recreate a database to resolve an uncertain commit.
+When initialization did not commit, prove the target is still the expected empty
+initial state before applying bootstrap SQL. Keep foreign or unexpected state intact.
+Owner provenance: DB-ops `scripts/domain_containers.py` and
+`runbooks/DOMAIN_CONTAINERS.md`, source revision `3bf12ca` on 28 September 2026.
+Actual disposable-cluster tests passed; production authority was not moved.
+Review also caught a fixed pending-receipt filename blocking recovery after a
+process crash. Unique same-directory atomic temporary files preserve unknown
+orphans without blocking later writes; focused tests verify old-receipt preservation.
+
+Independent frontend review found another reusable release trap: framework
+standalone output can contain loaded `.env` files. Copying the directory wholesale
+can package server credentials even when source-control ignore rules are correct.
+The replacement assembler excludes dotenv files from runtime/static/public output;
+a synthetic-file regression verifies exclusion while preserving required assets and
+the original inputs. Inspect the artifact itself, not only Git status. This does
+not make deliberately public build-time values private or prove a complete secret
+scan. Owner provenance: Frontend `scripts/assemble-app.mjs` and its packaging test,
+source revision `46d851d` on 28 September 2026; no production secret leak was
+observed or claimed. Source publication is distinct from deployment approval:
+an intermittent full-browser hydration failure remained a release gate despite
+passing builds and narrower suites. Unproven runtime fixes were reverted and the
+reproduction retained; a fixture failure was not reported as a proven live outage.
+
+### Follow-up: verify the runtime boundary and the actual renderer
+
+The first active database cutover moved one complete owner, rather than switching
+all prepared containers at once. Its foreign account lookup became a narrowly
+scoped owner API with fail-closed behavior. Native typed transfer compared schema,
+nullability and PostgreSQL data digests under a writer fence; the retired SQL login
+was disabled. The running process's connection, restricted-role queries and a
+restore into an independent container were checked. The source partitions happened
+to be empty, so this is not evidence of a populated production transfer; separate
+synthetic tests exercised typed values. A local unencrypted recovery archive also
+does not establish encrypted, recurring or off-host backup readiness. Reuse the
+separation between a provisioned target, a tested candidate and an active authority.
+App provenance: Engagement `e73912e`, DB-ops `b3c64ac`, Ops `a57425e`, and Docs
+`DATABASE_SEPARATION.md`, 28 September 2026. Original receipts stay with the app.
+
+The frontend gate was later recovered through a concrete upstream failure mechanism.
+Production diagnostics expected a host element while React's hydration cursor was
+already at its child. Checking the renderer bundled by the framework—not just the
+top-level React package—found the missing host-replay cursor restoration from
+[React #35494](https://github.com/react/react/pull/35494). A delayed lazy-route chunk
+regression failed on the unchanged build. A keyed Fragment moved reconciliation
+onto a non-host fiber without changing HTML, disabling SSR or suppressing errors.
+The same reproduction and full browser suite passed afterward. Earlier title-effect,
+transition and Suspense guesses remained recorded as failed attempts. This is a
+version-specific workaround, not a rule to wrap every component; reevaluate after
+a framework upgrade that contains the upstream fix.
+
+A separate browser-test failure waited for the home URL after signing out while
+already on that URL. Cookie removal preceded the actual navigation, so the next
+page navigation raced logout. Registering the navigation observer before clicking,
+then checking anonymous UI and cookies, exercised the real completed flow without
+changing logout behavior or adding a fixed sleep. Frontend source `f7a9425`, its
+`VERIFICATION.md` and ignored browser evidence preserve the failing and passing
+runs. Full synthetic-owner browser checks passed; production selection, real
+identity-provider callbacks and real financial transactions were not established.
+
+A subsequent owner cutover verified a populated synthetic user journey through
+the real public route and real account/fee-policy dependencies. Test accounts
+created owner data, exercised stale-state and wrong-actor rejection, and were
+denied real financial obligations. Count the resulting writes in the new cluster
+and prove the fenced source stayed empty; a successful HTTP response alone does
+not show which database owns the operation. The independent restore compared
+snapshot-consistent data digests and runtime grants. Its first clean restore
+failed because the provisioned extension depended on the existing public schema;
+the corrected restore reused that verified-empty schema rather than dropping the
+extension or weakening restore error handling. Adapt archive selection to the
+actual provisioned target and preserve the failed attempt's evidence. App source:
+Docs `DATABASE_SEPARATION.md` at `a508fdb`, 28 September 2026. This proved that
+owner's QA workflow and same-host recovery; it did not prove other domains were
+isolated, real payments worked, or off-host backup was configured.
+
+Frontend consolidation then passed ordinary VM builds, real customer/partner
+sessions, a real administrator identity-provider callback and persisted QA-run
+history. Relocating only the process cwd was insufficient: a final inspection
+found diagnostic credential-file environment paths still pointing into the old
+owners. The fix copied scoped credentials with their original permissions and
+switched only those runtime paths through a temporary listener. Retirement checks
+covered cwd, open files, environment path references, units, active configuration
+and the QA manifest, followed by a reversible directory removal and real public
+journeys. Admin history relocation briefly fenced new QA commands and drained
+existing jobs. Review caught that unfreezing writes before fallible cleanup could
+trigger an unsafe rollback; commit the handover first, then treat an uncertain
+final route reload as reconciliation. Provenance: Ops `1839442`, `ec9f0b1`,
+`1970e01` and Frontend `VERIFICATION.md`, 28 September 2026. Source snapshots used
+by an administrative QA runner can lag live releases; reporting a passing run must
+retain those revision limits rather than treating it as a current whole-app gate.
+
+On 29 September the operator explicitly made beta data disposable. Adapt the
+plan immediately: remove historical backfills and compatibility as acceptance
+requirements, while retaining owner isolation, authentication and financial
+invariants. A minimal reset seed should whitelist only necessary administrator
+identity mappings and synthetic test accounts, revoke copied sessions, omit
+provider tokens and refuse a nonempty destination. Here an initial seed failed
+on a restricted legacy profile read. Generating fresh synthetic profiles removed
+that dependency; widening the old runtime's SQL privileges was unnecessary.
+The retry committed the minimal seed on a separate owner cluster. App provenance:
+Accounts `61c51d1`, `scripts/seed-clean-beta.mjs`, and owner
+`DATABASE_SEPARATION.md`. This establishes seed behavior only; creating separate
+containers and passing builds does not establish a complete traffic cutover.
+
+The subsequent clean-owner cutover passed public customer/partner password login,
+administrator identity-provider login, request creation/acceptance, account and
+booking pages, and a cross-owner issue hold. An independent runtime checker
+verified six distinct database containers, cluster identities, storage paths and
+restricted owner logins. Process environments covered APIs and workers; the old
+database had no client sessions before removal. These are bounded runtime and QA
+results, not real provider payment or payout evidence. App provenance: Ops
+`5222519`, DB-ops `6aa2c6e`, Accounts `5fbdb25`, Verification `b9434e8`, Bookings
+`72d9d11`, Payments `bc8f3e1`, and the app's `DATABASE_SEPARATION.md`.
+
+Three additional acceptance rules came from this completion:
+
+- A clean database baseline must include handwritten constraints, partial unique
+  indexes and immutable-record rules from migration history. ORM schema generation
+  alone omitted financial protections. Exercise deliberately invalid writes
+  against the actual clean baseline before selecting it.
+- Test the actual owner HTTP servers together. Unit-shaped adapters missed a
+  cancellation release race: an older resolution could clear a newer issue.
+  Pin assignment and issue identity, preserve idempotency receipts, and test
+  delayed/replayed releases against the new state. The final regression used
+  separate disposable databases and real owner sessions; arrival was an explicit
+  fixture prerequisite and provider money movement was not exercised.
+- Public and server-only contracts have different routing. A diagnostic initially
+  called an internal page-data endpoint through the public gateway and received
+  404. Check the declared route before treating that as an outage or exposing a
+  new public endpoint. Exercise the real rendered page and its owner call instead.
+
+## Container handover preparation, 29 September 2026
+
+The next stage used local multi-platform builds and public registry publication,
+keeping automated CI/CD deferred. The Panyora case's central build contract was
+adapted to service-owned manifests and platform-owned recipes, with separate app
+version/source revision and immutable image digest evidence.
+
+Two failed assumptions were caught before traffic selection. Desktop Linux disk
+space exhausted even though the Mac filesystem still had capacity; exact completed
+task BuildKit records were removed and final-image checks retried. A readiness
+probe inferred all owner SQL usernames from one convention; inspection found two
+legitimate different roles. An explicit identity map and executable positive and
+negative probe tests replaced the assumption. Hung probes now have deadlines that
+reach rollback rather than waiting indefinitely.
+
+Runtime inspection also required preserving compiled public frontend settings,
+pinning committed platform recipes despite unrelated local edits, and changing
+log collection from systemd unit selectors to exact Docker journal tags. Actual
+read-only frontend image tests exercised HTTP readiness, dependency failure and
+native image processing. These preparation results are not traffic-cutover proof.
+Original receipts and deployment outcomes remain in the app's own documentation.
+
+Provenance: Ops `fb8294a`, `70dcaca`, `83a0374`; Frontend `52d16a0`;
+`scripts/local-images.mjs`, `scripts/container-runtime.py`, and the app's migration
+execution documentation. Reuse the handover checks in
+[central container builds](../../custom/skills/reliable-web-app-operations/references/central-container-builds.md).
+
+The subsequent traffic handover passed public customer/partner login and a
+synthetic booking/issue workflow. An administrator's real QA action then exposed
+an omitted OS identity: the preserved host UID did not exist in the distroless
+passwd file, and a deliberately scrubbed child environment had no `HOME` fallback.
+A read-only per-container identity mapping fixed native home lookup without
+widening the child environment. The same UI Prisma-validation and site-smoke
+actions then passed. These QA commands use explicitly pinned source snapshots,
+so they establish runner compatibility, not complete current-source coverage.
+
+Retirement inspection also found that disabling linked systemd units removed
+their definitions. Capturing the canonical definition/hash and relinking without
+enabling or starting preserved the rollback entry point. The regression models
+that unlink behavior and rejects changed definitions. Provenance: Ops `26418fc`
+and `d5dac72`; original public-flow and run evidence stays with the app. No real
+provider payment or payout was performed by this container acceptance work.
+
+### Source retirement and CI handover follow-up, 29 September 2026
+
+Image packaging alone did not make application checkouts disposable: containers
+still bound owner-local secrets and state, the proxy used certificates/logs/static
+assets there, and the collector mounted those logs. A two-stage relocation copied
+only required runtime paths, stopped writers for the final copy, verified the new
+paths, then checked container mounts, process references and active unit definitions
+before deleting the retired checkouts. Proxy recovery uses its preserved operational
+plan even when both the source checkout and collector container are absent. Unit
+tests cover that recovery boundary; actual proxy/app health and signed-in reads
+passed after relocation. Private evidence remains with the application.
+
+The replacement release workflow separates hosted source builds, archive validation
+and publication, and an unprivileged deployment runner. Its root-owned deployment
+helper accepts bounded non-symlink receipts, preserves unselected images/settings,
+and restores previous images on failure without rolling back database data. Source
+retirement is a prerequisite to this deployment path. Freeze all source revisions
+before matrix fan-out, particularly when two images share a repository.
+
+Runner registration exposed an additional assumption: the runner's .NET host
+required listing access to every parent directory, not merely traversal. Scoped
+read/traverse ACLs on the restricted ancestors replaced a proposed broad permission
+change; private child directories and secret file modes remained unchanged. This
+is a registration compatibility fix, not justification for granting Docker or
+repository write access to the deployment identity. After registration, placing
+the runner inside an ES-module repository also made its upstream CommonJS service
+entrypoint fail. A runner-local `package.json` with `type: commonjs` restored the
+upstream module contract; a real Node test reproduced failure before and success
+after. The dedicated runner then connected with its narrow deployment privilege.
+
+Status at capture: runtime relocation and ten-checkout retirement observed; local
+receipt/rollback tests passed. Hosted build, publication and deployment acceptance
+were still pending at that checkpoint and could not be inferred from these checks. Provenance: Ops
+`a6d677e`, `df4c6f8`, `b875812`, `0224631`; owner release documentation records the
+subsequent workflow outcome. Reuse this sequence when removing build-time source
+from a stateful host, and verify the target's actual bindings and public workflows.
+
+Independent release review then found two acceptance defects before final
+promotion: public checks originally ran after the helper had declared success,
+and an anonymous-admin probe named a nonexistent route. Moving public checks into
+the image-rollback boundary and selecting an actual protected route retained an
+exact denial assertion. Actual public checks passed after correction; the local
+failure regression verifies image rollback without database commands. Workflow
+revisions are immutable within a running Actions run: a correction to main cannot
+repair that run's final steps. Preserve its built/scanned artifacts and promote
+their exact digests through the corrected workflow rather than overwrite tags or
+report the first run as successful. Provenance: Ops `794b8e4`, `d86c6c1`, `c5e4686`;
+the final promotion outcome still belongs in the owner release evidence.
+
+The follow-up completed eight hosted builds and separate scan/publication jobs.
+The original workflow was cancelled before its deployment job ran; the corrected
+workflow promoted the same eight digests successfully. Independent checks then
+matched all ten running processes to the new image/source identities, with the
+same six database containers and only the two retained operations checkouts.
+Signed-in customer/partner reads, a synthetic booking/issue flow, QA-payment denial,
+and the administrator's pinned-source validation/site-smoke actions passed.
+This is bounded runtime and workflow evidence, not proof of real provider payment,
+mail delivery, all business cases or a new disaster-recovery drill. Owner evidence
+and exact run identifiers remain in application release docs; baseline Ops
+`d6a086a` records the published image selection. The target-specific lesson is to
+verify actual workflow revisions and reuse verified artifacts after orchestration
+corrections, without rewriting immutable image tags or hiding a cancelled run.
+
+### Automatic versioning correction, 29 September 2026
+
+The container handover used changing source suffixes with an unchanged package
+version. That proved image identity, but missed the requested automatic version
+updates despite the central build guide linking the release-versioning reference.
+The correction adopts pinned Release Please with independent component versions,
+real deployed bootstrap commits and separate frontend component tags. Version PRs
+update package versions, lockfiles and changelogs; image selection checks a stable
+published tag against its exact source and committed package versions. Retries and
+digest promotions retain their existing version.
+
+Actual-library tests cover first/subsequent increments, no-op commits, component
+isolation, shared frontend inputs and missing history. A real read-only provider
+preview returned no pending releases for all eight deployed components. Dedicated
+cross-repository write access is still pending, so automated PR/tag publication
+must not be claimed verified. Source: owner Ops `scripts/app-versions.mjs`,
+`scripts/release-sources.mjs`, `config/app-versions.json` and `docs/container-ci.md`
+(reviewed working changes at capture; original evidence stays with the app).
+Reuse the linked versioning reference before declaring container CI complete;
+verify version calculation and publication separately from image/deploy success.
+
+### Worker ordering and maintenance follow-up, 29 September 2026
+
+Review of the image rollback path found that starting API and worker containers
+together could resume work before public acceptance. Recovery also needed to
+verify the restored public path before recording success. The replacement pauses
+selected workers, starts and checks selected APIs plus the public path, and only
+then resumes workers. If final recovery readiness fails, selected workers are
+stopped again and the receipt reports recovery required. Unselected services and
+database data stay outside the rollback mutation scope.
+
+A disposable local Compose rehearsal used real cached images/container lifecycle
+and the deployment algorithm with synthetic HTTP, database-probe and provenance
+adapters. Candidate direct health passed while its login failed; previous-image
+recovery passed, two accepted writes and eight unselected container identities
+survived, and worker order was asserted. The final rehearsal passed; its isolated
+resources were removed. This does not establish a production rollback or financial
+workflow recovery. Original evidence remains with the application. Reuse the
+ordering rule for stateful workers and test the public failure/recovery path, not
+just process readiness or mocked command order.
+
+The maintenance release implementation separately validates an explicitly approved
+deployed baseline, ancestry, patch-only increments and a forward-port issue. It
+prevents maintenance publication from becoming GitHub's latest release or shadowing
+main's release selection. Tests use the pinned release library and actual SDK
+transport; a real read-only main preview passed. No maintenance release was created
+and cross-repository write activation remains pending a dedicated credential.
+Provenance: owner Ops `scripts/container-upgrade.py`,
+`test/test_container_rollback_drill.py`, `scripts/release-tracks.mjs` and
+`docs/hotfixes.md`, committed in Ops `41549e5` on this date. Hosted contract tests
+subsequently passed and the helper was installed with matching hashes and unchanged
+running containers. Detailed release and installation evidence belongs in the
+owner's Docs `MIGRATION_EXECUTION.md` and Ops `docs/container-ci.md`.
+
+### Local parent retirement, 29 September 2026
+
+After container/CI handover, the obsolete local monolith still surrounded the
+independent repositories. Cleanup first checked live process/mount ownership,
+local access-container mounts, repo working changes and client paths. Unique
+parent changes, Git metadata and release evidence were hashed into an ignored
+private owner archive before removing caches and the runnable parent tree. Repo
+HEADs and staged/unstaged diffs were compared across the move; the resulting
+workspace contains only direct repository directories. Standalone documentation
+and release-tool checks passed from the new paths.
+
+Two limits matter when reusing this sequence: an old inventory generator that
+requires the monolith is a historical collector, not current owner-only tooling;
+and a global MCP command may point at a deleted local wrapper even though the
+production service is independent. Retarget such client paths within explicit
+authorization and report pending edits. Do not declare the entire host
+container-only when ingress, SMTP or runners remain host services. Original
+archive and relocation evidence stay with the owner Docs migration record.
+
+### Strict internal contracts and live schema capability, 2 October 2026
+
+An authenticated administrative page remained broken through several individually
+reasonable repairs. A consumer first lagged a producer's strict response schema.
+After that compatibility update, the deployed application expected a database
+function overload that its live owner database had not received. Applying the
+additive migration exposed a third defect: the producer selected a password hash
+to calculate an authorization flag and accidentally spread the hash into its
+internal response. A strict downstream schema rejected the unexpected field and
+the UI surfaced the dependency failure as a generic server error.
+
+The replacement keeps credential material inside its owning service, derives the
+authorization flag locally, and returns an explicit credential-free projection.
+The regression first failed on the presence of the hash, then passed while also
+asserting the authorization flag remained true. Deployment verification separately
+checked the running database capability, the live internal response keys, the
+authenticated page after a stable reload, and a current screenshot. Unit tests,
+image scanning, deployment success and anonymous canaries had not proved that
+combined journey.
+
+Reuse these gates when a release changes authentication or a cross-service read:
+
+- Test exact producer output against the consumer's strict schema, including a
+  negative assertion for credentials and private fields.
+- Treat a selected secret as tainted even when it is needed only for a derived
+  boolean; destructure it out before forming the response.
+- Verify required database functions, columns and grants through the running
+  application's actual connection before calling a deployment compatible.
+- Exercise the authenticated public route after deployment and preserve failures
+  encountered between partial repairs instead of replacing them with the final
+  success claim.
+
+Status: adopted and live-verified for the affected administrative read; no payment
+or money movement was involved. Provenance: sanitized owner Accounts release
+`da9dba0`, DB Ops migration revision `70fb4cf`, and application-owned release
+evidence dated 2 October 2026. Exact identities, screenshots and runtime receipts
+remain with the application.
