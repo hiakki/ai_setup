@@ -538,3 +538,32 @@ network-level failures for idempotent reads; mutations and authoritative HTTP
 responses remain single-attempt. Unit tests cover recovery plus both non-retry
 boundaries. Container revisions, production diagnostics and release evidence stay
 with the application; this case records the reusable state and deployment lessons.
+
+### Observability exposed deployment drift, 1–2 October 2026
+
+The remote diagnostic adapter and the actual Prometheus, Loki and Tempo paths made
+several previously hidden failures distinguishable. A healthy endpoint or MCP tool
+catalog had not proved that alert rules were loaded, targets had converged after a
+reload, owner tools could read their downstream services, logs and traces were
+ingested, or backup jobs could publish metrics. One projection also represented an
+intentionally disabled worker as missing or stale, creating a false incident. Error
+instrumentation emitted a second empty event that hid the useful sanitized type and
+fingerprint needed to correlate the real failure.
+
+The corrections verify the effective system rather than the configuration file:
+monitoring reload waits for rules and healthy targets, diagnostic tests call the
+adapter and owner families, disabled is a distinct state, one actionable sanitized
+error is retained, and backup setup creates its metrics directory before the job
+writes an atomic nonsecret textfile. Deployment checks also cover bind-mount inputs,
+canonical public origins, worker runtime origin and removal of build-only packages
+from runtime images. Each correction added a focused contract or regression test;
+the failed-payment browser journey additionally runs in the ordinary Web image
+publication path.
+
+These findings were reviewed from the current owner records and remote revisions:
+Ops `7439a75`, `48247a9`, `ee96b4e`, `3795480`, `ce34ae5`, `7674ac7` and `8fb8629`;
+Web `89ed1ec`, `5767f78`, `561f2ad` and `24305ab`; Payments `109073d`; DB Ops
+`e4a17fc` and `dc4c2a2`. Their source and tests establish implemented controls, not
+that every hosted workflow ran after every change. MCP read success does not prove a
+provider payment, alert delivery or backup restore; those remain separate acceptance
+checks with application-owned evidence.

@@ -108,6 +108,14 @@ can leave a single-file bind mount pointing at an old inode. For mutable config,
 consider a directory mount or explicit container recreation; confirm ownership and
 readability under the actual container UID. Keep secret access least-privileged.
 
+Treat monitoring configuration rollout as a convergence check. Validate syntax,
+reload the intended running process, then query the effective loaded rules and
+targets until they match the reviewed configuration or a bounded timeout expires.
+A successful reload response alone is insufficient. Test alert evaluation separately
+from notification delivery. Provision writable metrics directories and other runtime
+inputs before the producer starts, and verify one nonsecret sample through the real
+collector query path.
+
 For containerized system-journal readers, mounted files and a healthy component
 do not prove ingestion. Check a labelled synthetic host journal entry, the reader's
 line counter, its actual UID/groups, and the correlated backend query. Default
@@ -137,6 +145,12 @@ disabled owner policy, stale authority URL or credential mismatch. Align and rot
 the bounded read credential together, verify every real tool call, then remove
 temporary transfer files. A successful diagnostic read is operational evidence,
 not proof that the observed business or provider workflow succeeds.
+
+Model an intentionally disabled component as `disabled`, not missing, stale or
+unhealthy. Preserve that distinction in diagnostic projections and alerts so an
+operator choice does not create a false incident. Emit one actionable sanitized
+error with a stable type or fingerprint; test against duplicate empty events that
+can obscure the causal record.
 
 ## Safe Correlation And Failure Behavior
 
