@@ -741,13 +741,19 @@ own releases. The owner repository's unrelated private documentation is excluded
 ordinary app developers do not require repository access to use the artifact.
 No new repository, service or CI/CD subsystem is needed for this boundary.
 
-**Replacement status and limits.** Bundled content is the approved correction,
-under implementation at this capture. Consumer build/device results for that
-correction remain pending; this entry does not claim successful publication or
-deployment. Earlier origin/public observations establish the failed hosting
-approach only. Approved fast-release QA/security skips remain SKIPPED and cannot
-be repurposed as proof of package or workflow acceptance. Do not change gateway
-policy as an unapproved workaround for a rejected runtime dependency.
+**Replacement status and limits.** The content artifact and all three consumer
+adoptions are implemented and merged. The Web release passed its health check;
+both public legal pages returned 200 and all 72 reviewed text fields remained
+unchanged. The Customer Android consumer completed its actual Metro bundle,
+Kotlin compilation, APK/AAB generation and signing; the testing-track upload was
+accepted. Partner Android is still compiling at this checkpoint, so this is not
+a completed all-consumer rollout. Installed-device offline interaction remains
+unverified, and iOS is explicitly deferred. QA/security suites, RC maintenance
+and release-catalog verification were SKIPPED for the approved fast release;
+upload acceptance does not prove review completion or download availability.
+The earlier origin/public observations establish the failed hosting approach,
+not the success of the replacement. No gateway exception was used to retain that
+rejected runtime dependency.
 
 **Reuse and acceptance.** Use an existing owner and immutable artifact for
 versioned static content; use an HTTP service when live authority is actually
@@ -760,7 +766,8 @@ The enduring rule is in the existing
 
 **Provenance.** Sanitized review of app-owned
 `servinoza-docs/DESIGN_MIGRATION_EVIDENCE.md`, baseline `9de3587`, and the approved
-successor correction on 15 October 2026. Current package paths, exact release
-receipts and private operational evidence remain with the app's owner docs.
+successor correction on 15 October 2026: content-owner source `6d19cb1`, Web
+consumer `d7dc88e`, Mobile consumers `6be55fa`. Current package paths, exact
+release receipts and private operational evidence remain with the app's owner docs.
 This records a reusable failure and selected replacement, not automatic learning,
 distribution to other machines or proof of completed consumer rollout.
