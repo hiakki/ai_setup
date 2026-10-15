@@ -744,13 +744,14 @@ No new repository, service or CI/CD subsystem is needed for this boundary.
 **Replacement status and limits.** The content artifact and all three consumer
 adoptions are implemented and merged. The Web release passed its health check;
 both public legal pages returned 200 and all 72 reviewed text fields remained
-unchanged. The Customer Android consumer completed its actual Metro bundle,
-Kotlin compilation, APK/AAB generation and signing; the testing-track upload was
-accepted. Partner Android is still compiling at this checkpoint, so this is not
-a completed all-consumer rollout. Installed-device offline interaction remains
-unverified, and iOS is explicitly deferred. QA/security suites, RC maintenance
-and release-catalog verification were SKIPPED for the approved fast release;
-upload acceptance does not prove review completion or download availability.
+unchanged. Both Customer and Partner Android consumers completed actual Metro
+bundles, Kotlin compilation, APK/AAB generation and signing. Both testing-track
+uploads were accepted and their committed version codes read back. This confirms
+the implemented build and upload paths, not installed-device offline interaction,
+which remains unverified; iOS is explicitly deferred. QA/security suites, RC
+maintenance and release-catalog verification were SKIPPED for the approved fast
+release, so the download page retained its previous verified metadata. Upload
+acceptance does not prove review completion or download availability.
 The earlier origin/public observations establish the failed hosting approach,
 not the success of the replacement. No gateway exception was used to retain that
 rejected runtime dependency.
