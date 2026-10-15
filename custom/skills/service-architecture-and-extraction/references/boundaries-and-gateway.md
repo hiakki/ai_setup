@@ -141,6 +141,32 @@ commits, rewritten-away history and failed fetches; test all four cases. When
 source ownership changes, review image validators, cleanup allowlists and every
 deployment adapter as well as build labels. Keep runtime identities independent.
 
+### Shared content is a build dependency, not automatically a service
+
+Moving files does not remove runtime coupling. Replacing another application's
+HTML with JSON served by that same application still requires its deployment,
+routing and availability. Before introducing an endpoint during an ownership
+cleanup, identify whether consumers actually need live data or only approved,
+versioned content. Keep that behavior change distinct from source segregation.
+
+For static shared content, prefer an immutable, narrowly exported package owned
+by its existing content authority. Each consumer can vendor the reviewed archive,
+pin its version and integrity in its lockfile, and bundle it into its own release.
+Developers then need their app checkout and published artifact, not access to the
+owner's entire documentation repository. Pack only public content and its contract;
+exclude private documents, build credentials and application UI/session code.
+Keep renderer code with the platform consumer and business rules with their owner.
+
+Verify the actual consumer toolchain. TypeScript and mocked tests can pass while
+Metro cannot resolve a shared package outside the app root because its resolver
+or watch roots omit that path. Confirm the consumer bundle/native build resolves
+the pinned archive without sibling application source or runtime asset hosting.
+For any intentionally retained HTTP contract, check the public path as well as
+the origin: an origin 200 does not establish gateway availability. Record source,
+unit, bundle, installed-device and public-path results separately; an approved
+test skip is SKIPPED, never PASS. Do not add a new framework or service solely to
+distribute a small static document set.
+
 ## Financial and personal-data boundaries
 
 Separate identity/session authority from business membership and authorization. An authenticated actor is not automatically entitled to every tenant, location, field or action.
