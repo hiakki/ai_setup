@@ -711,3 +711,56 @@ The owner release explicitly retained an empty-History limitation and a blocked
 state-changing QA action rather than claiming full workflow coverage. Provenance:
 sanitized owner Frontend releases through `db360d8`, Ops release evidence merge
 `73b39aa`, and application-owned RC evidence dated 2 October 2026.
+
+## Shared content isolation correction, 15 October 2026
+
+Search terms: ownership cleanup, native legal content, bundled content package,
+runtime independence, Metro watchFolders, public route versus origin.
+
+**Problem and attempted approach.** A web/native ownership cleanup replaced
+native access to web-rendered legal pages with structured documents hosted by the
+Web application. Although the rendering contract changed, the native application
+still depended on Web hosting and gateway routing. File movement and a structured
+response were incorrectly treated as sufficient evidence of independence.
+
+**Observed result.** The deployed Web container contained both public documents
+and served them at its origin, but the public paths returned 404: the gateway's
+explicit route policy did not expose those paths. Health success therefore did
+not qualify the native legal-document journey. Separately, shared-package source
+checks/typechecks had not established Metro resolution; omitted watch roots left
+the consumer build unable to resolve a shared package. These are distinct
+runtime-routing and build-resolution failures, not reasons to redefine a passing
+source check as an end-to-end pass.
+
+**Reason for switching.** Adding another route would repair the immediate HTTP
+symptom while preserving the inter-application dependency the owner asked to
+remove. The approved replacement uses the existing documentation/content owner
+to publish a narrowly scoped immutable content artifact. Apps consume reviewed,
+vendored archives with exact dependency pins and bundle the content into their
+own releases. The owner repository's unrelated private documentation is excluded;
+ordinary app developers do not require repository access to use the artifact.
+No new repository, service or CI/CD subsystem is needed for this boundary.
+
+**Replacement status and limits.** Bundled content is the approved correction,
+under implementation at this capture. Consumer build/device results for that
+correction remain pending; this entry does not claim successful publication or
+deployment. Earlier origin/public observations establish the failed hosting
+approach only. Approved fast-release QA/security skips remain SKIPPED and cannot
+be repurposed as proof of package or workflow acceptance. Do not change gateway
+policy as an unapproved workaround for a rejected runtime dependency.
+
+**Reuse and acceptance.** Use an existing owner and immutable artifact for
+versioned static content; use an HTTP service when live authority is actually
+needed. Inspect package exports and contents, install from a consumer-only
+checkout, verify real bundler resolution and exercise the app with the former
+content host unavailable. Keep UI renderers and authentication out of the content
+package. If HTTP remains intentional, verify both public and direct-origin paths.
+The enduring rule is in the existing
+[shared-content boundary reference](../../custom/skills/service-architecture-and-extraction/references/boundaries-and-gateway.md#shared-content-is-a-build-dependency-not-automatically-a-service).
+
+**Provenance.** Sanitized review of app-owned
+`servinoza-docs/DESIGN_MIGRATION_EVIDENCE.md`, baseline `9de3587`, and the approved
+successor correction on 15 October 2026. Current package paths, exact release
+receipts and private operational evidence remain with the app's owner docs.
+This records a reusable failure and selected replacement, not automatic learning,
+distribution to other machines or proof of completed consumer rollout.
