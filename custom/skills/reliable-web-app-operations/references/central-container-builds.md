@@ -43,6 +43,14 @@ deployment evidence. Read [release-versioning-and-hotfixes.md](release-versionin
 for version calculation and [portable-deployment.md](portable-deployment.md) for
 promotion without rebuilding.
 
+When automatic versioning is requested, reading this build guide alone is not
+enough. Verify the linked versioning flow separately: calculate an actual version
+bump, update package and lock files, publish the component release, then select
+that release's exact commit for the image. A changing Git suffix with a frozen
+package version is not automatic versioning. Test bootstrap, component isolation,
+no-change runs and retry/promotion without another bump. Keep credential-pending
+automation explicitly inactive rather than claiming it is operational.
+
 For example, `git log -1 --format=%h <selected-source-commit>` asks Git for the
 abbreviation of the revision actually being built. Do not hardcode seven/eight
 characters or accidentally query the ops checkout's HEAD. Verify the result
@@ -90,3 +98,61 @@ were removed when some are deliberately retained.
 Keep local build tests, final-image runtime tests, registry publication, deployed
 digest, public customer flow and rollback evidence separate. Reusable guidance
 does not establish that any specific project passed these checks.
+
+## Process-manager handover checks
+
+Preserve the running process's actual configuration, credential bytes and public
+build-time settings. Frontend environment values compiled into JavaScript cannot
+be repaired by setting container environment variables afterward. Use a reviewed
+allowlist of public settings; never pass the whole production environment to a build.
+
+Build the application and platform recipes from identified committed revisions,
+even when the platform checkout contains unrelated work. Inspect the exact final
+image for native modules, workers, read-only filesystem compatibility and required
+dynamic assets. A default image hostname must not widen a loopback listener when
+using host networking; host networking does not provide network isolation.
+
+Check service-specific database identities against the actual owner configuration.
+Do not infer every database username from a naming convention. Bound readiness
+and SQL probes so a hung dependency reaches the rollback path. Stop old writers
+before starting new ones; confirm candidate writers stopped before restoring old
+processes against the same database.
+
+Preserving a host numeric UID does not create that user in a distroless image.
+Test native tools with the exact deployed UID and scrubbed child environment.
+Where a tool needs operating-system user lookup, provide a reviewed read-only
+identity mapping and a bounded writable home; do not expose more secrets through
+child environments or run as root to hide the failure.
+
+Retiring linked systemd units needs its own recovery check: `disable` can unlink
+the definition, leaving a later `start` unable to resolve it. Pin the canonical
+definition and hash before retirement, retain a non-enabled link, and verify that
+rollback can resolve it without starting duplicate writers.
+
+Once source checkouts are intentionally deleted, retire that process-manager
+rollback path before it can stop the current app. Relocate persistent binds,
+private settings and proxy/collector dependencies into retained operational
+ownership first. The replacement rollback should restore the prior selected image
+references against current data, not revive deleted source or restore an older
+database. Include required public-path acceptance checks inside the rollback
+boundary; a later failing CI step must not leave a deployment receipt claiming
+success while the broken candidate remains selected.
+
+Freeze source revisions before matrix fan-out, including components sharing a
+repository. Keep application build execution separate from registry publication
+credentials and production deployment privileges. A deployment runner needs only
+a bounded receipt and a root-controlled helper, not a Docker group membership or
+application checkout. Reject receipt symlinks, special files and oversized input
+through anchored file descriptors before privileged work. Test the real runner's
+ancestor permissions and module-loading context when placing it under a repository.
+
+Treat logging as part of the handover. A collector matching systemd unit names will
+not automatically see Docker output. Configure exact container journal tags or a
+reviewed alternative, preserve curated-log filters, and verify a real post-switch
+request reaches the log store. Keep canonical collector configuration aligned with
+the running configuration. Use supported reloads when a restart is unnecessary.
+
+On desktop builders, inspect the Linux VM's disk capacity as well as host free
+space. Concurrent builds can exhaust the former while the host still has space.
+Remove only identified completed task cache records, preserve other projects and
+active volumes, and rerun final-image checks after a recoverable disk failure.

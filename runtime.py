@@ -5,6 +5,7 @@ import json
 import os
 from pathlib import Path
 import platform
+import re
 import shlex
 import shutil
 import subprocess
@@ -35,20 +36,70 @@ def merge(existing, incoming, context='configuration'):
 def merge_config(i, path, incoming):
     i.safe(path)
     i.backup(path)
+    key = path.relative_to(i.home).as_posix()
+    previous = i.state.setdefault('configuration', {}).get(key, {})
+    merger = (lambda old, new: merge_managed(old, new, previous)) if i.allow_source_updates else merge
     if path.suffix == '.toml':
         import tomlkit
         old = tomlkit.parse(path.read_text(encoding='utf-8')) if path.exists() else tomlkit.document()
-        content = tomlkit.dumps(merge(old, incoming))
+        content = tomlkit.dumps(merger(old, incoming))
     else:
         old = json.loads(path.read_text(encoding='utf-8')) if path.exists() else {}
-        content = json.dumps(merge(old, incoming), indent=2) + '\n'
+        content = json.dumps(merger(old, incoming), indent=2) + '\n'
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(content, encoding='utf-8')
     path.chmod(0o600)
-    key = path.relative_to(i.home).as_posix()
-    previous = i.state.setdefault('configuration', {}).get(key, {})
-    i.state['configuration'][key] = merge(previous, incoming)
+    i.state['configuration'][key] = merge_managed(previous, incoming, previous)
     i.save()
+
+
+def merge_managed(existing, incoming, previous, context='configuration'):
+    """Upgrade unchanged owned settings while preserving independent operator choices."""
+    result = copy.deepcopy(existing)
+    for key, value in incoming.items():
+        if key not in result:
+            result[key] = value
+        elif isinstance(value, dict) and isinstance(result[key], dict):
+            prior = previous.get(key, {})
+            result[key] = merge_managed(result[key], value, prior if isinstance(prior, dict) else {}, context + '.' + key)
+        elif result[key] == value:
+            continue
+        elif key in previous and result[key] == previous[key]:
+            result[key] = value
+        else:
+            raise ValueError(f'Preserving operator setting at {context}.{key}; reconcile before syncing')
+    return result
+
+
+def install_codebase_memory(i):
+    binary = i.bin / ('codebase-memory-mcp.exe' if i.windows else 'codebase-memory-mcp')
+    expected = i.manifest['codebase_memory_version']
+    i.owned(binary)
+    pattern = r'(?<![\d.])' + re.escape(expected) + r'(?![\d.])'
+    if binary.exists() and re.search(pattern, capture([binary, '--version'], env=i.env)):
+        return
+    spec = i.spec('codebase-memory')
+    i.bin.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(prefix='cbm-install-', dir=i.bin.parent) as directory:
+        stage = Path(directory)
+        script = stage / ('install.ps1' if i.windows else 'install.sh')
+        download('https://raw.githubusercontent.com/DeusData/codebase-memory-mcp/' + spec['revision'] + '/' + script.name, script)
+        checksum = 'codebase_memory_windows_installer_sha256' if i.windows else 'codebase_memory_installer_sha256'
+        if hashlib.sha256(script.read_bytes()).hexdigest() != i.manifest[checksum]:
+            raise ValueError('Codebase Memory installer checksum mismatch')
+        env = dict(i.env, CBM_DOWNLOAD_URL=f'https://github.com/DeusData/codebase-memory-mcp/releases/download/v{expected}')
+        if i.windows:
+            env['CBM_ARCH'] = 'amd64'
+            command = ['powershell.exe', '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', script]
+        else:
+            command = ['bash', script]
+        run([*command, '--skip-config', '--dir=' + str(stage / 'bin')], env=env)
+        candidate = stage / 'bin' / binary.name
+        if not re.search(pattern, capture([candidate, '--version'], env=i.env)):
+            raise ValueError('Codebase Memory candidate version mismatch; previous binary preserved')
+        i.backup(binary)
+        candidate.replace(binary)
+        i.remember(binary)
 
 
 def download(url, path):
@@ -83,7 +134,7 @@ def runtime(i):
     system = {'Darwin': 'darwin', 'Linux': 'linux'}.get(platform.system())
     arch = {'arm64': 'arm64', 'aarch64': 'arm64', 'x86_64': 'x64', 'AMD64': 'x64'}.get(platform.machine())
     if not system or not arch:
-        raise ValueError('Supported: macOS/Linux x64 or arm64. On Windows use install.ps1 (WSL2).')
+        raise ValueError('Supported: macOS/Linux x64 or arm64. On native Windows use install.ps1; no WSL required.')
     version = i.manifest['node']
     node_root = ensure_node(i, version, system, arch)
     for command in ('node', 'npm', 'npx'):
@@ -116,64 +167,104 @@ def runtime(i):
             shlex.quote(str(graft_prefix / 'lib/node_modules/@nanonets/graft/dist/cli.js')) + ' "$@"\n', 0o755)
     for command in ('codex', 'claude', 'graft', 'skills', 'bun'):
         run([i.bin / command, '--version'], env=i.env)
-    binary = i.bin / 'codebase-memory-mcp'
-    expected = i.manifest['codebase_memory_version']
-    if not binary.exists():
-        spec = i.spec('codebase-memory')
-        installer = i.home / '.local/share/ai-setup/installers/codebase-memory.sh'
-        i.safe(installer)
-        installer.parent.mkdir(parents=True, exist_ok=True)
-        download('https://raw.githubusercontent.com/DeusData/codebase-memory-mcp/' + spec['revision'] + '/install.sh', installer)
-        if hashlib.sha256(installer.read_bytes()).hexdigest() != i.manifest['codebase_memory_installer_sha256']:
-            raise ValueError('Codebase Memory installer checksum mismatch')
-        env = dict(i.env, CBM_DOWNLOAD_URL=f'https://github.com/DeusData/codebase-memory-mcp/releases/download/v{expected}')
-        run(['bash', installer, '--skip-config', '--dir=' + str(i.bin)], env=env)
-        i.remember(binary)
-    elif binary.relative_to(i.home).as_posix() not in i.state['files']:
-        raise ValueError(f'Preserving existing Codebase Memory binary: {binary}')
-    if expected not in capture([binary, '--version'], env=i.env):
-        raise ValueError('Codebase Memory version mismatch')
+    install_codebase_memory(i)
+
+
+def copy_gstack_skill(i, folder, target, source, stage):
+    # Provider render folders link shared sections/assets back into the checkout.
+    # Validate followed links before materializing them out of the temporary home.
+    roots = (source.resolve(), stage.resolve())
+    visited = set()
+    for directory, dirs, files in os.walk(folder, followlinks=True):
+        resolved = Path(directory).resolve()
+        if resolved in visited or not any(resolved.is_relative_to(root) for root in roots):
+            raise ValueError('Unsafe or cyclic Gstack skill link: ' + str(directory))
+        visited.add(resolved)
+        for name in dirs + files:
+            resolved = (Path(directory) / name).resolve()
+            if not any(resolved.is_relative_to(root) for root in roots):
+                raise ValueError('Gstack skill link escapes provider: ' + str(Path(directory) / name))
+    with tempfile.TemporaryDirectory(dir=stage) as temporary:
+        payload = Path(temporary) / 'skill'
+        shutil.copytree(folder, payload)
+        i.copy_tree(payload, target)
 
 
 def gstack(i):
+    previous = i.state.get('gstack_revision') or i.state.get('sources', {}).get('gstack', {}).get('revision')
+    if previous and 'gstack' in i.state['completed'] and not i.state.get('gstack_revision'):
+        # Fetch records the new source before generation succeeds. Preserve the
+        # legacy installed revision so a failed upgrade remains retryable.
+        i.state['gstack_revision'] = previous
+        i.save()
     source = i.fetch(i.spec('gstack'))
-    if 'gstack' in i.state['completed']:
-        i.verify()
-        gstack_adapter(i, source)
+    revision = i.spec('gstack')['revision']
+    for relative in list(i.state['files']):
+        if relative.startswith(('.claude/skills/gstack', '.codex/skills/gstack', '.agents/skills/gstack',
+                                '.claude/skills/_gstack-command')):
+            i.owned(i.home / relative)
+    if 'gstack' in i.state['completed'] and previous == revision:
+        # Later components may still have old pins during a full sync.
         return
-    # The source layout matters: upstream infers its install destination from this path.
-    claude = i.home / '.claude/skills/gstack'
-    for folder in (i.home / '.claude/skills', i.home / '.codex/skills', i.home / '.agents/skills'):
-        for path in folder.glob('gstack*'):
-            if path.relative_to(i.home).as_posix() not in i.state['files']:
-                raise ValueError(f'Preserving pre-existing gstack installation: {path}')
-    i.link(claude, source)
-    env = dict(i.env, GSTACK_SKIP_COREUTILS='1', GSTACK_SKIP_GBRAIN_REGEN='1',
-               GSTACK_SKIP_FONTS='1', GSTACK_SKIP_ASIDE='1')
-    flags = ['--prefix', '--no-team', '--no-plan-tune-hooks', '--no-timeline-stop-hook']
-    for host in ('claude', 'codex'):
-        run(['bash', claude / 'setup', '--host', host, *flags], cwd=source, env=env,
-            stdin=subprocess.DEVNULL)
-    run([source / 'bin/gstack-config', 'set', 'auto_upgrade', 'false'], env=env)
-    run([source / 'bin/gstack-patch-names', '.agents/skills', 'true'], cwd=source, env=env)
-    for path in sorted((i.home / '.codex/skills').glob('gstack-*')):
-        if not path.is_symlink() or not path.resolve().is_relative_to(source):
-            raise ValueError(f'Unexpected generated gstack path: {path}')
-        target = i.home / '.agents/skills' / path.name
-        i.link(target, path.resolve())
-        path.unlink()
-    router = source / '.agents/skills/gstack/SKILL.md'
-    i.write(i.home / '.agents/skills/gstack/SKILL.md', router.read_text(encoding='utf-8'))
-    # Keep the runtime adapter, but do not expose a second Codex router/skill tree.
-    adapter = i.home / '.codex/skills/gstack'
-    if adapter.exists():
-        i.remember(adapter)
-    gstack_adapter(i, source)
-    for folder in (i.home / '.claude/skills', i.home / '.codex/skills'):
-        for path in folder.glob('gstack*'):
-            i.remember(path)
-    i.state.setdefault('generated_sources', {})['gstack'] = capture(['git', '-C', source, 'diff', 'HEAD'])
-    i.save()
+    from windows_runtime import runtime_adapter, gstack_skill_names
+    i.state_dir.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(prefix='gstack-home-', dir=i.state_dir) as temporary:
+        stage = Path(temporary)
+        claude = stage / '.claude/skills/gstack'
+        claude.parent.mkdir(parents=True)
+        if i.windows:
+            import _winapi
+            _winapi.CreateJunction(str(source.resolve()), str(claude))
+            from windows_runtime import git_bash
+            shell = git_bash(i)
+        else:
+            claude.symlink_to(source)
+            shell = 'bash'
+        # The provider heals hooks/settings even with --no-team; isolate all of it.
+        env = dict(i.env, HOME=stage.as_posix(), USERPROFILE=str(stage),
+                   CODEX_HOME=str(stage / '.codex'), CLAUDE_CONFIG_DIR=str(stage / '.claude'),
+                   XDG_CONFIG_HOME=str(stage / '.config'), XDG_DATA_HOME=str(stage / '.local/share'),
+                   XDG_CACHE_HOME=str(stage / '.cache'), XDG_STATE_HOME=str(stage / '.local/state'),
+                   GSTACK_HOME=str(stage / '.gstack'), GSTACK_USER_RENDER_DIR=str(stage / '.gstack/render/claude'),
+                   GSTACK_SKIP_COREUTILS='1', GSTACK_SKIP_GBRAIN_REGEN='1',
+                   GSTACK_SKIP_FONTS='1', GSTACK_SKIP_ASIDE='1')
+        if not shutil.which('bunx', path=env['PATH']):
+            bun = shutil.which('bun', path=env['PATH'])
+            if not bun:
+                raise ValueError('Gstack needs Bun; install the runtime component first')
+            commands = stage / 'bin'
+            commands.mkdir()
+            shim = commands / 'bunx'
+            shim.write_text('#!/usr/bin/env bash\nexec ' + shlex.quote(Path(bun).as_posix()) + ' x "$@"\n', encoding='utf-8')
+            shim.chmod(0o755)
+            env['PATH'] = str(commands) + os.pathsep + env['PATH']
+        config = i.home / '.codex/config.toml'
+        model = tomllib.loads(config.read_text(encoding='utf-8')).get('model') if config.exists() else None
+        if model:
+            (stage / '.codex').mkdir(parents=True, exist_ok=True)
+            (stage / '.codex/config.toml').write_text('model = ' + json.dumps(model) + '\n', encoding='utf-8')
+        flags = ['--prefix', '--no-team', '--no-plan-tune-hooks', '--no-timeline-stop-hook']
+        try:
+            for host in ('claude', 'codex'):
+                run([shell, (claude / 'setup').as_posix(), '--host', host, *flags],
+                    cwd=source, env=env, stdin=subprocess.DEVNULL)
+            run([shell, (source / 'bin/gstack-patch-names').as_posix(), '.agents/skills', 'true'],
+                cwd=source, env=env)
+            i.link(i.home / '.claude/skills/gstack', source)
+            for client, target in (('.claude', '.claude'), ('.codex', '.agents')):
+                for folder in sorted((stage / client / 'skills').glob('gstack-*')):
+                    copy_gstack_skill(i, folder, i.home / target / 'skills' / folder.name, source, stage)
+            alias = stage / '.claude/skills/_gstack-command'
+            if alias.exists():
+                copy_gstack_skill(i, alias, i.home / '.claude/skills/_gstack-command', source, stage)
+            i.write(i.home / '.agents/skills/gstack/SKILL.md',
+                    (source / '.agents/skills/gstack/SKILL.md').read_text(encoding='utf-8'))
+            runtime_adapter(i, source)
+            gstack_skill_names(i)
+            i.state['gstack_revision'] = revision
+        finally:
+            i.state.setdefault('generated_sources', {})['gstack'] = capture(['git', '-C', source, 'diff', 'HEAD'])
+            i.save()
 
 
 def gstack_adapter(i, source):
@@ -307,9 +398,14 @@ def trust_generated_hooks(i):
 
 
 def figma(i):
-    if 'figma' in i.state['completed']:
-        return
     spec = i.manifest['figma']
+    previous = i.state.get('figma_revision') or i.state.get('sources', {}).get('openai-plugins', {}).get('revision')
+    if previous and 'figma' in i.state['completed']:
+        if not i.state.get('figma_revision'):
+            i.state['figma_revision'] = previous
+            i.save()
+        if previous == spec['revision']:
+            return
     source = i.fetch({'id': 'openai-plugins', 'url': 'https://github.com/' + spec['repository'] + '.git',
                       'revision': spec['revision'], 'sparse': ['plugins/figma']})
     # Codex reserves official catalog names; a portable local registry must use its own name.
@@ -319,5 +415,13 @@ def figma(i):
                 'source': {'source': 'local', 'path': './plugins/figma'},
                 'policy': {'installation': 'AVAILABLE', 'authentication': 'ON_INSTALL'}}]}
     i.write(marketplace / '.agents/plugins/marketplace.json', json.dumps(registry, indent=2) + '\n')
-    run([i.bin / 'codex', 'plugin', 'marketplace', 'add', marketplace], env=i.env)
-    run([i.bin / 'codex', 'plugin', 'add', 'figma@ai-setup-providers'], env=i.env)
+    (i.home / '.codex').mkdir(parents=True, exist_ok=True)
+    if i.windows:
+        from windows_runtime import command
+        codex = command(i, 'codex')
+    else:
+        codex = [i.bin / 'codex']
+    run([*codex, 'plugin', 'marketplace', 'add', marketplace], env=i.env)
+    run([*codex, 'plugin', 'add', 'figma@ai-setup-providers'], env=i.env)
+    i.state['figma_revision'] = spec['revision']
+    i.save()

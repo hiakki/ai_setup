@@ -36,7 +36,7 @@ class HindsightConnectionTests(unittest.TestCase):
                     result = {'protocolVersion': '2024-11-05', 'capabilities': {'tools': {}},
                               'serverInfo': {'name': 'fixture', 'version': '1'}}
                 elif method == 'tools/list':
-                    result = ({'tools': [{'name': 'reflect'}]} if body.get('params', {}).get('cursor')
+                    result = ({'tools': [{'name': 'get_bank'}]} if body.get('params', {}).get('cursor')
                               else {'tools': [{'name': 'retain'}, {'name': 'recall'}], 'nextCursor': 'page2'})
                 else:
                     self.send_response(400)

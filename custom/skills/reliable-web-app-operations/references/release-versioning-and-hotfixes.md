@@ -18,6 +18,13 @@ rule. Commit labels are intent, not proof of compatibility. Do not bump for
 unchanged-code retries or deployments. Separate platform-only rebuild identity
 from application versions. Release tools are preferable to a custom SemVer engine.
 
+Classify every follow-up PR against the pipeline's actual application-input set,
+not its commit label. A test fixture beneath an application source tree may still
+change those inputs. Run the owning version preparation/validation command after
+the final edit and before each merge. If an earlier merge omitted required version
+metadata, use the documented version-baseline repair path; do not bypass the
+guard, invent an unrelated code change or relabel an existing artifact.
+
 When the project requires central ownership, keep the pinned release tool,
 configuration and workflows in the ops owner. App repos receive ordinary version,
 lockfile and changelog changes. Verify a supported cross-repo interface rather

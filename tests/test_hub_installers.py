@@ -64,7 +64,7 @@ class SharedUpdateTests(unittest.TestCase):
     def commit(self, message):
         self.git('add', '.')
         self.git('-c', 'user.name=Fixture', '-c', 'user.email=fixture@example.invalid',
-                 'commit', '-qm', message)
+                 'commit', '--no-verify', '-qm', message)
 
     def save_manifest(self):
         self.manifest.write_text(json.dumps({'schema': 1, 'sources': [self.source]}))

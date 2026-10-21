@@ -46,6 +46,49 @@ Preserve invariants that require atomicity. If a split crosses a transaction, de
 
 Read [boundaries-and-gateway.md](references/boundaries-and-gateway.md) for decomposition, secrets/PII boundaries, gateway responsibilities and extraction sequencing.
 
+## Separate runtime concurrency from platform scaling
+
+Do not treat a language's concurrency mechanism, asynchronous messaging and
+orchestrator autoscaling as the same design choice. For Node.js specifically:
+
+- One process normally executes JavaScript callbacks on one main event-loop
+  thread. A container or pod can still receive and use more than one CPU for
+  garbage collection, native libraries, libuv work and explicit worker threads.
+  Raising a CPU limit does not by itself make ordinary request handlers execute
+  JavaScript in parallel.
+- The event loop provides local I/O concurrency; Kafka, queues and outbox events
+  coordinate distributed work; Kubernetes HPA changes replica counts. None of
+  these automatically supplies the other two.
+- Prefer one request-serving Node process per container under Kubernetes and
+  scale replicas. Use a bounded worker-thread pool or separate worker/service for
+  measured CPU-heavy work such as image conversion, large imports or PDF
+  generation. Multiple in-container cluster workers are a deliberate alternative,
+  not a default substitute for pod lifecycle and resource accounting.
+- Do not infer throughput from language choice or a CPU limit. Measure a real
+  authenticated endpoint with its validation, database query, payload and
+  contention. Compare requests per allocated CPU, p95/p99 latency, memory/GC,
+  event-loop delay/utilization, database-pool waits, errors and cost.
+- CPU-only autoscaling is incomplete for I/O-heavy services. Include relevant
+  request concurrency/latency, event-loop pressure, pool wait time and queue lag;
+  verify scale-up delay, graceful drain, dependency budgets and recovery after
+  the burst. A fixed replica declaration is not autoscaling evidence.
+- Budget database connections across every replica before increasing pod count.
+  Fast asynchronous clients can overload a shared database while application CPU
+  remains low. Test locks, transactions and connection saturation, especially for
+  stock, payment and other authoritative writes.
+- Keep synchronous transactional authority where atomicity is required. Events
+  are appropriate for asynchronous consequences such as notifications, search,
+  analytics and media work when ordering, idempotency, backpressure, replay and
+  reconciliation are defined. “Event driven” is not a correctness or scale proof.
+
+At very high stated traffic, first split CDN/cacheable reads, origin reads,
+transactional writes and background events, and distinguish burst from sustained
+load. One million edge-cached requests and one million stock/payment writes are
+different architectures. Preserve the current stack until representative
+benchmarks identify a constrained hot path; select a leaner Node framework or a
+Go/Java/Rust service only when the measured benefit outweighs operational and
+team cost. Record the benchmark workload and evidence limits with the application.
+
 ## Execute and verify the authorized slice
 
 For a user-selected VM → local images → Compose → CI/CD workflow, use the

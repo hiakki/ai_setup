@@ -1,0 +1,31 @@
+description: Six synthetic coding-agent cases; artifact grades, not self-reported success
+prompts:
+  - '{{task}}'
+providers:
+  - id: file://agent_provider.py
+    label: codex-active-configuration
+    config:
+      agent: codex
+      timeout: 300
+  - id: file://agent_provider.py
+    label: claude-active-configuration
+    config:
+      agent: claude
+      timeout: 300
+defaultTest:
+  assert:
+    - type: javascript
+      value: 'JSON.parse(output).passed === true'
+tests:
+  - vars:
+      task: bug
+  - vars:
+      task: refactor
+  - vars:
+      task: responsive
+  - vars:
+      task: recall
+  - vars:
+      task: irrelevant
+  - vars:
+      task: recovery

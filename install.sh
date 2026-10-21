@@ -16,7 +16,7 @@ for setup_arg in "$@"; do
   if [[ "$setup_previous" == --home ]]; then setup_home="$setup_arg"; fi
   if [[ "$setup_previous" == --only ]]; then setup_only="$setup_arg"; fi
   case "$setup_arg" in
-    plan|verify|install|update) setup_action="$setup_arg" ;;
+    plan|verify|install|sync|update) setup_action="$setup_arg" ;;
     --home=*) setup_home="${setup_arg#--home=}" ;;
     --only=*) setup_only="${setup_arg#--only=}" ;;
   esac
@@ -28,10 +28,19 @@ if [[ "$setup_action" == plan ]]; then
 fi
 
 setup_python=python3
-if [[ "$setup_action" == install ]]; then
+if [[ "$setup_action" == install || "$setup_action" == sync ]]; then
   # `all` installs defaults; add optional tools with --only all,strix,skillui.
+  # `quality` installs shared evaluation/testing CLIs without starting scans or servers.
+  # `agentreach` installs global research skills/CLIs; social accounts stay opt-in.
+  # `openrig` installs the shared specialist-team runtime; agents start on demand.
+  # Ponytail skills and the on-demand Graphify CLI are part of the default profile.
+  # Logo Design and all six Anti Slop skills use the shared pinned manifest.
+  # Context Mode MCP (contextmode) is included too.
+  # Context Mode uses native Node/SQLite; no capture/routing hooks are enabled.
+  # Entire is in the default profile but repository capture remains opt-in.
+  # Agent Wiki joins the default profile when its individual API key is configured.
   # Remote Hindsight: set HINDSIGHT_MCP_URL and --only hindsight,docs,hub.
-  # Credentials stay in the client environment; see docs/HINDSIGHT.md.
+  # Codex credentials can use ~/.config/ai-setup/secrets.env; see the integration guides.
   # Validate against setup.py's canonical component list before package changes
   # whenever a compatible Python is already available.
   setup_validated=false

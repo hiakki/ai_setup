@@ -56,6 +56,12 @@ jobs:
           & .\install.ps1 *>&1 |
             Tee-Object -FilePath .work/windows-repeat-install.log
           if ($LASTEXITCODE -ne 0) { throw 'Repeated native installation failed' }
+      - name: Sync full setup from the immutable Git revision
+        run: |
+          & "$env:AI_SETUP_TEST_HOME/.local/bin/ai-setup.cmd" sync --source "$env:GITHUB_WORKSPACE" --ref "$env:GITHUB_SHA"
+          if ($LASTEXITCODE -ne 0) { throw 'Full native synchronization failed' }
+          .\install.ps1 -Action verify
+          if ($LASTEXITCODE -ne 0) { throw 'Post-sync verification failed' }
       - name: Collect diagnostic evidence
         if: always()
         run: |

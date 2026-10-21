@@ -30,9 +30,15 @@ The follow-up read of local skill-lock metadata and role names confirmed 35 CLI-
 | `microsoft/playwright-mcp` | Pinned npm package, isolated headless Chromium |
 | `openai/plugins` | Official pinned Figma plugin, registered through a small generated local catalog |
 | `upstash/context7` | Default hosted documentation MCP for both clients; anonymous access |
+| `kaankiziltug/logo-design-skill` | Default global `logo-design`, complete provider scripts/catalog plus MIT and trademark notices |
+| `mksglu/context-mode` | Default pinned npm stdio MCP for both clients, native Node/SQLite, project-cwd adapter; no capture/routing hooks |
 | `ibelick/ui-skills` | Pinned `create-design-md` and `fixing-metadata` only |
 | `usestrix/strix` | Optional native release with checksums and nine upstream security skills |
+| `dietrichgebert/ponytail` | Six upstream implementation/review skills; lifecycle hooks intentionally omitted |
+| `Graphify-Labs/graphify` | Default isolated CLI plus generic global skill for mixed artifacts; MCP and guards omitted |
 | `amaancoderx/npxskillui` | Optional `skillui` CLI from its pinned original npm package |
+| `entireio/cli` | Default checksum-pinned native Entire CLI; repository session capture stays opt-in |
+| `onyx-dot-app/agent-wiki` | Optional central proposal/discussion service fetched at its pinned original revision; MCP clients use individual keys |
 
 Recorded revisions are retained where available. For sources without recorded commit IDs, the manifest pins the provider HEAD resolved during this implementation; those are newly verified pins, not invented historical installation revisions. Exact local source folder hashes remain evidence of the old snapshot, not Git commit IDs.
 

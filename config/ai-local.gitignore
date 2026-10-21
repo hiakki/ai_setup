@@ -17,5 +17,6 @@ agent-routing.local.json
 .graft/
 /graft/
 .codebase-memory/
+graphify-out/
 .ai-local/
 # END local AI setup

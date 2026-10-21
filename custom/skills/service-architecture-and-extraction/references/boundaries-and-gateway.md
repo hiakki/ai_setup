@@ -74,6 +74,33 @@ engineer to clone backend/gateway source. Verify real registration, sign-in/out,
 mutation/reload, denied access and an actual hot-reload edit in a clean consumer
 checkout. A production HTTP proxy may not support development WebSockets.
 
+Report three results separately when accepting a shared frontend origin:
+
+1. **Routing:** each public path, asset prefix, API path and HMR endpoint reaches
+   its intended worker while the browser remains on the shared origin.
+2. **Authorization:** anonymous, ordinary and privileged users receive the
+   intended redirect, page or denial. A role-correct `404` can prove that the
+   admin worker was reached; it does not prove an administrator can use it.
+3. **Workflow support:** the selected mock or integrated backend supports the
+   complete advertised journey. Reaching a UI worker that later reports an
+   unsupported API is routing success and workflow failure.
+
+Verify the launcher's effective port range rather than only its documented
+default. Environment files and process variables can move the shared listener
+and every internal worker together. Print and test the effective public URL;
+frontend engineers should not browse internal worker ports or edit browser URLs
+when crossing application boundaries.
+
+Keep the handoff documentation task-oriented. The repository README should give
+the shortest working install/start path, the available modes, common checks and a
+small document index. Put command details in how-to guides, route/ownership facts
+in reference tables, and rationale in explanation documents. Keep dated migration,
+incident and research evidence as labelled history rather than interleaving it
+with current setup steps. Preserve security boundaries, but state each constraint
+once beside the command or interface it governs. Validate documented commands,
+local links and anchors, then run the actual startup/check path before calling the
+handoff usable.
+
 For everyday UI work, prefer an optional database-free local mock mode when a
 real service stack is unnecessary. Keep synthetic fixtures and bounded handlers
 with the frontend, behind the same API paths and one browser origin. Cover
@@ -141,6 +168,32 @@ commits, rewritten-away history and failed fetches; test all four cases. When
 source ownership changes, review image validators, cleanup allowlists and every
 deployment adapter as well as build labels. Keep runtime identities independent.
 
+### Shared content is a build dependency, not automatically a service
+
+Moving files does not remove runtime coupling. Replacing another application's
+HTML with JSON served by that same application still requires its deployment,
+routing and availability. Before introducing an endpoint during an ownership
+cleanup, identify whether consumers actually need live data or only approved,
+versioned content. Keep that behavior change distinct from source segregation.
+
+For static shared content, prefer an immutable, narrowly exported package owned
+by its existing content authority. Each consumer can vendor the reviewed archive,
+pin its version and integrity in its lockfile, and bundle it into its own release.
+Developers then need their app checkout and published artifact, not access to the
+owner's entire documentation repository. Pack only public content and its contract;
+exclude private documents, build credentials and application UI/session code.
+Keep renderer code with the platform consumer and business rules with their owner.
+
+Verify the actual consumer toolchain. TypeScript and mocked tests can pass while
+Metro cannot resolve a shared package outside the app root because its resolver
+or watch roots omit that path. Confirm the consumer bundle/native build resolves
+the pinned archive without sibling application source or runtime asset hosting.
+For any intentionally retained HTTP contract, check the public path as well as
+the origin: an origin 200 does not establish gateway availability. Record source,
+unit, bundle, installed-device and public-path results separately; an approved
+test skip is SKIPPED, never PASS. Do not add a new framework or service solely to
+distribute a small static document set.
+
 ## Financial and personal-data boundaries
 
 Separate identity/session authority from business membership and authorization. An authenticated actor is not automatically entitled to every tenant, location, field or action.
@@ -152,6 +205,30 @@ Inventory PII across profiles, membership, party records, immutable documents, l
 ## Gateway versus operations
 
 The gateway owns runtime traffic behavior: route selection/composition, trusted forwarding, upstream connection behavior and any intentionally centralized edge policies. Ops owns installation, release orchestration, process definitions, configuration delivery, deployment evidence and recovery. Host TLS/DNS/proxy infrastructure may have another owner. A dedicated gateway repo is optional; select it when ownership or release needs justify it.
+
+Before implementing a new public page or endpoint, trace its complete admission
+path: browser/client → edge/Gateway → application router → owner. Inspect the
+existing neighboring route in every applicable layer; framework middleware alone
+cannot establish that the edge forwards the request. Enumerate requested bare,
+market-prefixed and trailing-slash URLs, plus private/lookalike negatives. Record
+affected repositories, tests and compatible deployment order in the initial plan,
+then delegate independent owner changes in parallel. Do not discover predictable
+routing dependencies only after the application release. A one-line Gateway
+allowlist change is still a release dependency; keep the match narrow rather than
+adding a catch-all to conceal missing admission. Test the assembled routing policy
+before release and retry every requested public URL afterward. See the
+17 October tester-page planning correction in the existing
+[Servinoza case](../../../../docs/case-studies/servinoza-workflow-recovery.md).
+
+Prefer one reviewed gateway policy source over a chain of mutation scripts that
+incrementally rewrites generated configuration. Let Ops check out an exact Gateway
+revision, test it, publish only the reviewed artifact and deployment helper, validate
+the proxy configuration, then reload with rollback. Once that path is observed in
+production, remove superseded extraction scripts, one-time cutovers, old service
+definitions and migration-specific tests from active repos; Git history and the
+application's evidence docs preserve necessary history. Before deletion, search the
+live scheduler, service manager, deployment workflows and checked-in imports so a
+historical-looking file is not still runtime authority.
 
 The gateway need not own service business logic or all API contracts. Service authorization remains enforced at the protected operation even when the edge performs authentication. Inventory direct service, worker, server-rendered and webhook access paths that can bypass browser routing.
 

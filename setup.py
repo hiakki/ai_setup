@@ -15,10 +15,11 @@ import time
 import tomllib
 
 ROOT = Path(__file__).resolve().parent
-DEFAULT_COMPONENTS = ('runtime', 'skills', 'agents', 'custom', 'blog', 'gstack', 'integrations', 'context7', 'rules', 'figma', 'hermes', 'docs', 'hub')
-OPTIONAL_COMPONENTS = ('strix', 'skillui', 'hindsight')
+DEFAULT_COMPONENTS = ('runtime', 'skills', 'agents', 'custom', 'blog', 'gstack', 'integrations',
+                      'graphify', 'context7', 'contextmode', 'quality', 'agentreach', 'openrig', 'rules', 'figma', 'hermes', 'entire', 'docs', 'hub')
+OPTIONAL_COMPONENTS = ('strix', 'skillui', 'hindsight', 'agentwiki')
 COMPONENTS = DEFAULT_COMPONENTS + OPTIONAL_COMPONENTS
-SHARED_COMPONENTS = ('skills', 'agents', 'custom', 'rules', 'docs', 'hub', 'hindsight')
+SHARED_COMPONENTS = ('skills', 'agents', 'custom', 'graphify', 'rules', 'docs', 'hub', 'hindsight')
 
 
 def select_components(value):
@@ -31,6 +32,37 @@ def select_components(value):
     if 'all' in selected:
         selected.update(DEFAULT_COMPONENTS)
     return [component for component in COMPONENTS if component in selected]
+
+
+def select_sync_components(value, completed):
+    selected = set(select_components(value))
+    if 'all' in {item.strip() for item in value.split(',')}:
+        selected.update(select_components(','.join(completed)) if completed else [])
+    return [component for component in COMPONENTS if component in selected]
+
+
+def source_identity():
+    try:
+        return {'revision': capture(['git', '-C', ROOT, 'rev-parse', 'HEAD'], stderr=subprocess.DEVNULL),
+                'dirty': bool(capture(['git', '-C', ROOT, 'status', '--porcelain'], stderr=subprocess.DEVNULL))}
+    except (OSError, subprocess.CalledProcessError):
+        return {'revision': 'unversioned checkout', 'dirty': True}
+
+
+def add_configured_components(value, selected, home, manifest, env):
+    """Enable credential-backed shared services during the default one-click setup."""
+    requested = {item.strip() for item in value.split(',')}
+    if 'all' not in requested:
+        return selected
+    enabled = set(selected)
+    from agentwiki_runtime import connection
+    if 'agentwiki' not in enabled and connection(home.resolve(), manifest, env, required=False):
+        enabled.add('agentwiki')
+    if env.get('HINDSIGHT_MCP_URL', '').strip():
+        from hindsight_runtime import validate_url
+        validate_url(env['HINDSIGHT_MCP_URL'].strip())
+        enabled.add('hindsight')
+    return [component for component in COMPONENTS if component in enabled]
 
 
 def command_args(args, *, windows=None, env=None):
@@ -354,6 +386,12 @@ class Installer:
                 if capture(['git', '-C', checkout, 'rev-parse', 'HEAD']) != revision:
                     raise ValueError('Fetched commit mismatch')
                 checkout.rename(source)
+        # A manifest may select more skills at the same commit. Expand an existing
+        # sparse checkout additively; never prune paths or reset provider changes.
+        sparse = subprocess.run(['git', '-C', source, 'config', '--get', 'core.sparseCheckout'],
+                                env=self.env, text=True, capture_output=True)
+        if spec.get('sparse') and sparse.stdout.strip() == 'true':
+            run(['git', '-C', source, 'sparse-checkout', 'add', *spec['sparse']], env=self.env)
         self.state['sources'][spec['id']] = {'url': spec['url'], 'revision': revision,
                                            'path': source.relative_to(self.home).as_posix()}
         self.save()
@@ -405,6 +443,10 @@ class Installer:
                 source = self.fetch(spec)
                 for entry in spec['skills']:
                     self.install_skill(source, entry)
+                if spec['id'] == 'anti-slop':
+                    guidance = (ROOT / 'config/ANTISLOP.md').read_text(encoding='utf-8')
+                    for path in (self.home / '.codex/AGENTS.md', self.home / '.claude/CLAUDE.md'):
+                        self.merge_text(path, guidance, 'antislop')
 
     def agent(self, path, note=''):
         import yaml
@@ -519,15 +561,16 @@ class Installer:
                 self.backup(p)
                 p.write_text(old.rstrip() + '\n\n# ai_setup tools\n' + line + '\n', encoding='utf-8')
 
-    def verify(self):
+    def verify(self, components=None):
         if not self.state_file.exists():
             raise ValueError('No successful installation state in selected home')
         errors = []
-        if 'hermes' in self.state['completed']:
+        checked = set(self.state['completed']) if components is None else set(components) & set(self.state['completed'])
+        if 'hermes' in checked:
             from hermes_runtime import verify
             verify(self)
-        for component in ('context7', 'strix', 'skillui', 'hindsight'):
-            if component in self.state['completed']:
+        for component in ('graphify', 'context7', 'contextmode', 'quality', 'agentreach', 'openrig', 'strix', 'skillui', 'hindsight', 'agentwiki', 'entire'):
+            if component in checked:
                 import importlib
                 importlib.import_module(component + '_runtime').verify(self)
         for name, expected in self.state['files'].items():
@@ -561,19 +604,25 @@ class Installer:
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('command', choices=['plan', 'install', 'update', 'verify'], nargs='?', default='install')
+    parser.add_argument('command', choices=['plan', 'install', 'sync', 'update', 'verify'], nargs='?', default='install')
     parser.add_argument('--home', type=Path, default=Path.home())
     parser.add_argument('--manifest', type=Path, default=ROOT / 'manifest.json')
     parser.add_argument('--only', default='all', help='all = default profile; comma-separated components, e.g. all,strix,skillui or context7')
+    parser.add_argument('--sync', action='store_true', help='With plan, preview defaults plus previously installed optional components')
     args = parser.parse_args()
-    try:
-        selected = select_components(args.only)
-    except ValueError as exc:
-        parser.error(str(exc))
     manifest = json.loads(args.manifest.read_text(encoding='utf-8'))
     if manifest.get('schema') != 1:
         parser.error('Unsupported manifest schema')
-    installer = Installer(args.home, manifest, allow_source_updates=args.command == 'update')
+    if args.sync and args.command != 'plan':
+        parser.error('--sync is only valid with plan; use the sync action to apply')
+    installer = Installer(args.home, manifest, allow_source_updates=args.command in ('update', 'sync'))
+    try:
+        selected = (select_sync_components(args.only, installer.state['completed'])
+                    if args.command == 'sync' or args.sync else select_components(args.only))
+        selected = add_configured_components(args.only, selected,
+                                             args.home, manifest, os.environ)
+    except ValueError as exc:
+        parser.error(str(exc))
     if args.command == 'update':
         if args.only.strip() == 'all':
             completed = set(installer.state['completed'])
@@ -583,12 +632,13 @@ def main():
             parser.error('update supports shared content only: ' + ', '.join(SHARED_COMPONENTS))
     if args.command == 'plan':
         print(f'Home: {installer.home}\nComponents: {", ".join(selected)}')
-        print('Optional (explicit selection only): ' + ', '.join(OPTIONAL_COMPONENTS))
+        print('Optional: ' + ', '.join(OPTIONAL_COMPONENTS)
+              + ' (Agent Wiki joins with its individual API key; Hindsight joins with HINDSIGHT_MCP_URL)')
         for s in manifest['sources']:
             print(f'{s["id"]}: {s["url"]} @ {s["revision"]}')
         return
     if args.command == 'verify':
-        installer.verify()
+        installer.verify(None if args.only.strip() == 'all' else selected)
         return
     if installer.windows and 'hermes' in selected and installer.home != Path(os.environ['USERPROFILE']).resolve():
         parser.error('The full Windows setup includes Hermes and requires the current user home. '
@@ -597,6 +647,10 @@ def main():
     installer.state_dir.mkdir(parents=True, exist_ok=True, mode=0o700)
     from hub import operation_lock
     with operation_lock(installer.home, allow_inherited=True), install_lock(installer.state_dir / 'install.lock'):
+        identity = source_identity()
+        operation = dict(identity, action=args.command, components=selected, status='incomplete')
+        installer.state['last_operation'] = operation
+        installer.save()
         actions = {}
         if set(selected) & {'docs', 'hub'}:
             import hub
@@ -607,7 +661,7 @@ def main():
             else:
                 from runtime import runtime, gstack, integrations, figma
             actions.update(runtime=runtime, gstack=gstack, integrations=integrations, figma=figma)
-        for component in ('context7', 'strix', 'skillui', 'hindsight'):
+        for component in ('graphify', 'context7', 'contextmode', 'quality', 'agentreach', 'openrig', 'strix', 'skillui', 'hindsight', 'agentwiki', 'entire'):
             if component in selected:
                 import importlib
                 actions[component] = importlib.import_module(component + '_runtime').install
@@ -621,10 +675,16 @@ def main():
                 getattr(installer, component)()
             if component not in installer.state['completed']:
                 installer.state['completed'].append(component)
+            installer.state.setdefault('component_sources', {})[component] = identity.copy()
             installer.save()
-        installer.verify()
-        if args.command == 'install' and set(DEFAULT_COMPONENTS).issubset(selected):
+        installer.verify(selected)
+        if args.command in ('install', 'sync') and set(DEFAULT_COMPONENTS).issubset(selected):
             run([sys.executable, ROOT / 'smoke.py', '--home', installer.home], env=installer.env)
+        operation['status'] = 'verified'
+        operation['completed_at'] = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
+        if args.command == 'sync':
+            installer.state['last_sync'] = dict(operation, full=set(DEFAULT_COMPONENTS).issubset(selected))
+        installer.save()
 
 
 if __name__ == '__main__':

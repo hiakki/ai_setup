@@ -50,6 +50,34 @@ ownership until earlier in-flight work is resolved, and reconcile partial
 completion before replacement. Test failed journal writes, response loss,
 restart, cancellation races and missing terminal quantities when applicable.
 
+## Agreed schedules and incremental charges
+
+Keep hard availability/safety limits separate from paid allowances: payment must
+not override an unavailable window. Validate dependent configuration together
+(for example, an after-hours transport rule needs a defined base-hours band).
+Examples from competing products are hypotheses, not approved operating policy.
+
+Preview on the owning server and bind consent to the exact evaluated revision,
+actors and assignment. Snapshot dated windows, timezone, rule basis, rate, units,
+recipient and total. Recheck pending proposals; preserve already accepted prices
+and idempotent outcomes when configuration later changes. Historical untimed
+agreements need an explicit compatibility path, not invented dates or fees.
+
+For additional scope, assess existing plus proposed windows against daily limits,
+thresholds and once-per-booking/night rules. Price only the authorized increment;
+do not charge earlier scope twice or retrospectively reprice it. Aggregate rounding
+at the policy's declared scope so splitting equivalent windows does not change
+the fee. Assert the explanatory minutes/components as well as the final amount.
+Define an opening-day key for overnight work rather than silently splitting at
+midnight. Schedule validation alone does not reserve capacity across bookings.
+
+Validate the actual producer payload through every consumer schema, then exercise
+the real agreement/extension persistence actions and duplicate acceptance. Mocked
+owner or payment facts must remain labelled: database success does not establish
+provider settlement, public browser behavior or installed-device acceptance.
+See the [16 October scheduling case](../../../../docs/case-studies/servinoza-workflow-recovery.md#16-october-2026-agreed-schedules-and-incremental-allowances)
+for reproduced failures and bounded evidence.
+
 ## Test Fixtures
 
 Include:

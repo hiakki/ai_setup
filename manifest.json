@@ -6,11 +6,79 @@
   },
   "sources": [
     {
+      "id": "agent-reach",
+      "url": "https://github.com/Panniantong/Agent-Reach.git",
+      "revision": "94f06c1969dfc1834001269d79d3ad0972d9dee6",
+      "sparse": ["agent_reach"]
+    },
+    {
+      "id": "anti-slop",
+      "url": "https://github.com/miqdadbadjuber/anti-slop.git",
+      "revision": "439a2ef5b9dd0ebe74e8113ff43f5928d0fe2a6a",
+      "sparse": ["skills"],
+      "skills": [
+        {"path": "skills/antislop", "name": "antislop", "extra_files": {"LICENSE": "LICENSE"}},
+        {"path": "skills/antislop-ui", "name": "antislop-ui", "extra_files": {"LICENSE": "LICENSE"}, "link_rewrites": {"`antislop.md`": "`../antislop/SKILL.md`"}},
+        {"path": "skills/antislop-copywriting", "name": "antislop-copywriting", "extra_files": {"LICENSE": "LICENSE"}, "link_rewrites": {"`antislop.md`": "`../antislop/SKILL.md`"}},
+        {"path": "skills/antislop-human", "name": "antislop-human", "extra_files": {"LICENSE": "LICENSE"}, "link_rewrites": {"`antislop.md`": "`../antislop/SKILL.md`"}},
+        {"path": "skills/antislop-layoutmobile", "name": "antislop-layoutmobile", "extra_files": {"LICENSE": "LICENSE"}, "link_rewrites": {"`antislop.md`": "`../antislop/SKILL.md`"}},
+        {"path": "skills/antislop-code", "name": "antislop-code", "extra_files": {"LICENSE": "LICENSE"}, "link_rewrites": {"`antislop.md`": "`../antislop/SKILL.md`"}}
+      ]
+    },
+    {
+      "id": "logo-design",
+      "url": "https://github.com/kaankiziltug/logo-design-skill.git",
+      "revision": "0ecf52e9a4b3ac92b714f7cc6e3148ab8c774134",
+      "sparse": ["skills/logo-design"],
+      "skills": [{
+        "path": "skills/logo-design",
+        "name": "logo-design",
+        "extra_files": {"LICENSE": "LICENSE", "TRADEMARKS.md": "TRADEMARKS.md"}
+      }]
+    },
+    {
       "id": "anthropic-skills",
       "url": "https://github.com/anthropics/skills.git",
       "revision": "33375500bcea98d610eb30ce10ac4e59b89c390d",
-      "sparse": ["skills/doc-coauthoring"],
-      "skills": [{"path": "skills/doc-coauthoring", "name": "doc-coauthoring"}]
+      "sparse": ["skills/doc-coauthoring", "skills/frontend-design"],
+      "skills": [
+        {"path": "skills/doc-coauthoring", "name": "doc-coauthoring"},
+        {"path": "skills/frontend-design", "name": "frontend-design"}
+      ]
+    },
+    {
+      "id": "ui-ux-pro-max",
+      "url": "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill.git",
+      "revision": "56ea9cf174ed86786187daa9de0e6247cb0747e4",
+      "sparse": [".claude/skills/ui-ux-pro-max"],
+      "skills": [{
+        "path": ".claude/skills/ui-ux-pro-max",
+        "name": "ui-ux-pro-max",
+        "extra_files": {"LICENSE": "LICENSE"},
+        "link_rewrites": {
+          "${CLAUDE_PLUGIN_ROOT}/.claude/skills/ui-ux-pro-max": "${HOME}/.agents/skills/ui-ux-pro-max"
+        }
+      }]
+    },
+    {
+      "id": "gsap-skills",
+      "url": "https://github.com/greensock/gsap-skills.git",
+      "revision": "aed9cfd3277740755f6bfc1155c7aa645403b760",
+      "sparse": ["skills/gsap-core", "skills/gsap-react"],
+      "skills": [
+        {"path": "skills/gsap-core", "name": "gsap-core", "extra_files": {"LICENSE": "LICENSE"}},
+        {"path": "skills/gsap-react", "name": "gsap-react", "extra_files": {"LICENSE": "LICENSE"}}
+      ]
+    },
+    {
+      "id": "expo-design-skills",
+      "url": "https://github.com/expo/skills.git",
+      "revision": "7ddc1f5796996e5c7efe2fc3fa9168eb24e8dac1",
+      "sparse": ["plugins/expo/skills/expo-design-system", "plugins/expo/skills/expo-native-ui"],
+      "skills": [
+        {"path": "plugins/expo/skills/expo-design-system", "name": "expo-design-system", "extra_files": {"LICENSE": "LICENSE"}},
+        {"path": "plugins/expo/skills/expo-native-ui", "name": "expo-native-ui", "extra_files": {"LICENSE": "LICENSE"}}
+      ]
     },
     {
       "id": "ui-skills",
@@ -40,6 +108,25 @@
       ]
     },
     {
+      "id": "ponytail",
+      "url": "https://github.com/dietrichgebert/ponytail.git",
+      "revision": "2961b52fc1fe6a5a87c7a959a79512e5c2f3ffe5",
+      "sparse": ["skills"],
+      "skills": [
+        {"path": "skills/ponytail", "name": "ponytail", "extra_files": {"LICENSE": "LICENSE"}},
+        {"path": "skills/ponytail-audit", "name": "ponytail-audit", "extra_files": {"LICENSE": "LICENSE"}},
+        {"path": "skills/ponytail-debt", "name": "ponytail-debt", "extra_files": {"LICENSE": "LICENSE"}},
+        {"path": "skills/ponytail-gain", "name": "ponytail-gain", "extra_files": {"LICENSE": "LICENSE"}},
+        {"path": "skills/ponytail-help", "name": "ponytail-help", "extra_files": {"LICENSE": "LICENSE"}},
+        {"path": "skills/ponytail-review", "name": "ponytail-review", "extra_files": {"LICENSE": "LICENSE"}}
+      ]
+    },
+    {
+      "id": "graphify",
+      "url": "https://github.com/Graphify-Labs/graphify.git",
+      "revision": "e8eb76e797bed4f324bf0e1c262984a525aaab3e"
+    },
+    {
       "id": "hermes-agent",
       "url": "https://github.com/NousResearch/hermes-agent.git",
       "revision": "11e22f25823cdb0bec7d86e8591f6415eb0b58e6"
@@ -59,8 +146,22 @@
       "id": "vercel-design",
       "url": "https://github.com/vercel-labs/agent-skills.git",
       "revision": "063bee94c3f4df8453406c830b0a7df0f2860278",
-      "sparse": ["skills/web-design-guidelines"],
-      "skills": [{"path": "skills/web-design-guidelines", "name": "web-design-guidelines"}]
+      "sparse": ["skills/web-design-guidelines", "skills/react-best-practices", "skills/composition-patterns"],
+      "skills": [
+        {"path": "skills/web-design-guidelines", "name": "web-design-guidelines"},
+        {"path": "skills/react-best-practices", "name": "vercel-react-best-practices"},
+        {"path": "skills/composition-patterns", "name": "vercel-composition-patterns"}
+      ]
+    },
+    {
+      "id": "promptfoo-skills",
+      "url": "https://github.com/promptfoo/promptfoo.git",
+      "revision": "480893f9c6f6dd84bbc2fa71ec9fbc2174885aaf",
+      "sparse": ["plugins/promptfoo/skills/promptfoo-evals", "plugins/promptfoo/skills/promptfoo-provider-setup"],
+      "skills": [
+        {"path": "plugins/promptfoo/skills/promptfoo-evals", "name": "promptfoo-evals", "extra_files": {"LICENSE": "LICENSE"}},
+        {"path": "plugins/promptfoo/skills/promptfoo-provider-setup", "name": "promptfoo-provider-setup", "extra_files": {"LICENSE": "LICENSE"}}
+      ]
     },
     {
       "id": "quantitative-trading",
@@ -284,6 +385,8 @@
       "url": "https://github.com/msitarzewski/agency-agents.git",
       "revision": "647c8baa42b6842afb4a97bf2c0950d45ba88e8b",
       "agents": [
+        "design/design-brand-guardian.md",
+        "design/design-visual-storyteller.md",
         "design/design-image-prompt-engineer.md",
         "design/design-persona-walkthrough.md",
         "design/design-ui-designer.md",
@@ -415,7 +518,70 @@
     }
   ],
   "node": "24.20.0",
+  "openrig": {
+    "version": "0.6.13",
+    "node": "22.22.0",
+    "source": "https://github.com/mvschwarz/openrig",
+    "revision": "9eeb2e42ca6dcfb8da60a8517dc39c7d83b84082",
+    "integrity": "sha512-EeWrcqPCz4rMp5tP1q8a3pCuSWbcbYZP1Oj/efd9BqZVpiyIqDBLZB9ujw2gwdR9REvWrCTlNO9CKIkp885zgw=="
+  },
+  "agent_reach": {
+    "version": "1.5.0",
+    "yt_dlp": "2026.8.19",
+    "feedparser": "6.0.14",
+    "opencli": {
+      "version": "2.0.1",
+      "integrity": "sha512-E9tk5AWtOAksCBAYZdW9VpfLW5Ng3e9vUWR/Groxd5SJy+KS9ssX5UP8eMOXhcUCHaE0TGZN+5VC3cNopxcj8A=="
+    }
+  },
+  "quality": {
+    "libsql": {
+      "version": "0.5.29",
+      "integrity": {
+        "darwin-arm64": "sha512-K+2RIB1OGFPYQbfay48GakLhqf3ArcbHqPFu7EZiaUcRgFcdw8RoltsMyvbj5ix2fY0HV3Q3Ioa/ByvQdaSM0A==",
+        "darwin-x64": "sha512-OtT+KFHsKFy1R5FVadr8FJ2Bb1mghtXTyJkxv0trocq7NuHntSki1eUbxpO5ezJesDvBlqFjnWaYYY516QNLhQ==",
+        "linux-arm64-gnu": "sha512-gURBqaiXIGGwFNEaUj8Ldk7Hps4STtG+31aEidCk5evMMdtsdfL3HPCpvys+ZF/tkOs2MWlRWoSq7SOuCE9k3w==",
+        "linux-x64-gnu": "sha512-y14V0vY0nmMC6G0pHeJcEarcnGU2H6cm21ZceRkacWHvQAEhAG0latQkCtoS2njFOXiYIg+JYPfAoWKbi82rkg==",
+        "win32-x64-msvc": "sha512-4/0CvEdhi6+KjMxMaVbFM2n2Z44escBRoEYpR+gZg64DdetzGnYm8mcNLcoySaDJZNaBd6wz5DNdgRmcI4hXcg=="
+      }
+    },
+    "npm": {
+      "promptfoo": {"version": "0.124.1", "integrity": "sha512-Y6fq/WGTL7lPvDsirNSmmmcPLhURwRao03iv8fCoLbFq6H1eqg5VVTmXiap5Jl+fiRaQQZXYMHb2N1gQm1tGyQ=="},
+      "@ast-grep/cli": {"version": "0.51.0", "integrity": "sha512-sIZEt4L4iQJRM2QDKQnbltQxddIsxzt9nmguw3/X7eP3cFwBopsZtFRvaEVht/3/6C1xe3Opn/pbsxSFVJDvpA=="},
+      "chrome-devtools-mcp": {"version": "1.11.0", "integrity": "sha512-CytJ/5tnzrS+J/74be2P5aCOsS/mmGRHys/Si+IYC4ucrbnWAmES/dYdxGJjeUCECRcoFUilZAysdjlwqUjXIA=="}
+    },
+    "schemathesis": "4.32.1",
+    "rtk": {
+      "version": "1.0.1",
+      "sha256": {
+        "aarch64-apple-darwin": "4a4d9d09656ff29423336aa506e680afc3f7b6dafe84f0194a1c9a523a3c80e1",
+        "x86_64-apple-darwin": "2cf4d6dd2cabccbc74aa6aba2a48e60aad85b1a31e3d740e6ca0b2fa0060b06a",
+        "aarch64-unknown-linux-gnu": "ee24a43dac9162de55fea8460b5efcd56d401ec28b5117c921bffa8a57bc136e",
+        "x86_64-unknown-linux-musl": "a44e8ffc43981100b4ddf1710399a1649a6c874591aa6d0c0727fe6cbd983c41",
+        "x86_64-pc-windows-msvc": "0e53e2eca471e15fbd3636e64e6bc0b182cbc278ed0339c80450a2dd03f4cd6b"
+      }
+    }
+  },
+  "context_mode": {
+    "version": "1.0.169",
+    "integrity": "sha512-94JIaFuLjF9SO2BsGTrbGtyT44K95+9OC8BdbaL/UT76xOkanJLfUR5CzmNw+GELXZQqH4nBrKg9wjBnSFkVnQ=="
+  },
   "optional_npm": {"skillui": "1.3.4"},
+  "entire": {
+    "version": "0.11.4",
+    "sha256": {
+      "darwin-amd64": "74ff766a6877741ece7f100b2c428bd5d748899018f464a6ea6fa397b33da345",
+      "darwin-arm64": "6636dd5bf1b2ff9a9c52d4ea1ad936799ada962142f0f5e5c3c8611f3acd347b",
+      "linux-amd64": "b93634124bf51bc5e07156d92b53853d124325a3ff9af60c4960307bf8eb870f",
+      "linux-arm64": "389274ce4bfc0813fe5d6ac0cc8b270beddfa025340e4506f4807dab7798f447",
+      "windows-amd64": "c46e4c61b55780c3d3b8192cf8bec67c436b64a4adf181a739ec38b74d4e99c7"
+    }
+  },
+  "agent_wiki": {
+    "url": "https://github.com/onyx-dot-app/agent-wiki.git",
+    "revision": "117b5872de55539bceb39388ef24381b7da1e7a9",
+    "mcp_url": "https://agent-wiki.platform.stg.lcmsgsndr.net/api/mcp"
+  },
   "strix": {
     "version": "1.6.2",
     "sha256": {
@@ -436,6 +602,7 @@
     "bun": "1.4.2"
   },
   "codebase_memory_version": "0.10.8",
+  "graphify_version": "0.9.89",
   "codebase_memory_installer_sha256": "2fdd4d6563fc8e540bb32e233c5fdef22ecf05d7ebd5a80657cd4fec953b3475",
   "codebase_memory_windows_installer_sha256": "4fa23417504db92845f33086569f8906259a07f0168d0d07b4c29555593a7607",
   "windows_ffmpeg": {

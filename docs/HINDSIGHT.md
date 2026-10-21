@@ -20,11 +20,13 @@ and fragments in the URL. No personal endpoint or bank is embedded in this repo.
 
 The credential reference defaults to `LLM_GATEWAY_KEY`. Set
 `HINDSIGHT_MCP_TOKEN_ENV` to a different variable name if needed. Provision that
-variable through your normal secret manager or private shell environment before
-starting clients; the installer never copies its value into client configuration
-or installer state. A Git-ignored project `.env` is **not automatically loaded**
-by Claude/Codex. Clients launched from an IDE/desktop also need the variable in
-their own launch environment, not only in an unrelated terminal.
+variable in `~/.config/ai-setup/secrets.env` for Codex and restrict the file to
+the current user (`chmod 600` on macOS/Linux). The managed Codex header helper
+parses this file directly, so terminal, IDE and desktop launches behave the same
+and the credential survives reboot without a global process environment setting.
+It rejects symlinks, duplicate assignments, unsafe POSIX permissions and header
+control characters. The installer never copies the value into client configuration
+or installer state. Claude still needs the variable in its launch environment.
 
 macOS / Ubuntu / Debian, from the checkout:
 
@@ -59,7 +61,7 @@ Codex's `~/.codex/config.toml` entry uses:
 ```toml
 [mcp_servers.hindsight]
 url = "https://your-gateway.example/hindsight/mcp/your-bank/"
-bearer_token_env_var = "LLM_GATEWAY_KEY"
+http_headers_helper = "/absolute/python /absolute/mcp_headers.py --env-file /home/user/.config/ai-setup/secrets.env --variable LLM_GATEWAY_KEY --header Authorization --prefix 'Bearer '"
 ```
 
 The installer preserves other MCP servers and existing Hindsight settings,
@@ -71,10 +73,17 @@ settings; rerunning is not an overwrite switch. Later reruns/updates can omit
 only for installations that already selected Hindsight. Ordinary `all` does not
 activate this optional connection for other users.
 
+Existing operator-owned authentication is preserved. When the private secret file
+has already been provisioned, the installer migrates the standard Codex
+`bearer_token_env_var` entry to the managed helper. Custom headers/helpers remain
+untouched. Older `bearer_token_env_var` entries must contain an environment-variable
+name rather than the credential itself.
+
 ## Verify the actual connection
 
-Start a fresh client with the token environment variable available. In Claude,
-use `/mcp` to inspect Hindsight. `codex mcp get hindsight` confirms registration;
+Start a fresh client. Claude needs the token environment variable available;
+Codex invokes its configured helper and private file. In Claude, use `/mcp` to
+inspect Hindsight. `codex mcp get hindsight` confirms registration;
 it is not a live authentication test. Project-level or managed configuration may
 override a user-level server of the same name, so check the active client too.
 
@@ -246,6 +255,29 @@ engineering playbook third. Returned passages were inspected for relevance and
 evidence limits. These are source-discovery checks on this snapshot, not a
 general retrieval benchmark or proof that every lesson will be recalled.
 
+### Reviewed resynchronization — 29 September 2026
+
+The reviewed index now identifies **15 stable document IDs**: the same nine case
+documents and six navigation pointers. The resynchronization replaced the existing
+Panyora and Servinoza case documents after their later reviewed additions, updated
+the project-catalog pointer for Servinoza's current owner repositories and retired
+parent, and added a pointer to this Hindsight operating guide. Stable IDs prevent
+parallel old/new copies of the same source.
+
+The changed sources were re-read for evidence limits, local links and obvious
+credential or private-path leakage before their hashes were accepted. Reusable
+container guidance and the global communication rule remain in their canonical
+skill/rule files; they were not copied into memory as duplicate implementations.
+The bank profile was reset through MCP to chunks-only retention with observations,
+automatic consolidation, temporal/graph retrieval, reranking and reflection tools
+disabled before writing. No direct REST call or model-provider credential was used.
+
+This resynchronization covers the explicit reviewed index. It does not certify the
+remaining historical learning backlog, automatically follow later Git changes or
+prove that every query will retrieve the right passage. The verification record
+must still compare bank metadata and readback content with this index and exercise
+the changed probes.
+
 #### Maintain the reviewed index through MCP
 
 The JSON index ships with the normal cross-platform `docs` component. It contains
@@ -270,7 +302,9 @@ not a scheduled synchronization job or an install-time upload instruction.
    evidence limits, and test new failure mechanisms. A pointer hit alone does not
    prove the right passage was retrieved or that a project applied it correctly.
 
-This closes the audited **nine-case/five-pointer** gap. It does not close the
+The original expansion closed the audited **nine-case/five-pointer** gap; the
+29 September resynchronization extends that reviewed set to **nine cases and six
+pointers**. It does not close the
 historical review backlog in [learning coverage](LEARNING_COVERAGE.md), copy every
 skill into memory, publish the local checkout or update other machines. Later
 source changes require another reviewed memory update. Git remains canonical.

@@ -1,5 +1,9 @@
 # Make a repository or directory AI-ready
 
+For a persistent specialist team, use the global `openrig-team` skill and
+`ai-team prepare --project PATH`, then start its lead on demand. The central roster
+is shared; each project's runtime context remains separate. See `docs/OPENRIG.md`.
+
 Updated 2026-09-28. Scope: **central AI guidance, project-owned application docs, global Claude Code and Codex tooling**.
 
 ## The request to use in any project
@@ -19,6 +23,9 @@ This authorizes onboarding the chosen directory. It does not authorize changing 
 | gstack | Existing global source, runtime and host adapters | Invoke the matching workflow from the project root; no `gstack init` step |
 | Graft | CLI, MCP registration and existing global integration | Build this project's structural graph |
 | Codebase Memory MCP | Binary, MCP registration and machine-local graph storage | Index the exact project root and verify coverage |
+| Ponytail | Six provider-managed implementation/review skills | Invoke for the smallest complete safe change; no project copy or hook install |
+| Graphify | CLI plus global Agent Skills package; no MCP or search guards | Run only for mixed code/docs/schema/PDF/Office investigations; keep output local |
+| Agent Reach | Global research skill, CLI, video/RSS helpers and OpenCLI | Select for relevant social/video research; account/browser access is personal and optional |
 | Product context | Reusable AI guidance only | Read and maintain application facts in the project's own canonical docs |
 
 Inspect the global skill and role directories listed above to confirm discovery. On native Windows, `~` denotes the Windows user profile; consult [the Windows command reference](WINDOWS.md) for PowerShell equivalents. For installation repair, use the ai_setup repository's README and `bash install.sh verify` (Unix) or `.\install.ps1 -Action verify` (Windows). Do not rerun global installers as ordinary project onboarding.
@@ -73,6 +80,25 @@ docs, and a reminder to read existing team instructions. Preserve existing
 content. Do not copy shared skills into `.agents/project-context.md` or create a
 project-level skill/agent registry. Verify in a fresh session that the route is usable.
 
+### Frontend projects: establish design guidance early
+
+For a new frontend or substantive UI work, search `ai-setup search "frontend-design-workflow"`
+and read the global `build-usable-apps` skill with its
+`references/frontend-design-workflow.md` and relevant provider-catalog entries.
+Inspect existing design docs, tokens and rendered screens before selecting a new
+direction. Keep the app's design contract and acceptance evidence in its own docs;
+reuse global skills without local copies. Prove one representative screen and
+its interaction states before expanding. Reference galleries, paid research and
+component libraries are optional; onboarding alone does not authorize app changes.
+
+For relevant evaluation, React performance, API/AST or browser-quality tasks,
+select the global `development-quality` skill. It routes Vercel's React and
+composition guidance, Promptfoo, ast-grep, Schemathesis and optional Chrome/RTK
+use. Reuse app-owned Playwright/axe tests and Storybook when available. Installed
+examples are under `~/.local/share/ai-setup/quality/`; inspect and adapt only within
+an authorized app task. Do not start scans/servers, spend model quota or add app
+dependencies during onboarding. See `docs/DEVELOPMENT_QUALITY.md` centrally.
+
 ## 4. Build only this project's graphs
 
 Once the root contains supported source code:
@@ -110,6 +136,8 @@ Do not run `graft init` by default: global MCP/hooks already provide the integra
 | --- | --- |
 | Architecture, symbols, callers and impact | Codebase Memory MCP; confirm project/freshness, then check evidence coverage |
 | Fast source pack or graph fallback | `graft ask "specific question" --source`, `graft callers <symbol>`, or `graft map` |
+| Smallest complete implementation/review | `ponytail` or the focused `ponytail-review` / `ponytail-audit` skill |
+| Relationships across code and non-code artifacts | `graphify`; use its local output only for the current investigation |
 | Config values, literals, unsupported files | Direct source reads / `rg` |
 | Planning a substantial change | Existing `gstack-plan-eng-review`, when the task benefits from it |
 | Reviewing a diff | Existing `gstack-review` |
@@ -120,7 +148,7 @@ Do not run `graft init` by default: global MCP/hooks already provide the integra
 
 Claude invocation example: `/gstack-review`. Codex example: `$gstack-review`. State the diff, project and scope. Shipping, deployment and service-changing workflows require the corresponding task authorization.
 
-Use one discovery tool per question unless the second resolves a real gap. Codebase Memory is a structural graph, not a guarantee that every chat decision is remembered. gstack's optional gbrain/learning features are separate and are not enabled by this guide.
+Use one discovery tool per question unless the second resolves a real gap. Graphify is not the default code-discovery tool and its MCP/search guards are intentionally not installed. Codebase Memory is a structural graph, not a guarantee that every chat decision is remembered. gstack's optional gbrain/learning features are separate and are not enabled by this guide.
 
 ## 6. Verify readiness
 

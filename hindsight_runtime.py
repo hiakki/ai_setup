@@ -1,6 +1,10 @@
 """Register an operator-selected remote Hindsight MCP; never ingest or copy keys."""
 import json
+from pathlib import Path
 import re
+import shlex
+import subprocess
+import sys
 import tomllib
 from urllib.parse import urlsplit
 
@@ -46,11 +50,54 @@ def read_server(i, path, section):
     return data.get(section, {}).get('hindsight')
 
 
-def validate_existing(server):
+def validate_existing(server, section):
     if not isinstance(server, dict) or not (server.get('url') or server.get('command')):
         raise ValueError('Existing Hindsight entry needs a URL or command; preserving it')
     if server.get('url'):
         validate_url(server['url'])
+    token_env = server.get('bearer_token_env_var')
+    if (section == 'mcp_servers' and token_env is not None
+            and (not isinstance(token_env, str)
+                 or not re.fullmatch(r'[A-Za-z_][A-Za-z0-9_]*', token_env))):
+        raise ValueError('Existing Codex Hindsight bearer_token_env_var must name an '
+                         'environment variable; preserving the configuration')
+
+
+def credential_helper(i, token_env):
+    from setup import ROOT, venv_python
+    secret_file = i.home / '.config/ai-setup/secrets.env'
+    installed = i.home / '.local/share/ai-setup/mcp_headers.py'
+    i.write(installed, (ROOT / 'mcp_headers.py').read_text(encoding='utf-8'), 0o700)
+    python = venv_python(i.home / '.local/share/ai-setup/venv')
+    if not python.exists():
+        python = Path(sys.executable)
+    arguments = [str(python), str(installed), '--env-file',
+                 str(secret_file),
+                 '--variable', token_env, '--header', 'Authorization', '--prefix', 'Bearer ']
+    return subprocess.list2cmdline(arguments) if i.windows else shlex.join(arguments)
+
+
+def migrate_codex_environment_auth(i, path, existing, helper, token_env):
+    """Use the helper only when the standard private file has been provisioned."""
+    secret_file = i.home / '.config/ai-setup/secrets.env'
+    if not secret_file.is_file() or secret_file.is_symlink():
+        return existing
+    if existing.get('http_headers_helper') == helper:
+        return existing
+    if (set(existing) & {'http_headers_helper', 'http_headers', 'env_http_headers'}
+            or existing.get('bearer_token_env_var') != token_env):
+        return existing
+    from mcp_headers import dotenv_value
+    dotenv_value(secret_file, existing['bearer_token_env_var'])
+    i.backup(path)
+    import tomlkit
+    document = tomlkit.parse(path.read_text(encoding='utf-8'))
+    server = document['mcp_servers']['hindsight']
+    del server['bearer_token_env_var']
+    server['http_headers_helper'] = helper
+    path.write_text(tomlkit.dumps(document), encoding='utf-8')
+    path.chmod(0o600)
+    return read_server(i, path, 'mcp_servers')
 
 
 def install(i):
@@ -60,24 +107,31 @@ def install(i):
         raise ValueError('HINDSIGHT_MCP_TOKEN_ENV must be an environment variable name')
     if endpoint:
         validate_url(endpoint)
+    helper = credential_helper(i, token_env)
     # Preflight BOTH clients before adding either registration.
     entries = [(path, section, read_server(i, path, section))
                for path, section in configurations(i)]
-    for _, _, existing in entries:
+    for _, section, existing in entries:
         if existing is not None:
-            validate_existing(existing)
+            validate_existing(existing, section)
             if endpoint and existing.get('url') != endpoint:
                 raise ValueError('Existing Hindsight endpoint conflicts; preserving it. '
                                  'Review the client configuration before switching banks.')
         elif not endpoint:
             raise ValueError('Set HINDSIGHT_MCP_URL to your full bank MCP endpoint before installation')
     for path, section, existing in entries:
+        if section == 'mcp_servers' and existing is not None:
+            existing = migrate_codex_environment_auth(i, path, existing, helper, token_env)
         if existing is None:
             server = {'url': endpoint}
             if section == 'mcpServers':
                 server.update(type='http', headers={'Authorization': 'Bearer ${' + token_env + '}'})
             else:
-                server['bearer_token_env_var'] = token_env
+                secret_file = i.home / '.config/ai-setup/secrets.env'
+                if secret_file.exists():
+                    from mcp_headers import dotenv_value
+                    dotenv_value(secret_file, token_env)
+                server['http_headers_helper'] = helper
             merge_config(i, path, {section: {'hindsight': server}})
         else:
             print('Preserving existing Hindsight configuration in ' + str(path))
@@ -123,12 +177,17 @@ See the shared docs entry `HINDSIGHT.md` for setup and verification.
         i.merge_text(path, guidance, 'hindsight')
     verify(i)
     print('Hindsight registration verified locally; remote authentication was not tested.')
-    print('New clients need their configured bearer-token variable in the launch environment. '
-          'Repository .env files are not loaded automatically.')
-    if not i.env.get(token_env):
-        print('No ' + token_env + ' in the installer environment; registration does not require the key.')
+    print('Codex reads its Hindsight credential through the managed helper from '
+          '~/.config/ai-setup/secrets.env; Claude still uses its launch environment.')
+    secret_file = i.home / '.config/ai-setup/secrets.env'
+    if not secret_file.exists():
+        print('Create ' + str(secret_file) + ' with ' + token_env
+              + '=... and restrict it to the current user before starting Codex.')
 
 
 def verify(i):
+    helper = i.home / '.local/share/ai-setup/mcp_headers.py'
+    if not helper.is_file():
+        raise ValueError('Missing managed Codex MCP credential helper')
     for path, section in configurations(i):
-        validate_existing(read_server(i, path, section))
+        validate_existing(read_server(i, path, section), section)

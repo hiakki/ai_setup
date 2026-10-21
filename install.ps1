@@ -1,12 +1,22 @@
 # Native Windows entry point. Git Bash is an auxiliary tool, not a Linux VM.
 [CmdletBinding()]
 param(
-    [ValidateSet('install', 'plan', 'verify', 'update')][string]$Action = 'install',
+    [ValidateSet('install', 'sync', 'plan', 'verify', 'update')][string]$Action = 'install',
     [string]$HomeDirectory = [Environment]::GetFolderPath('UserProfile'),
     # Defaults include Context7 and Hermes; opt in with -Only 'all,strix,skillui'.
+    # Ponytail skills and the on-demand Graphify CLI are installed by default.
+    # Logo Design and all six Anti Slop skills use the shared pinned manifest.
+    # Context Mode MCP (contextmode) is included too.
+    # Quality CLIs and shared evaluation/testing guidance are included (quality).
+    # Agent Reach research CLI/skill and OpenCLI are included (agentreach); no social login.
+    # OpenRig (openrig) installs ai-team.cmd for SSH to a macOS/Linux execution host; no WSL.
+    # No API scans, Storybook servers, browser sessions or RTK hooks are started.
+    # Context Mode uses native node.exe/SQLite; no WSL, C++ build or hooks required.
+    # Entire is installed by default but does not enable repository capture.
+    # Agent Wiki joins the default profile when its individual API key is configured.
     # setup.py owns the component list and expands all to the default components.
     # Remote Hindsight: set HINDSIGHT_MCP_URL, then -Only 'hindsight,docs,hub'.
-    # LLM_GATEWAY_KEY must be in the client environment; see docs/HINDSIGHT.md.
+    # Codex can load LLM_GATEWAY_KEY from ~/.config/ai-setup/secrets.env; see docs/HINDSIGHT.md.
     [string]$Only = 'all',
     [string]$RepositoryDirectory = ''
 )
@@ -165,7 +175,7 @@ function Invoke-AISetup {
     $selected = if ($SetupOnly) { $SetupOnly } else { 'all' }
     $components = @($selected.Split(',') | ForEach-Object { $_.Trim() })
     $currentUserHome = [IO.Path]::GetFullPath([Environment]::GetFolderPath('UserProfile'))
-    if ($SetupAction -eq 'install' -and ('all' -in $components -or 'hermes' -in $components) -and $SetupHome -ne $currentUserHome) {
+    if ($SetupAction -in @('install', 'sync') -and ('all' -in $components -or 'hermes' -in $components) -and $SetupHome -ne $currentUserHome) {
         throw 'The full setup includes Hermes and requires the current user profile. Omit -HomeDirectory, or use -Only with components excluding hermes for an isolated test.'
     }
     $bootstrap = Join-Path $SetupHome '.local/share/ai-setup/bootstrap'
@@ -174,14 +184,14 @@ function Invoke-AISetup {
     }
     $hasCheckout = $Checkout -and (Test-Path -LiteralPath (Join-Path $Checkout 'setup.py'))
     $validatedSelection = $false
-    if ($SetupAction -eq 'install' -and $hasCheckout) {
+    if ($SetupAction -in @('install', 'sync') -and $hasCheckout) {
         $existingPython = Find-SetupPython $bootstrap
         if ($existingPython) {
             Invoke-CheckedNative $existingPython @((Join-Path $Checkout 'setup.py'), 'plan', '--home', $SetupHome, '--only', $selected) | Out-Null
             $validatedSelection = $true
         }
     }
-    if ($SetupAction -ne 'install') {
+    if ($SetupAction -notin @('install', 'sync')) {
         if (-not $hasCheckout) { throw 'plan/verify/update require a local repository checkout. Run install first.' }
         $python = Join-Path $SetupHome '.local/share/ai-setup/venv/Scripts/python.exe'
         if ($SetupAction -eq 'update' -and -not (Test-Path -LiteralPath $python)) {
@@ -206,6 +216,13 @@ function Invoke-AISetup {
                 if ($LASTEXITCODE -ne 0 -or $origin -notin @('https://github.com/hiakki/ai_setup.git', 'git@github.com:hiakki/ai_setup.git')) {
                     throw "Preserving unrelated setup directory: $Checkout"
                 }
+                $dirty = & $git -C $Checkout status --porcelain
+                if ($LASTEXITCODE -ne 0) { throw 'Cannot inspect the cached checkout' }
+                $branch = & $git -C $Checkout branch --show-current
+                if ($LASTEXITCODE -ne 0 -or $dirty -or $branch -ne 'main') {
+                    throw "Preserving local checkout changes/branch: $Checkout. Reconcile before syncing."
+                }
+                Invoke-CheckedNative $git @('-C', $Checkout, 'pull', '--ff-only', 'origin', 'main')
             } else { Invoke-CheckedNative $git @('clone', 'https://github.com/hiakki/ai_setup.git', $Checkout) }
         }
         if (-not (Test-Path -LiteralPath (Join-Path $Checkout 'setup.py'))) { throw "Incomplete setup checkout: $Checkout" }
@@ -228,5 +245,9 @@ function Invoke-AISetup {
 
 # Dot-sourcing loads functions for focused tests without installing anything.
 if ($MyInvocation.InvocationName -ne '.') {
+    if (-not $PSBoundParameters.ContainsKey('Action') -and
+        (Test-Path -LiteralPath (Join-Path $HomeDirectory '.local/state/ai-setup/state.json'))) {
+        $Action = 'sync'
+    }
     Invoke-AISetup $Action $HomeDirectory $Only $RepositoryDirectory
 }

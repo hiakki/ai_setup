@@ -18,7 +18,7 @@ import tomllib
 import zipfile
 
 from setup import capture, run
-from runtime import download, merge, merge_config
+from runtime import download, merge, merge_config, install_codebase_memory
 
 
 def verify_checksum(archive, checksums, name):
@@ -101,7 +101,7 @@ def command(i, name):
 
 
 def executable(i, name):
-    return i.bin / (name + ('.cmd' if name in ('npm', 'npx', 'codex', 'claude', 'skills', 'graft', 'playwright-mcp') else '.exe'))
+    return i.bin / (name + ('.cmd' if name in ('npm', 'npx', 'codex', 'claude', 'skills', 'graft', 'graphify', 'playwright-mcp') else '.exe'))
 
 
 def launcher(argv):
@@ -165,25 +165,7 @@ def runtime(i):
     terminal_launchers(i, ('npm', 'npx', 'codex', 'claude', 'graft', 'skills', 'playwright-mcp'))
     for name in ('codex', 'claude', 'graft', 'skills', 'bun'):
         run([*command(i, name), '--version'], env=i.env)
-    binary = i.bin / 'codebase-memory-mcp.exe'
-    expected = i.manifest['codebase_memory_version']
-    if not binary.exists():
-        spec = i.spec('codebase-memory')
-        installer = i.home / '.local/share/ai-setup/installers/codebase-memory.ps1'
-        i.safe(installer)
-        installer.parent.mkdir(parents=True, exist_ok=True)
-        download('https://raw.githubusercontent.com/DeusData/codebase-memory-mcp/' + spec['revision'] + '/install.ps1', installer)
-        if hashlib.sha256(installer.read_bytes()).hexdigest() != i.manifest['codebase_memory_windows_installer_sha256']:
-            raise ValueError('Codebase Memory installer checksum mismatch; retry the provider download')
-        env = dict(i.env, CBM_ARCH='amd64',
-                   CBM_DOWNLOAD_URL=f'https://github.com/DeusData/codebase-memory-mcp/releases/download/v{expected}')
-        run(['powershell.exe', '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', installer,
-             '--skip-config', '--dir=' + str(i.bin)], env=env)
-        i.remember(binary)
-    else:
-        i.owned(binary)
-    if expected not in capture([binary, '--version'], env=i.env):
-        raise ValueError('Codebase Memory version mismatch; preserve the changed binary before retrying')
+    install_codebase_memory(i)
     install_ffmpeg(i)
 
 
@@ -237,47 +219,8 @@ def blog_renderer_adapter(i, source):
 
 
 def gstack(i):
-    source = i.fetch(i.spec('gstack'))
-    if 'gstack' in i.state['completed']:
-        i.verify()
-        gstack_skill_names(i)
-        return
-    for folder in (i.home / '.claude/skills', i.home / '.codex/skills', i.home / '.agents/skills'):
-        for path in folder.glob('gstack*'):
-            i.owned(path)
-    claude = i.home / '.claude/skills/gstack'
-    i.link(claude, source)
-    env = dict(bash_env(i), GSTACK_SKIP_COREUTILS='1', GSTACK_SKIP_GBRAIN_REGEN='1',
-               GSTACK_SKIP_FONTS='1', GSTACK_SKIP_ASIDE='1')
-    flags = ['--prefix', '--no-team', '--no-plan-tune-hooks', '--no-timeline-stop-hook']
-    try:
-        for host in ('claude', 'codex'):
-            run([git_bash(i), (claude / 'setup').as_posix(), '--host', host, *flags],
-                cwd=source, env=env, stdin=subprocess.DEVNULL)
-        run([git_bash(i), (source / 'bin/gstack-config').as_posix(), 'set', 'auto_upgrade', 'false'], env=env)
-        run([git_bash(i), (source / 'bin/gstack-patch-names').as_posix(), '.agents/skills', 'true'], cwd=source, env=env)
-        for path in sorted((i.home / '.codex/skills').glob('gstack-*')):
-            if not (path / 'SKILL.md').exists():
-                raise ValueError(f'Generated gstack skill missing: {path}; rerun provider setup')
-            target = i.home / '.agents/skills' / path.name
-            i.copy_tree(path, target)
-            # These are the exact fresh provider-owned copies, not pre-existing user paths.
-            if path.is_symlink() or getattr(path, 'is_junction', lambda: False)():
-                path.rmdir() if getattr(path, 'is_junction', lambda: False)() else path.unlink()
-            else:
-                shutil.rmtree(path)
-        i.write(i.home / '.agents/skills/gstack/SKILL.md', (source / '.agents/skills/gstack/SKILL.md').read_text(encoding='utf-8'))
-        # The Codex runtime must expose binaries/assets without a second skill tree.
-        runtime_adapter(i, source)
-        gstack_skill_names(i)
-    finally:
-        # Remember only directories checked for ownership before provider setup.
-        # A provider interruption remains resumable, without adopting unrelated files.
-        for folder in (i.home / '.claude/skills', i.home / '.codex/skills'):
-            for path in folder.glob('gstack*'):
-                i.remember(path)
-        i.state.setdefault('generated_sources', {})['gstack'] = capture(['git', '-C', source, 'diff', 'HEAD'])
-        i.save()
+    from runtime import gstack as shared_gstack
+    shared_gstack(i)
 
 
 def gstack_skill_names(i):
@@ -300,8 +243,7 @@ def runtime_adapter(i, source):
     """Replace the generated root without ever traversing/removing its links."""
     adapter = i.home / '.codex/skills/gstack'
     if adapter.exists():
-        # Caller has established this is provider output in our installation.
-        i.remember(adapter)
+        i.owned(adapter)
         backup = i.state_dir / ('gstack-runtime-adapter-' + str(time.time_ns()))
         adapter.rename(backup)
         prefix = adapter.relative_to(i.home).as_posix()
@@ -460,16 +402,5 @@ def trust_generated_hooks(i):
 
 
 def figma(i):
-    if 'figma' in i.state['completed']:
-        return
-    spec = i.manifest['figma']
-    source = i.fetch({'id': 'openai-plugins', 'url': 'https://github.com/' + spec['repository'] + '.git',
-                      'revision': spec['revision'], 'sparse': ['plugins/figma']})
-    marketplace = i.home / '.local/share/ai-setup/marketplace'
-    i.copy_tree(source / 'plugins/figma', marketplace / 'plugins/figma')
-    registry = {'name': 'ai-setup-providers', 'plugins': [{'name': 'figma',
-                'source': {'source': 'local', 'path': './plugins/figma'},
-                'policy': {'installation': 'AVAILABLE', 'authentication': 'ON_INSTALL'}}]}
-    i.write(marketplace / '.agents/plugins/marketplace.json', json.dumps(registry, indent=2) + '\n')
-    run([*command(i, 'codex'), 'plugin', 'marketplace', 'add', marketplace], env=i.env)
-    run([*command(i, 'codex'), 'plugin', 'add', 'figma@ai-setup-providers'], env=i.env)
+    from runtime import figma as install_figma
+    install_figma(i)

@@ -1,8 +1,25 @@
 # Native Windows command reference
 
+For full synchronization after initial installation: `ai-setup sync --dry-run`,
+then `ai-setup sync`. This invokes native PowerShell prerequisites and refreshes
+new default tools plus already-selected optional tools. From a current checkout,
+use `.\install.ps1 -Action sync`; `-Action update` refreshes shared content only.
+An older installer without `sync` must first receive the published new checkout.
+
+OpenRig: `install.ps1 -Only openrig` installs the native `ai-team.cmd` SSH client.
+Use `ai-team --host SSH_ALIAS start --project /remote/project/path` after installing
+ai_setup on that macOS/Linux host. OpenRig itself has no native Windows runtime;
+this integration does not install WSL. See `docs/OPENRIG.md` for the full workflow.
+
 Use PowerShell 5.1 or 7. The global installation lives under `$HOME`, your Windows
 user profile. Restart the terminal/client after installation to refresh PATH.
 Git Bash supports upstream shell scripts; no WSL distribution is needed.
+
+Agent Reach uses native Python and Node. From an updated checkout run
+`.\install.ps1 -Only agentreach` for an existing installation; fresh default
+installs include it. Use `agent-reach.cmd doctor --json`,
+`agent-reach-yt-dlp.cmd --help` and `opencli.cmd list`. Browser Bridge and social
+logins remain personal opt-ins. See `docs/AGENT_REACH.md` in the central library.
 
 From the `ai_setup` checkout, the default installation includes Context7 and the
 selected upstream UI skills. Strix and SkillUI are optional:
@@ -16,9 +33,29 @@ selected upstream UI skills. Strix and SkillUI are optional:
 ```
 
 `all` means the default profile, including Hermes; optional tools must be named.
+The default profile installs Entire's native CLI but does not enable capture in any
+repository. After the project owner approves retention, configure a dedicated private
+checkpoint repository and run `entire enable` inside that project.
+
+To connect this developer account to the central Agent Wiki, create an individual
+Wiki MCP key and run the normal installer. The team endpoint is already configured;
+set the environment variable below only for a different deployment:
+
+```powershell
+$env:AGENT_WIKI_MCP_URL = 'https://agent-wiki.example.com/api/mcp' # optional override
+.\install.ps1
+```
+
+Store `AGENT_WIKI_TOKEN` or `AGENT_WIKI_API_KEY` in
+`%USERPROFILE%\.config\ai-setup\secrets.env` for
+Codex and in Claude's launch environment. Do not use an administrator or shared
+team key. The Wiki server runs once on a central Docker host; Windows developer
+machines do not run another server. See `SHARED_DEVELOPER_KNOWLEDGE.md`.
+
 For remote Hindsight memory, set `$env:HINDSIGHT_MCP_URL` to the full bank MCP URL
-and run `.\install.ps1 -Only 'hindsight,docs,hub'`. Claude/Codex read the bearer key
-from `LLM_GATEWAY_KEY` in their launch environment. No WSL or local Hindsight
+and run `.\install.ps1 -Only 'hindsight,docs,hub'`. Codex can read the bearer key
+from `%USERPROFILE%\.config\ai-setup\secrets.env`; Claude reads `LLM_GATEWAY_KEY`
+from its launch environment. No WSL or local Hindsight
 server is needed. See the installed `HINDSIGHT.md` guide for verification.
 The default profile uses the current Windows user profile. Selective Context7,
 Strix and SkillUI setup does not require Microsoft C++ build tools or the full

@@ -1,6 +1,6 @@
 ---
 name: build-usable-apps
-description: Build or revise application workflows with clear user states, shared UI rules, recoverable onboarding, usable admin reviews and browser-verified responsive interactions. Use for new apps or substantive form, dashboard and management-screen work; adapt to the product rather than importing a marketplace workflow.
+description: Build or revise frontend UI with relevant visual references, coherent design tokens, purposeful motion, clear user states and browser-verified responsive interactions. Use for new apps, landing pages, redesigns, forms, dashboards and management screens; adapt to the product and preserve its existing design system.
 ---
 
 # Build usable apps
@@ -14,6 +14,18 @@ no particular framework, paid tool, provider, global configuration or agent team
 For an existing app, preserve its brand and useful components. For a new app,
 choose a coherent visual direction suited to its audience and establish its
 shared rules before implementing several independent pages.
+
+For a new frontend, landing page or substantive visual improvement, read
+[frontend-design-workflow.md](references/frontend-design-workflow.md) before
+choosing the appearance. It covers reference selection, the first representative
+screen, component adaptation, motion and a rendered quality gate. Use the linked
+provider catalog selectively; a tiny UI repair does not need a research exercise.
+
+When installed, use `development-quality` for app-owned Playwright/axe/visual
+checks and optional profiling or Storybook context. For React/Next performance
+and component API work, select `vercel-react-best-practices` and
+`vercel-composition-patterns` against the app's actual version. These are optional
+shared tools, not new dependencies or permission to change application scope.
 
 When the central library is available, `ai-setup search "servinoza recovery"`
 finds concrete state/recovery and responsive-table failures; search

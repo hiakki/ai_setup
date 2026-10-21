@@ -42,7 +42,14 @@ elif args and args[0] == 'clone':
     (target / 'setup.py').write_text('# simulated downloaded repository')
     (target / 'requirements.txt').write_text('')
 elif args and args[0] == '-C':
-    print(os.environ.get('SETUP_TEST_ORIGIN', 'https://github.com/hiakki/ai_setup.git'))
+    if args[2:4] == ['remote', 'get-url']:
+        print(os.environ.get('SETUP_TEST_ORIGIN', 'https://github.com/hiakki/ai_setup.git'))
+    elif args[2] == 'status':
+        print(os.environ.get('SETUP_TEST_DIRTY', ''))
+    elif args[2] == 'branch':
+        print('main')
+    elif args[2] == 'pull':
+        sys.exit(int(os.environ.get('SETUP_TEST_PULL_EXIT', '0')))
 ''')
         executable.chmod(0o755)
         checkout = temp / 'repo & source with spaces'
@@ -66,7 +73,7 @@ Invoke-AISetup $env:SETUP_TEST_ACTION $env:SETUP_TEST_HOME $selection $env:SETUP
         env = dict(os.environ, SETUP_TEST_PYTHON=str(executable), SETUP_TEST_CHECKOUT=str(checkout))
         count = 0
         for mode in ('Standard', 'Legacy'):
-            for action, pip_exit, setup_exit in (('install', 0, 0), ('install', 17, 0),
+            for action, pip_exit, setup_exit in (('sync', 0, 0), ('sync', 17, 0), ('install', 0, 0), ('install', 17, 0),
                                                 ('install', 0, 23), ('plan', 0, 0), ('verify', 0, 23)):
                 home = temp / f'home & spaces {count}'
                 log = temp / f'log-{count}.jsonl'
@@ -81,11 +88,11 @@ Invoke-AISetup $env:SETUP_TEST_ACTION $env:SETUP_TEST_HOME $selection $env:SETUP
                                          + result.stdout + result.stderr)
                 calls = [json.loads(line) for line in log.read_text().splitlines()]
                 if pip_exit:
-                    assert not any(call[0].endswith('setup.py') and call[1] == 'install' for call in calls), calls
+                    assert not any(call[0].endswith('setup.py') and call[1] in ('install', 'sync') for call in calls), calls
                 else:
                     assert calls[-1] == [str(checkout / 'setup.py'), action, '--home', str(home),
                                         '--only', 'skills,agents'], calls
-                if action != 'install':
+                if action not in ('install', 'sync'):
                     assert not home.exists(), 'plan/verify unexpectedly mutated the installation home'
                 print(f'PASS simulated: {mode} {action}; pip exit={pip_exit}, setup exit={setup_exit}')
                 count += 1
@@ -100,6 +107,20 @@ Invoke-AISetup $env:SETUP_TEST_ACTION $env:SETUP_TEST_HOME $selection $env:SETUP
             assert calls[0] == ['clone', 'https://github.com/hiakki/ai_setup.git',
                                 str(home / '.local/share/ai-setup-repo')], calls
             print(f'PASS simulated: {mode} downloaded script clones into selected home')
+            for dirty, pull_exit in (('', 0), (' M setup.py', 0), ('', 29)):
+                log = temp / f'cached-{mode}-{pull_exit}-{bool(dirty)}.jsonl'
+                result = subprocess.run([str(args.pwsh.resolve()), '-NoLogo', '-NoProfile', '-File', str(harness)],
+                    cwd=ROOT, env=dict(env, SETUP_TEST_ACTION='sync', SETUP_TEST_MODE=mode,
+                        SETUP_TEST_HOME=str(home), SETUP_TEST_LOG=str(log), SETUP_TEST_CHECKOUT='',
+                        SETUP_TEST_BOOTSTRAP='1', SETUP_TEST_DIRTY=dirty, SETUP_TEST_PULL_EXIT=str(pull_exit)),
+                    text=True, capture_output=True, timeout=30)
+                assert (result.returncode == 0) == (not dirty and pull_exit == 0), result.stdout + result.stderr
+                calls = [json.loads(line) for line in log.read_text().splitlines()]
+                applied = [call for call in calls if call[0].endswith('setup.py') and call[1] == 'sync']
+                assert bool(applied) == (not dirty and pull_exit == 0), calls
+                pulled = any(call[2:] == ['pull', '--ff-only', 'origin', 'main'] for call in calls if call[0] == '-C')
+                assert pulled == (not dirty), calls
+            print(f'PASS simulated: {mode} cached checkout refresh, local edits and failed pull')
             # Exercise the script's actual default parameter and pass-through.
             log = temp / f'default-{mode}.jsonl'
             result = subprocess.run([str(args.pwsh.resolve()), '-NoLogo', '-NoProfile', '-File', str(harness)],
@@ -110,7 +131,7 @@ Invoke-AISetup $env:SETUP_TEST_ACTION $env:SETUP_TEST_HOME $selection $env:SETUP
             calls = [json.loads(line) for line in log.read_text().splitlines()]
             assert calls[-1] == [str(checkout / 'setup.py'), 'plan', '--home', str(home), '--only', 'all'], calls
             print(f'PASS simulated: {mode} default PowerShell selection forwards all components')
-            for selection in ('context7', 'strix,skillui', 'hindsight'):
+            for selection in ('context7', 'strix,skillui', 'hindsight', 'agentwiki'):
                 home = temp / f'optional home {mode} {selection}'
                 log = temp / f'optional-{mode}-{selection}.jsonl'
                 result = subprocess.run([str(args.pwsh.resolve()), '-NoLogo', '-NoProfile', '-File', str(harness)],
@@ -139,16 +160,18 @@ function Find-SetupPython { return $env:SETUP_REAL_PYTHON }
 Invoke-AISetup $env:SETUP_PLAN_ACTION $env:SETUP_PLAN_HOME $env:SETUP_PLAN_ONLY (Get-Location).Path
 ''')
         plan_home = temp / 'plan home'
-        for selection in ('all', 'all,strix,skillui', 'context7', 'hindsight'):
+        for selection in ('all', 'all,strix,skillui', 'context7', 'hindsight', 'agentwiki'):
             result = subprocess.run([str(args.pwsh.resolve()), '-NoLogo', '-NoProfile', '-File', str(real_plan)],
                 cwd=ROOT, env=dict(os.environ, SETUP_REAL_PYTHON=sys.executable, SETUP_PLAN_HOME=str(plan_home),
                     SETUP_PLAN_ACTION='plan', SETUP_PLAN_ONLY=selection), capture_output=True, text=True, timeout=30)
             assert result.returncode == 0, result.stdout + result.stderr
             components = next(line for line in result.stdout.splitlines() if line.startswith('Components:'))
-            assert ('context7' in components) == (selection != 'hindsight'), result.stdout
+            assert ('context7' in components) == (selection.startswith('all') or selection == 'context7'), result.stdout
             assert ('hindsight' in components) == (selection == 'hindsight'), result.stdout
+            assert ('agentwiki' in components) == (selection == 'agentwiki'), result.stdout
             if selection.startswith('all'):
-                assert 'hermes' in components and 'runtime' in components, result.stdout
+                assert ('hermes' in components and 'runtime' in components
+                        and 'entire' in components), result.stdout
             assert ('strix' in components) == ('strix' in selection), result.stdout
             assert ('skillui' in components) == ('skillui' in selection), result.stdout
             assert not plan_home.exists(), 'Plan unexpectedly wrote to its target home'

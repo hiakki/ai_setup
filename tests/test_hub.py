@@ -1,5 +1,7 @@
 """Real Git distribution, contribution and rollback through the shared installer."""
 import json
+import contextlib
+import io
 import os
 from pathlib import Path
 import shutil
@@ -22,14 +24,18 @@ class HubTests(unittest.TestCase):
         self.root = Path(self.temp.name)
         self.source = self.root / 'central source'
         self.source.mkdir()
-        for name in ('setup.py', 'runtime.py', 'hub.py', 'library.py', 'hindsight_runtime.py'):
+        for name in ('setup.py', 'runtime.py', 'hub.py', 'library.py', 'hindsight_runtime.py',
+                     'mcp_headers.py', 'agent_wiki_server.py'):
             shutil.copy2(ROOT / name, self.source / name)
         for name in ('custom/skills/example', 'docs', 'config'):
             (self.source / name).mkdir(parents=True)
         (self.source / 'README.md').write_text('# Central docs\n')
         (self.source / 'docs/guide.md').write_text('# Version one\n')
         (self.source / 'config/example.md').write_text('Shared configuration reference\n')
-        (self.source / 'manifest.json').write_text(json.dumps({'schema': 1, 'sources': []}))
+        shutil.copy2(ROOT / 'config/CENTRAL_ROUTING.md', self.source / 'config/CENTRAL_ROUTING.md')
+        (self.source / 'manifest.json').write_text(json.dumps({'schema': 1, 'sources': [],
+            'agent_wiki': {'url': 'https://github.com/onyx-dot-app/agent-wiki.git',
+                           'revision': '1' * 40}}))
         self.skill = self.source / 'custom/skills/example/SKILL.md'
         self.skill.write_text('---\nname: example\ndescription: A reusable example\n---\nVersion one\n')
         self.git('init', '-q', '-b', 'main')
@@ -44,7 +50,7 @@ class HubTests(unittest.TestCase):
     def commit(self, message):
         self.git('add', '.')
         self.git('-c', 'user.name=Fixture', '-c', 'user.email=fixture@example.invalid',
-                 'commit', '-qm', message)
+                 'commit', '--no-verify', '-qm', message)
         return self.git('rev-parse', 'HEAD')
 
     def setup(self, source, home, command):
@@ -74,6 +80,35 @@ class HubTests(unittest.TestCase):
         self.assertIn('Version one', (self.home / '.local/share/ai-setup/docs/docs/guide.md').read_text())
         self.assertIn('Version two', (second / '.agents/skills/example/SKILL.md').read_text())
         self.setup(self.source, self.home, 'verify')
+
+    def test_two_machines_sync_new_components_and_record_exact_scope(self):
+        second = self.root / 'second machine'
+        self.setup(self.source, second, 'install')
+        revision = self.revise()
+        for home in (self.home, second):
+            result = subprocess.run([sys.executable, str(self.source / 'setup.py'), 'sync',
+                '--home', str(home), '--only', 'custom,agents,docs,hub'], capture_output=True, text=True)
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            state = Hub(home).state()
+            self.assertIn('agents', state['completed'])
+            self.assertEqual(state['last_sync']['revision'], revision)
+            self.assertEqual(state['last_sync']['status'], 'verified')
+            self.assertFalse(state['last_sync']['full'])
+            self.assertFalse(state['last_sync']['dirty'])
+            self.assertIn('Version two', (home / '.agents/skills/example/SKILL.md').read_text())
+        self.assertEqual(fingerprint(self.home / '.agents/skills/example'),
+                         fingerprint(second / '.agents/skills/example'))
+
+    def test_status_distinguishes_all_installed_from_shared_updates(self):
+        state = self.hub.state()
+        state['completed'].extend(('graphify', 'entire', 'agentwiki'))
+        self.hub.state_file.write_text(json.dumps(state))
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output):
+            self.hub.status()
+        rendered = output.getvalue()
+        self.assertIn('Installed components: custom, docs, hub, graphify, entire, agentwiki', rendered)
+        self.assertIn('Shared update components: custom, docs, hub', rendered)
 
     def test_update_preserves_local_edits_and_failed_snapshot_can_restore_state(self):
         local = self.home / '.agents/skills/example/SKILL.md'

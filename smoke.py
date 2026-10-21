@@ -115,12 +115,18 @@ def main():
 
 def check_runtime(i, report_file):
     i.verify()
+    if 'contextmode' in i.state['completed']:
+        run([sys.executable, ROOT / 'tests/check_design_context.py', '--home', i.home], env=i.env)
+    if 'quality' in i.state['completed']:
+        run([sys.executable, ROOT / 'tests/check_quality.py', '--home', i.home], env=i.env)
+    if 'agentreach' in i.state['completed']:
+        run([sys.executable, ROOT / 'tests/check_agentreach.py', '--home', i.home], env=i.env)
     fixture = i.state_dir / 'smoke-fixture'
     fixture.mkdir(parents=True, exist_ok=True)
     (fixture / 'example.py').write_text('def greet(name):\n    return "Hello " + name\n\ndef main():\n    return greet("world")\n', encoding='utf-8')
     (fixture / 'index.html').write_text('<!doctype html><title>Setup test</title><button onclick="document.querySelector(\'p\').textContent=\'Verified\'">Check</button><p>Ready</p>', encoding='utf-8')
     run(['git', 'init', '-q', fixture], env=i.env)
-    for tool in ('codex', 'claude', 'graft', 'codebase-memory-mcp', 'bun', 'skills'):
+    for tool in ('codex', 'claude', 'graft', 'graphify', 'codebase-memory-mcp', 'bun', 'skills', 'entire'):
         run([*tool_command(i, tool), '--version'], env=i.env)
     run([*tool_command(i, 'graft'), 'build', '--no-ignore'], cwd=fixture, env=i.env)
     run([*tool_command(i, 'graft'), 'check'], cwd=fixture, env=i.env)
@@ -138,7 +144,8 @@ def check_runtime(i, report_file):
         counts = Counter(s['name'] for s in skills['skills'])
         if skills['errors'] or any(count > 1 for count in counts.values()):
             raise RuntimeError('Codex skill loading errors or duplicate names')
-        required = {'laya-decisions', 'blog', 'gstack', 'gstack-browse', 'codebase-memory'}
+        required = {'laya-decisions', 'blog', 'gstack', 'gstack-browse', 'codebase-memory',
+                    'ponytail', 'ponytail-review', 'graphify'}
         if required - counts.keys():
             raise RuntimeError('Missing Codex skills: ' + str(required - counts.keys()))
         hooks = rpc.call('hooks/list', {'cwds': [str(fixture)]})['data'][0]
@@ -192,7 +199,8 @@ def check_runtime(i, report_file):
                         result = rpc.call('tools/call', {'name': 'browser_snapshot', 'arguments': {}})
                         if 'Verified' not in json.dumps(result):
                             raise RuntimeError('Browser button did not change the visible result')
-                        browse = i.sources / ('gstack/browse/dist/browse.exe' if i.windows else 'gstack/browse/dist/browse')
+                        gstack_source = i.home / i.state.get('sources', {}).get('gstack', {}).get('path', '.agents/skills/.sources/gstack')
+                        browse = gstack_source / ('browse/dist/browse.exe' if i.windows else 'browse/dist/browse')
                         browser_env = dict(i.env, BROWSE_STATE_FILE=str(fixture / 'gstack-browser.json'))
                         try:
                             run([browse, 'goto', f'http://127.0.0.1:{server.server_port}/index.html'],
@@ -216,7 +224,7 @@ def check_runtime(i, report_file):
         raise RuntimeError('Official Figma plugin is not installed and enabled')
     run([sys.executable, i.home / '.agents/skills/laya-decisions/scripts/test_predict.py'], env=i.env)
     i.verify()
-    report = {'status': 'passed', 'checks': ['managed files', 'CLI versions', 'Graft build/check',
+    report = {'status': 'passed', 'checks': ['managed files', 'CLI versions (including Entire)', 'Graft build/check',
               'Codebase Memory MCP index/search/coverage', 'Graft MCP initialize/tools',
               'Playwright MCP navigate/click/assert', 'Claude agent listing', 'Codex plugin listing'],
               'not_tested': ['paid model workflows', 'private remote MCPs', 'Figma OAuth/design access',

@@ -1,5 +1,13 @@
 # Custom agent skills
 
+`openrig-team` coordinates a central lead with selectively activated specialists
+using the global OpenRig runtime and existing shared skills. See
+[the team guide](../../docs/OPENRIG.md).
+
+`development-quality` routes agent evaluations, React performance, structural/API
+checks and browser quality to the shared tools. See
+[the installation and workflow guide](../../docs/DEVELOPMENT_QUALITY.md).
+
 Reusable skills for coding agents, with one independently usable folder per skill.
 Each directory name is also the skill's identifier in its `SKILL.md` frontmatter.
 
@@ -10,7 +18,7 @@ Each directory name is also the skill's identifier in its `SKILL.md` frontmatter
 | AI Model Comparison | [ai-model-comparison](ai-model-comparison/SKILL.md) | Compare exact models, quantizations and agent configurations without inheriting unmatched scores. | Primary evaluation sources and configuration details; matched workload results for deployment rankings. |
 | API Docs Governance | [api-docs-governance](api-docs-governance/SKILL.md) | Assign contract ownership, publish versioned API docs and navigate changes across repositories. | Authorized source/contracts and consumer context; current primary sources for tool choices. |
 | Auditable Business Workflows | [auditable-business-workflows](auditable-business-workflows/SKILL.md) | Keep rule-heavy calculations, status, corrections and historical documents consistent. | Approved domain rules and representative calculation/persistence evidence. |
-| Build Usable Apps | [build-usable-apps](build-usable-apps/SKILL.md) | Design and verify forms, onboarding, dashboards and application workflows. | Project context; a browser for rendered interaction checks. Framework-independent. |
+| Build Usable Apps | [build-usable-apps](build-usable-apps/SKILL.md) | Research visual references, establish design tokens and motion, and verify landing pages, dashboards, forms and application workflows. | Project context; a browser for rendered interaction checks. Framework-independent; paid research optional. |
 | Hermes Workflows | [hermes-workflows](hermes-workflows/SKILL.md) | Invoke Hermes for persistent tasks and reuse shared skills. | `hermes` runtime component (included in full setup) and separately configured model access. |
 | HyperDX UI Regression Memory | [hyperdx-ui-regression-memory](hyperdx-ui-regression-memory/SKILL.md) | Investigate HyperDX interaction regressions and preserve verified findings. | An authorized HyperDX checkout and its project evidence. |
 | Indian Card Research | [india-card-research](india-card-research/SKILL.md) | Research Indian card terms, compare practical rewards and audit calculations. | Current official issuer sources, or date-applicable evidence for historical audits. |

@@ -32,9 +32,13 @@ class HindsightTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         codex = self.home / '.codex/config.toml'
         claude = self.home / '.claude.json'
-        self.assertEqual(tomllib.loads(codex.read_text())['mcp_servers']['hindsight'], {
-            'url': 'https://memory.example.test/mcp/shared/',
-            'bearer_token_env_var': 'LLM_GATEWAY_KEY'})
+        codex_entry = tomllib.loads(codex.read_text())['mcp_servers']['hindsight']
+        self.assertEqual(set(codex_entry), {'url', 'http_headers_helper'})
+        self.assertEqual(codex_entry['url'], 'https://memory.example.test/mcp/shared/')
+        helper_command = codex_entry['http_headers_helper']
+        self.assertIn('.local/share/ai-setup/mcp_headers.py', helper_command)
+        self.assertIn('.config/ai-setup/secrets.env', helper_command)
+        self.assertTrue((self.home / '.local/share/ai-setup/mcp_headers.py').is_file())
         self.assertEqual(json.loads(claude.read_text())['mcpServers']['hindsight'], {
             'type': 'http', 'url': 'https://memory.example.test/mcp/shared/',
             'headers': {'Authorization': 'Bearer ${LLM_GATEWAY_KEY}'}})
@@ -70,8 +74,40 @@ class HindsightTests(unittest.TestCase):
         result = self.run_setup()
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         cfg = tomllib.loads((self.home / '.codex/config.toml').read_text())
-        self.assertEqual(cfg['mcp_servers']['hindsight']['bearer_token_env_var'], 'MEMORY_TOKEN')
+        self.assertIn('--variable MEMORY_TOKEN', cfg['mcp_servers']['hindsight']['http_headers_helper'])
         self.assertIn('MEMORY_TOKEN', result.stdout)
+
+    def test_private_secret_file_migrates_standard_codex_environment_auth(self):
+        secret = self.home / '.config/ai-setup/secrets.env'
+        secret.parent.mkdir(parents=True)
+        secret.write_text('LLM_GATEWAY_KEY=private\n')
+        secret.chmod(0o600)
+        codex = self.home / '.codex/config.toml'
+        codex.parent.mkdir(parents=True)
+        codex.write_text('[mcp_servers.hindsight]\nurl = "https://memory.example.test/mcp/shared/"\nbearer_token_env_var = "LLM_GATEWAY_KEY"\n')
+
+        result = self.run_setup()
+
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        entry = tomllib.loads(codex.read_text())['mcp_servers']['hindsight']
+        self.assertNotIn('bearer_token_env_var', entry)
+        self.assertIn('http_headers_helper', entry)
+
+    def test_private_secret_file_does_not_replace_custom_codex_variable(self):
+        secret = self.home / '.config/ai-setup/secrets.env'
+        secret.parent.mkdir(parents=True)
+        secret.write_text('LLM_GATEWAY_KEY=private\n')
+        secret.chmod(0o600)
+        codex = self.home / '.codex/config.toml'
+        codex.parent.mkdir(parents=True)
+        original = ('[mcp_servers.hindsight]\nurl = "https://memory.example.test/mcp/shared/"\n'
+                    'bearer_token_env_var = "OPERATOR_TOKEN"\n')
+        codex.write_text(original)
+
+        result = self.run_setup()
+
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertEqual(codex.read_text(), original)
 
     def test_preserves_existing_auth_and_disabled_settings_without_recording_credentials(self):
         self.home.mkdir(parents=True)
@@ -102,6 +138,22 @@ class HindsightTests(unittest.TestCase):
             self.assertNotEqual(result.returncode, 0)
             self.assertEqual(json.loads(path.read_text()), body)
             self.assertFalse((self.home / '.codex/config.toml').exists())
+
+    def test_rejects_existing_codex_credential_misfiled_as_environment_name(self):
+        leaked = 'credential-shaped-value-with-hyphens-1234567890'
+        codex = self.home / '.codex/config.toml'
+        codex.parent.mkdir(parents=True)
+        original = ('[mcp_servers.hindsight]\n'
+                    'url = "https://memory.example.test/mcp/shared/"\n'
+                    f'bearer_token_env_var = "{leaked}"\n')
+        codex.write_text(original)
+
+        result = self.run_setup()
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(codex.read_text(), original)
+        self.assertFalse((self.home / '.claude.json').exists())
+        self.assertNotIn(leaked, result.stdout + result.stderr)
 
     def test_verify_detects_removed_registration(self):
         result = self.run_setup()

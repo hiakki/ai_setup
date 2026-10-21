@@ -1,6 +1,19 @@
 # Portable AI setup
 
+For an existing machine, use `ai-setup sync --dry-run`, then `ai-setup sync` to
+fetch and apply the published full setup, including new default tools and previously
+installed optional components. `ai-setup update` remains a lighter shared-content
+refresh. See [machine setup and synchronization](docs/MACHINE_SYNC.md) for all
+platform commands, migration from older installers and verification limits.
+
+[Development quality](docs/DEVELOPMENT_QUALITY.md) adds shared React skills,
+agent evaluation, AST/API testing and optional profiling/output tools. Included
+in new installs; existing machines use `--only quality,docs` (`-Only` on Windows).
+
 Recreate the documented Claude Code + Codex environment on another machine. Provider skills, agents, plugins, binaries, and runtimes are downloaded from their original publishers. This repository contains the installer, pinned source manifest, personal rules, adapters, tests, and local custom skills.
+
+[Anti Slop](docs/ANTISLOP.md) adds six globally shared quality-check skills through
+both installers, with central routing instead of per-project rule copies.
 
 Browse the [custom skill catalog](custom/skills/README.md) to share or install an individual skill.
 
@@ -19,6 +32,16 @@ a global Git commit guard, preserving existing hooks. Check its effective covera
 This is not filesystem write isolation. The guard permits application documentation;
 private reusable AI material requires an authorized private source.
 
+Use the [frontend development guide](docs/FRONTEND_DEVELOPMENT.md) for visual
+references, design tokens, purposeful motion and browser checks from the first
+screen. It extends the shared `build-usable-apps` skill for new and existing apps.
+
+[Logo Design](docs/FRONTEND_DEVELOPMENT.md#logo-design-and-local-context-tools)
+adds original SVG logo design, audits and delivery variants. [Context Mode](docs/CONTEXT_MODE.md)
+adds local MCP tools for large output processing and indexed retrieval. Both are
+included by default for Claude/Codex, fetched from their pinned original providers;
+no Context Mode capture/routing hooks or extra model account are enabled.
+
 Use the [project catalog](docs/PROJECT_CATALOG.md) to locate existing apps' current
 architecture and operations, and the [learning workflow](docs/LEARNING_WORKFLOW.md)
 to capture failed attempts, successful fixes and superseded decisions centrally.
@@ -29,6 +52,12 @@ apps retain their current architecture, cron, CI/CD and release docs.
 `bash install.sh` or `.\install.ps1`. Its shared agent skill is included in `custom`;
 its runtime is downloaded directly from pinned NousResearch source. Use
 `--only hermes` or `-Only hermes` only for selective installation or repair.
+
+[Shared developer knowledge](docs/SHARED_DEVELOPER_KNOWLEDGE.md) adds Entire's
+Git-native Claude/Codex evidence capture and an optional central Agent Wiki MCP.
+Entire is installed by default but remains disabled in every repository until its
+owner opts in. Agent Wiki is one self-hosted server; developer machines register
+its MCP automatically during the default install when an individual key is configured.
 
 For model selection, use the shared [AI model comparison skill](custom/skills/ai-model-comparison/SKILL.md) to keep exact-product scores separate from unmatched model references. See the [agentic model comparison](docs/AGENTIC_AI_MODELS.md) and [decision AI comparison](docs/DECISION_AI_MODELS.md): quality evidence, pricing, CPU/GPU sizing, and SemIf/Laya options from 4 GB systems to large GPU deployments.
 
@@ -75,13 +104,16 @@ Start a fresh terminal after installation to load the user PATH. Existing WSL in
 | Specialist roles | 32 selected roles fetched from `msitarzewski/agency-agents`; two VoltAgent PowerShell roles; three Codebase Memory roles; five blog roles |
 | Blog | All 32 upstream skills, both clients' role adapters, isolated Python runtime and Chromium rendering |
 | gstack | Pinned official suite, built tools, prefixed Claude/Codex skills, shared source checkout; no optional learning or automatic upgrades |
-| Graph integration | Codebase Memory and Graft, provider-generated hooks and guidance, registered once per client |
+| Graph integration | Codebase Memory and Graft for routine code intelligence; on-demand Graphify for mixed code/docs/schema/PDF/Office graphs |
+| Minimal implementation review | Ponytail's six upstream skills, installed without its lifecycle hooks |
 | Design/browser | Isolated headless Playwright MCP; Figma remote MCP and official Codex Figma plugin |
 | Rules | Portable global preferences, workflow/release evidence rules, project-onboarding reference, local AI Git exclusions |
 | Custom additions | Laya, SRE incident investigation, HyperDX regression memory, build-usable-apps, social-rights-review, india-card-research, auditable-business-workflows, reliable-web-app-operations, Hermes agent guidance, ai-model-comparison, api-docs-governance, service-architecture-and-extraction |
-| Shared hub and docs | Per-user `ai-setup` status/update/contribute/rollback command and local documentation bundle; pinned dotagents stages custom skills in isolation |
+| Shared hub and docs | Per-user `ai-setup` status/sync/update/contribute/rollback command and local documentation bundle; pinned dotagents stages custom skills in isolation |
 | Hermes | Included by default: pinned NousResearch runtime, shared-skill discovery and Claude/Codex guidance; provider login is separate |
 | Context7 | Default remote documentation MCP for both clients; anonymous access, existing authentication preserved |
+| Entire | Default checksum-pinned native CLI; repository capture remains opt-in and raw checkpoints stay project-private |
+| Agent Wiki (optional) | Central Git-backed proposal/discussion MCP registration; server deployment helper fetches the pinned upstream source |
 | UI skills | Default `create-design-md` and `fixing-metadata`, from pinned `ibelick/ui-skills` |
 | Strix (optional) | Native checksum-verified CLI and nine upstream security skills; no automatic scans or Docker installation |
 | SkillUI (optional) | Pinned global `skillui` CLI for project design context; local directory mode needs no browser or API key |
@@ -106,7 +138,7 @@ Downloaded payloads live on the destination machine, outside this Git repository
 
 Reusable project skills are now shared globally: [scope, sources and migration](docs/GLOBAL_SKILLS.md). The skills component also downloads Anthropic testing strategy and document co-authoring, Vercel web design guidelines and Wshobson quantitative research skills from pinned original providers. Application context and documentation stay in the application's own repository. Reusable AI skills, roles and generic learning are maintained centrally; private shared AI material needs an authorized private source. Projects consume the global installation without duplicating its skill/agent libraries.
 
-The installer preserves unrelated configuration. It refuses conflicting existing skill folders, edited managed files, unexpected source revisions during `install`, duplicate role names, and conflicting MCP definitions. Use the shared `update` action for a reviewed provider pin change; older checkouts are retained. It backs up files before merging configuration and does not automatically delete or replace an older setup that it cannot prove it owns.
+The installer preserves unrelated configuration. It refuses conflicting existing skill folders, edited managed files, unexpected source revisions during `install`, duplicate role names, and conflicting MCP definitions. Use `sync` for runtime/provider pin changes and new components, or `update` for shared-content changes only; older checkouts are retained. It backs up files before merging configuration and does not automatically delete or replace an older setup that it cannot prove it owns.
 
 On Windows, an existing local Playwright MCP entry is reused with its configured browser. For example, `npx -y @playwright/mcp@latest --browser chrome` keeps using Chrome and skips the installer's Chromium download. Each client's existing Playwright entry is preserved; a client without one receives the existing launch settings. With no existing local entry, the installer sets up its managed Chromium browser. The full installation smoke check still tests the configured browser.
 
@@ -133,22 +165,46 @@ ai-setup status                           # Installed shared content and local e
 ai-setup search "deployment rollback"     # Search before authoring central material
 ai-setup library                          # Canonical authoring paths
 ai-setup guard status                     # Check effective Git enforcement here
+ai-setup sync --dry-run                   # Preview full machine refresh and local-edit blockers
+ai-setup sync                            # Refresh runtimes, defaults and installed optional tools
 ai-setup update                           # Fetch central revision; update installed shared components
 ~/.local/share/ai-setup/venv/bin/python smoke.py  # Actual local graph/browser flows
 ```
 
-Default components: `runtime,skills,agents,custom,blog,gstack,integrations,context7,rules,figma,hermes,docs,hub`.
+Default components: `runtime,skills,agents,custom,blog,gstack,integrations,graphify,context7,contextmode,quality,agentreach,openrig,rules,figma,hermes,entire,docs,hub`.
+
+[`openrig`](docs/OPENRIG.md) supplies a central lead and 13 specialist roles through
+`ai-team`, reusing shared skills for existing and new projects. macOS/Linux run
+teams locally; native Windows installs an SSH entrypoint to a macOS/Linux host,
+without WSL. Existing installations: `bash install.sh install --only openrig` or
+`.\install.ps1 -Only openrig`. No agents or daemon start during installation.
 Both entry points select `all` by default, using the shared default profile in
-`setup.py`. Optional components are `strix,skillui,hindsight`; `all` does not install them.
+`setup.py`. Optional components are `strix,skillui,hindsight,agentwiki`. Agent Wiki
+is added to `all` automatically when `AGENT_WIKI_TOKEN` or `AGENT_WIKI_API_KEY` is
+available in the process environment or `~/.config/ai-setup/secrets.env`; the other
+optional components remain explicit.
 Use `--only all,strix,skillui` or `-Only 'all,strix,skillui'` for the default profile plus both tools.
 Hermes provisions its own upstream runtime.
+[`agentreach`](docs/AGENT_REACH.md) installs the pinned Agent Reach research CLI,
+shared skill, isolated video/RSS dependencies and OpenCLI. Existing machines use
+`bash install.sh install --only agentreach` or `.\install.ps1 -Only agentreach`.
+No social accounts, Browser Bridge, model keys or background services are configured.
+`skills` installs Ponytail's upstream implementation, review and audit skills without its lifecycle hooks. `graphify` installs the pinned upstream CLI with PDF, Office, SQL and Terraform readers plus its generic global skill. It intentionally does not register another MCP server, search guard or project-local integration; use it only when mixed artifacts justify a third graph.
 `hindsight` connects Claude/Codex to your selected remote memory bank through MCP.
 Set `HINDSIGHT_MCP_URL` and select `--only all,hindsight` / `-Only 'all,hindsight'`,
-or add only `hindsight,docs,hub` to an existing setup. Authentication uses an
-environment-variable reference; no key or personal server is bundled. See
+or add only `hindsight,docs,hub` to an existing setup. Codex can load its bearer
+credential from the private user-level file described in the guide; Claude keeps
+an environment-variable reference. No key or personal server is bundled. See
 [Hindsight setup](docs/HINDSIGHT.md) for credential loading and live verification.
+`entire` installs the native CLI without enabling any repository, and the full smoke
+test checks its executable. Enable it only in
+an approved private project with a dedicated private checkpoint remote. `agentwiki`
+registers the operator-selected central `/api/mcp` endpoint for both clients; it
+does not start a per-developer server. See the
+[shared developer knowledge guide](docs/SHARED_DEVELOPER_KNOWLEDGE.md).
 `docs` installs the shared Markdown reference bundle; `hub` installs the central
-search/update/contribution command, client guidance and global Git commit guard.
+search/update/contribution command, Agent Wiki server deployment helper, client
+guidance and global Git commit guard.
 The guard forwards existing hooks and preserves an explicit operator disable.
 dotagents is an isolated
 staging dependency of `custom`; the existing installer remains the sole owner of
@@ -165,6 +221,7 @@ Windows equivalents, from the checkout:
 ```powershell
 .\install.ps1 -Action plan
 .\install.ps1 -Action verify
+.\install.ps1 -Action sync
 .\install.ps1 -Only 'skills,agents,custom,rules'
 # Isolated installation (does not persist that home's PATH in your user profile):
 .\install.ps1 -HomeDirectory 'C:\AI setup test' -Only 'skills,agents,custom,rules'
@@ -173,14 +230,16 @@ Windows equivalents, from the checkout:
 
 `plan` needs an existing Python 3.12–3.13 on Windows and makes no downloads. Directory junctions share Windows skill folders without requiring Developer Mode. Native MCP registrations use executables directly; terminal commands have Windows and Git Bash launchers.
 
-To add the new tools to an existing installation:
+To repair only these tools on an existing installation:
 
 ```bash
-bash install.sh install --only context7,skills,strix,skillui
+bash install.sh install --only entire
+bash install.sh install --only agentwiki
 ```
 
 ```powershell
-.\install.ps1 -Only 'context7,skills,strix,skillui'
+.\install.ps1 -Only 'entire'
+.\install.ps1 -Only 'agentwiki'
 ```
 
 `skills` installs the provider skill selection, including the two new UI skills.

@@ -31,7 +31,8 @@ class InstallerTests(unittest.TestCase):
         (agent / 'reviewer.md').write_text('---\nname: Test Reviewer\ndescription: Reviews code\n---\nCheck real behavior.\n')
         self.git('init', '-q')
         self.git('add', '.')
-        self.git('-c', 'user.name=Test', '-c', 'user.email=test@example.invalid', 'commit', '-qm', 'Fixture')
+        self.git('-c', 'user.name=Test', '-c', 'user.email=test@example.invalid',
+                 'commit', '--no-verify', '-qm', 'Fixture')
         self.revision = self.git('rev-parse', 'HEAD').strip()
         self.manifest = self.root / 'manifest.json'
         self.data = {'schema': 1, 'sources': [{'id': 'example', 'url': str(self.source),
@@ -57,6 +58,35 @@ class InstallerTests(unittest.TestCase):
     def test_plan_does_not_create_home_or_fetch(self):
         self.run_setup('plan')
         self.assertFalse(self.home.exists())
+
+    def test_existing_sparse_provider_expands_at_same_revision(self):
+        from setup import Installer
+        i = Installer(self.home, self.data)
+        spec = dict(self.data['sources'][0], sparse=['skills/example'])
+        source = i.fetch(spec)
+        self.assertFalse((source / 'agents/reviewer.md').exists())
+        spec['sparse'].append('agents')
+        self.assertEqual(i.fetch(spec), source)
+        self.assertTrue((source / 'agents/reviewer.md').is_file())
+        self.assertTrue((source / 'skills/example/SKILL.md').is_file())
+
+    def test_antislop_global_routing_preserves_personal_rules_and_repeats(self):
+        self.data['sources'][0]['id'] = 'anti-slop'
+        self.manifest.write_text(json.dumps(self.data))
+        config = self.home / '.codex/AGENTS.md'
+        config.parent.mkdir(parents=True)
+        config.write_text('Keep my personal instruction.\n')
+        self.run_setup('install', '--only', 'skills')
+        first = config.read_text()
+        self.assertIn('ai-setup:antislop:start', first)
+        self.assertIn('Keep my personal instruction.', first)
+        self.assertIn('antislop-copywriting', first)
+        self.assertIn('ai-setup:antislop:start', (self.home / '.claude/CLAUDE.md').read_text())
+        self.run_setup('install', '--only', 'skills')
+        self.assertEqual(config.read_text(), first)
+        config.write_text(first.replace('Anti Slop quality checks', 'My edited quality checks'))
+        self.run_setup('install', '--only', 'skills', ok=False)
+        self.assertIn('My edited quality checks', config.read_text())
 
     def test_real_install_assets_roles_rules_and_idempotence(self):
         self.home.mkdir()

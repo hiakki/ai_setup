@@ -25,7 +25,7 @@ class HermesTests(unittest.TestCase):
 
     def test_default_install_and_all_dispatch_hermes_without_opt_in(self):
         expected = ['runtime', 'skills', 'agents', 'custom', 'blog', 'gstack',
-                    'integrations', 'context7', 'rules', 'figma', 'hermes']
+                    'integrations', 'graphify', 'context7', 'contextmode', 'quality', 'agentreach', 'openrig', 'rules', 'figma', 'hermes', 'entire']
         for arguments in ([], ['--only', 'all']):
             with self.subTest(arguments=arguments), ExitStack() as patches:
                 calls = []
@@ -39,6 +39,18 @@ class HermesTests(unittest.TestCase):
                         patches.enter_context(patch(module + '.' + name, new=action))
                     elif name == 'context7':
                         patches.enter_context(patch('context7_runtime.install', new=action))
+                    elif name == 'contextmode':
+                        patches.enter_context(patch('contextmode_runtime.install', new=action))
+                    elif name == 'quality':
+                        patches.enter_context(patch('quality_runtime.install', new=action))
+                    elif name == 'agentreach':
+                        patches.enter_context(patch('agentreach_runtime.install', new=action))
+                    elif name == 'openrig':
+                        patches.enter_context(patch('openrig_runtime.install', new=action))
+                    elif name == 'graphify':
+                        patches.enter_context(patch('graphify_runtime.install', new=action))
+                    elif name == 'entire':
+                        patches.enter_context(patch('entire_runtime.install', new=action))
                     else:
                         patches.enter_context(patch.object(Installer, name, new=action))
                 patches.enter_context(patch.object(sys, 'argv', ['setup.py', 'install',

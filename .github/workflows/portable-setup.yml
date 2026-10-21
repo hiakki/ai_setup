@@ -1,0 +1,45 @@
+name: Full portable setup
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  posix:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-14, ubuntu-24.04]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 120
+    env:
+      HOMEBREW_NO_AUTO_UPDATE: '1'
+      HOMEBREW_NO_INSTALL_CLEANUP: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Fresh default installation
+        shell: bash
+        run: bash install.sh
+      - name: Sync from immutable Git revision and verify
+        shell: bash
+        run: |
+          "$HOME/.local/bin/ai-setup" sync --source "$GITHUB_WORKSPACE" --ref "$GITHUB_SHA"
+          bash install.sh verify
+          "$HOME/.local/bin/ai-setup" status
+  debian:
+    runs-on: ubuntu-24.04
+    container: python:3.12-slim-bookworm
+    timeout-minutes: 120
+    env:
+      # Chromium cannot use its sandbox as root in this disposable CI container.
+      AI_SETUP_BROWSER_NO_SANDBOX: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Fresh Debian installation and repeat sync
+        shell: bash
+        run: |
+          bash install.sh
+          bash install.sh sync
+          bash install.sh verify

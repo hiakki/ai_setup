@@ -162,8 +162,17 @@ class Hub:
     def status(self):
         state = self.state()
         print('Home:', self.home)
-        print('Shared components:', ', '.join(c for c in SHARED if c in state.get('completed', [])) or 'none')
-        print('Installed source:', state.get('hub', {}).get('revision', 'local checkout / not recorded'))
+        completed = state.get('completed', [])
+        print('Installed components:', ', '.join(completed) or 'none')
+        print('Shared update components:', ', '.join(c for c in SHARED if c in completed) or 'none')
+        print('Library source (not proof of runtime sync):', state.get('hub', {}).get('revision', 'local checkout / not recorded'))
+        operation = state.get('last_operation', {})
+        if operation:
+            print('Last operation:', operation.get('action'), operation.get('status'),
+                  operation.get('revision'), '(local changes)' if operation.get('dirty') else '')
+        synced = state.get('last_sync')
+        print('Last verified machine sync:', json.dumps(synced) if synced else 'not recorded')
+        print('Runtime/new component refresh: ai-setup sync; update refreshes shared content only.')
         print('Shared docs:', self.root / 'docs/README.md')
         for relative, expected in state.get('files', {}).items():
             if fingerprint(safe(self.home, relative)) != expected:
@@ -195,6 +204,38 @@ class Hub:
             clone.rename(destination)
         return destination, revision
 
+    @serialized
+    def sync(self, source, ref, only=None, dry_run=False):
+        if not self.state_file.exists():
+            raise ValueError('Bootstrap this machine with install.sh or install.ps1 first.')
+        state = self.state()
+        edited = [name for name, expected in state.get('files', {}).items()
+                  if fingerprint(safe(self.home, name)) not in (None, expected)]
+        for key, block in state.get('blocks', {}).items():
+            path = safe(self.home, key.rsplit(':', 1)[0])
+            if path.exists() and block not in path.read_text(encoding='utf-8'):
+                edited.append(key)
+        if edited and not dry_run:
+            raise ValueError('Preserving local edits; reconcile before full sync:\n' + '\n'.join(edited))
+        checkout, revision = self.checkout(source, ref)
+        selected = only or 'all'
+        if dry_run:
+            run([sys.executable, checkout / 'setup.py', 'plan', '--sync',
+                 '--home', self.home, '--only', selected])
+            if edited:
+                print('Sync would stop for local edits:\n' + '\n'.join(edited))
+            return
+        if sys.platform == 'win32':
+            command = ['powershell.exe', '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File',
+                       checkout / 'install.ps1', '-Action', 'sync', '-HomeDirectory', self.home,
+                       '-Only', selected, '-RepositoryDirectory', checkout]
+        else:
+            command = ['bash', checkout / 'install.sh', 'sync', '--home', self.home, '--only', selected]
+        print('Syncing machine from', revision, flush=True)
+        # OS packages/runtimes cannot use the shared-content rollback mechanism.
+        # Component ownership/backups remain authoritative; failed syncs are retried.
+        run(command, env=dict(os.environ, AI_SETUP_HUB_LOCK_TOKEN=HELD_LOCKS.get(self.home, '')))
+
     def snapshot_paths(self, state, checkout, selected):
         paths = set()
         manifest = json.loads((checkout / 'manifest.json').read_text(encoding='utf-8'))
@@ -216,7 +257,11 @@ class Hub:
             paths.add('.local/share/ai-setup/docs')
         if 'hub' in selected:
             paths.update(('.local/share/ai-setup/hub.py', '.local/share/ai-setup/library.py',
-                          '.local/bin/ai-setup', '.local/bin/ai-setup.cmd'))
+                          '.local/share/ai-setup/agent_wiki_server.py',
+                          '.local/share/ai-setup/agent-wiki-server.json',
+                          '.local/bin/ai-setup', '.local/bin/ai-setup.cmd',
+                          '.local/bin/ai-agent-wiki-server',
+                          '.local/bin/ai-agent-wiki-server.cmd'))
             paths.update(('.local/share/ai-setup/git-hooks', '.local/state/ai-setup/library.json', '.gitconfig'))
             for name in ('AI_READY_PROJECTS.md', 'PROJECT_INSTRUCTIONS_TEMPLATE.md', 'CENTRAL_LIBRARY.md', 'ai-local.gitignore', 'WINDOWS.md'):
                 paths.add('.local/share/ai-setup/reference/' + name)
@@ -384,6 +429,11 @@ def install(i):
     destination = i.home / '.local/share/ai-setup/hub.py'
     i.write(destination, (ROOT / 'hub.py').read_text(encoding='utf-8'))
     i.write(i.home / '.local/share/ai-setup/library.py', (ROOT / 'library.py').read_text(encoding='utf-8'))
+    wiki_manager = i.home / '.local/share/ai-setup/agent_wiki_server.py'
+    i.write(wiki_manager, (ROOT / 'agent_wiki_server.py').read_text(encoding='utf-8'))
+    wiki = i.manifest['agent_wiki']
+    i.write(i.home / '.local/share/ai-setup/agent-wiki-server.json',
+            json.dumps(wiki, indent=2) + '\n', mode=0o600)
     reference = i.home / '.local/share/ai-setup/reference'
     for name in ('AI_READY_PROJECTS.md', 'PROJECT_INSTRUCTIONS_TEMPLATE.md', 'CENTRAL_LIBRARY.md', 'ai-local.gitignore', 'WINDOWS.md'):
         source = ROOT / 'config' / name
@@ -395,9 +445,14 @@ def install(i):
     if i.windows:
         wrapper = '@echo off\n"' + str(python).replace('%', '%%') + '" "' + str(destination).replace('%', '%%') + '" %*\nexit /b %errorlevel%\n'
         i.write(i.bin / 'ai-setup.cmd', wrapper)
+        wiki_wrapper = ('@echo off\n"' + str(python).replace('%', '%%') + '" "' +
+                        str(wiki_manager).replace('%', '%%') + '" %*\nexit /b %errorlevel%\n')
+        i.write(i.bin / 'ai-agent-wiki-server.cmd', wiki_wrapper)
     else:
         i.write(i.bin / 'ai-setup', '#!/bin/sh\nexec ' + shlex.quote(str(python)) + ' ' +
                 shlex.quote(str(destination)) + ' "$@"\n', mode=0o755)
+        i.write(i.bin / 'ai-agent-wiki-server', '#!/bin/sh\nexec ' + shlex.quote(str(python)) + ' ' +
+                shlex.quote(str(wiki_manager)) + ' "$@"\n', mode=0o755)
     record = i.state.setdefault('hub', {})
     record['custom_skills'] = sorted(p.parent.name for p in (ROOT / 'custom/skills').glob('*/SKILL.md'))
     try:
@@ -408,68 +463,9 @@ def install(i):
         record['revision'] = 'local directory without Git revision'
     record['checkout'] = str(ROOT)
     i.save()
-    guidance = '''# Central shared AI setup
-
-Reusable AI skills, agent definitions and generic AI learning/docs belong in the
-central library. Application architecture, business decisions, design docs,
-runbooks and release/test evidence belong in the application's own repository.
-Before creating or changing shared AI material, run `ai-setup search "TOPIC"`, read the
-relevant results, then run `ai-setup library` to locate the canonical checkout.
-Use `ai-setup search "TOPIC" --refresh` when current remote content is required;
-it applies a trusted central update. A failed refresh is not permission to claim
-freshness or create a project-local substitute. Report the failure and use clearly
-labelled local evidence only. Do not commit or push without task authorization.
-
-Do not create project-local copies of reusable SKILL.md files or skill/agent
-libraries. Update their central source in custom/skills, custom/agents or the
-existing shared docs entry. Keep product-specific facts and discussions in project
-docs; generalize only reusable lessons into ai_setup. Do not move application docs
-into ai_setup or require a private central checkout to maintain them. Private
-reusable AI material needs an authorized private source, never this public library.
-Secrets are never library content. Personal client configuration and generated
-runtime/graph data stay ignored locally; preserve existing team instructions.
-This ownership split supersedes older rules requiring all project docs centrally.
-
-Use this library to learn once and reuse across projects: maintain reusable AI
-skills, agents, rules, workflows, AI learning discussions and reviewed self-learning.
-When a correction or verified solution yields a general lesson, search and improve
-the existing central entry within the authorized scope, then apply it on future
-tasks. Keep individual app discussions and transcripts with their app; preserve
-only the generic lesson here. Label unverified ideas as proposals. This is maintained
-knowledge, not automatic model training or guaranteed recall. Documentation for
-ai_setup's own tools and operation belongs here.
-
-Before substantial architecture, microservices, CI/CD, security or QA recommendations,
-search by topic and any named reference project. Read relevant curated cases under
-docs/case-studies and their linked skill references. Explain adopt/adapt/reject
-decisions against the target's requirements. Cases retain sanitized lessons and
-source/evidence limits; full project docs stay with their owner. Search is literal
-and does not read arbitrary sibling repositories or past conversations.
-
-Find current app documentation with `ai-setup search "project catalog"`. Resolve
-owner-relative pointers within authorized access and inspect current docs/source
-before borrowing an implementation. Keep architecture, crons/background work,
-CI/CD and operations current in the app; a central refresh does not refresh app
-checkouts. Before closing a significant failure, correction, migration, switch
-or release with a reusable lesson, follow `ai-setup search "learning workflow"`.
-Amend the existing central case/skill with what was tried, what passed/failed,
-why it changed, replacement/status, provenance and verification limits. Preserve
-superseded reasoning and original app evidence. Report pending promotion when
-central writing is unavailable or unauthorized; never claim automatic sync.
-
-Use `ai-setup check-project --project PATH` before committing. A Git guard can reject
-commits, but unrestricted filesystem tools can still create files. Do not claim
-search or central-authoring is enforced by a sandbox when only instructions apply.
-Read `''' + str(reference / 'CENTRAL_LIBRARY.md') + '''` for enforcement and exceptions.
-
-Use `ai-setup status` to inspect this user's installation. Shared docs
-are at `''' + str(i.home / '.local/share/ai-setup/docs') + '''`.
-For a reusable skill improvement, edit its canonical source or use
-`ai-setup contribute SKILL --checkout PATH_TO_AI_SETUP` to export an installed edit
-for review. Exporting does not commit, push or authorize publication. Third-party
-skills stay with their original provider. `ai-setup update` pulls and applies a
-central revision only when requested; no scheduled updates are installed.
-'''
+    guidance = (ROOT / 'config/CENTRAL_ROUTING.md').read_text(encoding='utf-8')\
+        .replace('{{REFERENCE}}', str(reference))\
+        .replace('{{DOCS}}', str(i.home / '.local/share/ai-setup/docs'))
     for path in (i.home / '.codex/AGENTS.md', i.home / '.claude/CLAUDE.md'):
         i.merge_text(path, guidance, 'hub')
     import library
@@ -510,6 +506,11 @@ def main():
     update.add_argument('--source', default=DEFAULT_SOURCE)
     update.add_argument('--ref', default='main', help='Approved Git branch, tag or commit SHA')
     update.add_argument('--only', help='Shared components; default is the already installed selection')
+    sync = commands.add_parser('sync', help='Fetch and apply the full machine setup, including new runtimes')
+    sync.add_argument('--source', default=DEFAULT_SOURCE)
+    sync.add_argument('--ref', default='main', help='Approved Git branch, tag or commit SHA')
+    sync.add_argument('--only', help='Default: all current defaults plus previously installed optional components')
+    sync.add_argument('--dry-run', action='store_true', help='Fetch and preview without installing packages or changing client configuration')
     commands.add_parser('rollback')
     contribute = commands.add_parser('contribute')
     contribute.add_argument('name')
@@ -540,6 +541,8 @@ def main():
         with operation_lock(hub.home):
             if args.command == 'update':
                 hub.update(args.source, args.ref, args.only)
+            elif args.command == 'sync':
+                hub.sync(args.source, args.ref, args.only, args.dry_run)
             elif args.command == 'rollback':
                 hub.rollback()
             else:

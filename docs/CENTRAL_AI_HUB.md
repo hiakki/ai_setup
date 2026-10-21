@@ -125,7 +125,12 @@ ai-setup update --source https://github.com/YOUR_ORG/ai_setup.git --ref main
 
 An update executes installer code from the selected repository; choose a source and revision you trust. Private repositories need Git authentication configured on that machine. Model credentials remain separate.
 
-The hub updates only already-installed members of `skills,agents,custom,rules,docs,hub`. It does not update runtimes, browsers, blog/gstack suites, Hermes, MCP integrations or optional tools. Those retain their component-specific installation flows. Updates run only when requested; no watcher, scheduled synchronization or service is installed.
+`ai-setup update` updates only already-installed shared skills, agents, custom
+content, rules, docs, hub and Hindsight guidance. It does not refresh the complete
+runtime profile. Use **`ai-setup sync`** for the published full setup, including new
+defaults, runtime pins and previously selected optional components. Preview with
+`ai-setup sync --dry-run`. See [machine synchronization](MACHINE_SYNC.md).
+Both operations run only when requested; no watcher or scheduled service is installed.
 
 **Publication matters:** other machines can fetch a change only after it has been committed and pushed. A local implementation or passing test does not make unpublished files available from GitHub.
 

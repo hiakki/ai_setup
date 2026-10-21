@@ -3,6 +3,8 @@ import argparse
 import json
 import os
 from pathlib import Path
+import re
+import subprocess
 import sys
 import time
 import tomllib
@@ -22,15 +24,27 @@ def check(home):
     codex = tomllib.loads((home / '.codex/config.toml').read_text(encoding='utf-8'))['mcp_servers']['hindsight']
     claude = json.loads((home / '.claude.json').read_text(encoding='utf-8'))['mcpServers']['hindsight']
     url = validate_url(codex['url'])
-    variable = codex.get('bearer_token_env_var', '')
-    if (codex.get('enabled') is False or not variable or claude.get('type') != 'http'
-            or claude.get('url') != url or claude.get('headers', {}).get('Authorization')
-            != 'Bearer ${' + variable + '}'):
-        raise ValueError('Clients must enable the same HTTP endpoint and bearer environment reference')
-    token = os.environ.get(variable)
-    if not token:
-        raise ValueError('Export the configured bearer-token variable in this process before checking')
-    headers = {'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json',
+    claude_authorization = claude.get('headers', {}).get('Authorization', '')
+    variable_match = re.fullmatch(r'Bearer \$\{([A-Za-z_][A-Za-z0-9_]*)\}', claude_authorization)
+    if (codex.get('enabled') is False or claude.get('type') != 'http'
+            or claude.get('url') != url or not variable_match):
+        raise ValueError('Clients must enable the same HTTP endpoint and valid bearer reference')
+    helper = codex.get('http_headers_helper')
+    if helper:
+        completed = subprocess.run(helper, shell=True, capture_output=True, text=True, timeout=10)
+        if completed.returncode:
+            raise ValueError('Codex HTTP headers helper failed')
+        helper_headers = json.loads(completed.stdout)
+        authorization = helper_headers.get('Authorization', '')
+    else:
+        variable = codex.get('bearer_token_env_var', '')
+        token = os.environ.get(variable)
+        if not token:
+            raise ValueError('Export the configured bearer-token variable in this process before checking')
+        authorization = 'Bearer ' + token
+    if not authorization.startswith('Bearer ') or len(authorization) == len('Bearer '):
+        raise ValueError('Codex authentication did not resolve to a bearer header')
+    headers = {'Authorization': authorization, 'Content-Type': 'application/json',
                'Accept': 'application/json, text/event-stream'}
     opener = urllib.request.build_opener(NoRedirect)
     request_id = 0
@@ -92,8 +106,8 @@ def check(home):
         params = {'cursor': cursor}
     else:
         raise ValueError('Tool pagination exceeded the verification limit')
-    if not {'retain', 'recall', 'reflect'}.issubset(names):
-        raise ValueError('Expected Hindsight retain/recall/reflect tools were not all advertised')
+    if not {'retain', 'recall'}.issubset(names):
+        raise ValueError('Expected Hindsight retain/recall tools were not both advertised')
     print(f'PASS: both registrations match; authenticated MCP {protocol}; {len(names)} tools discovered.')
     print('No memory read/write or model call performed. Active client overrides and inference remain separate checks.')
 

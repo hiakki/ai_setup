@@ -1,11 +1,71 @@
 {
   "schema_version": 1,
   "reviewed_date": "2026-09-29",
-  "scope": "Nine reviewed central case documents plus six navigation pointers; not all project history or private app docs.",
+  "scope": "Reviewed central cases and navigation pointers plus a bounded 7 October Servinoza decision pointer. Per-entry dates/hashes apply; this is not a refresh of all history or private app docs.",
   "transport": "MCP only; existing gateway authentication; no model-provider credentials",
   "profile": "chunks-only retain, no observations/auto consolidation, no temporal/graph/reranking stages, no reflect or generated pages",
   "update_policy": "Explicit reviewed apply only. Verify source hashes before writing; replace stable document IDs. No automatic install-time ingestion.",
   "entries": [
+    {
+      "document_id": "ai-setup-guide-openrig",
+      "source_path": "docs/OPENRIG.md",
+      "mode": "reviewed_pointer",
+      "reviewed_date": "2026-10-20",
+      "reviewed_sha256": "50b498776d1306b835e01d499fb36e6eb6ea19c744c3942547e20f1815ad6c79",
+      "summary": "Read docs/OPENRIG.md, custom/skills/openrig-team/SKILL.md and config/openrig-roles.json for one central lead with 13 on-demand specialists. The default openrig component fetches original OpenRig 0.6.13, checks npm integrity and installs ai-team with private project state and shared global guidance. macOS/Linux run locally; native Windows installs only the SSH entrypoint to an authorised macOS/Linux host, without WSL. Start only relevant agents and preserve application approval boundaries. Installation starts no daemon, assigns no work and publishes no transcripts. Mac ARM64 install/rerun, Codex lead-to-QA coordination, backend activation and snapshot restoration passed. Ubuntu 24.04 and Debian 12 ARM64 fresh/repeat installation, SQLite and daemon health/stop passed; Linux inference, x64 and actual Windows/SSH execution were not tested. Claude seat launched but inference failed with invalid OAuth; auth-status loggedIn was insufficient. Fixes: local host pinning, atomic startup guidance, state reconciliation after uncertain expand timeout, additive ignore rules, and missing build-essential/procps prerequisites on minimal Debian. Full suite 171 tests with four skips; final focused suite 11 passed. Existing unrelated whole-home rules/docs drift is preserved. This is availability and bounded coordination evidence, not a productivity benchmark or automatic cross-machine rollout.",
+      "probe": "How can existing and new projects use one lead conversation with specialised agents, and which OpenRig platforms and workflows were actually verified?",
+      "evidence_limit": "Unpublished working tree at base 50cd10a002b7eb7e5479f4f500ca19d7b350b5c2; Claude re-authentication and real Windows/SSH testing remain outstanding."
+    },
+    {
+      "document_id": "ai-setup-guide-agent-reach",
+      "source_path": "docs/AGENT_REACH.md",
+      "mode": "reviewed_pointer",
+      "reviewed_date": "2026-10-20",
+      "reviewed_sha256": "9fdc94ee003298a205183fb1210e64d43e80c5ce9aa0cdb86f39b5a6dc36f073",
+      "summary": "Read docs/AGENT_REACH.md and config/AGENT_REACH.md for shared social/video/RSS research. The default agentreach component installs Agent Reach 1.5.0 at provider commit 94f06c1969dfc1834001269d79d3ad0972d9dee6, OpenCLI 2.0.1 and isolated yt-dlp/feedparser. Source packages come from original providers; no vendored payloads. Claude and Codex share one adapted English provider skill. Use platform adapters only when useful; keep existing web tools, Context7 and code graphs in their roles. No social accounts, Browser Bridge, extra MCP, model calls or automatic updates are configured. Commands: agent-reach, agent-reach-python, agent-reach-yt-dlp, opencli. Existing installations use install --only agentreach, or -Only agentreach on native Windows. macOS ARM64 runtime/repeat checks, fresh Ubuntu 24.04 and Debian 12 ARM64 install/rerun and RSS/video positive/negative fixture checks passed; actual Codex discovery found one global skill from two project roots. Jina public-page and live Python Insider feed reads passed. Windows x64 implementation/CI is prepared but execution remains unverified. Doctor availability is not proof of login or requested content; subtitles are not visual understanding. Normalize CLI/package date versions and query paginated adapter lists by platform. Preserve existing unrelated rules/docs drift. Other machines need publication and their own install; this is an unpublished working tree, not automatic rollout or a quality benchmark.",
+      "probe": "How can existing and new projects use Agent Reach for social, video and RSS research, and which channels are actually configured?",
+      "evidence_limit": "Local unpublished base 50cd10a002b7eb7e5479f4f500ca19d7b350b5c2; macOS, Ubuntu and Debian ARM64 checked. Windows/x64 and social-account/browser access unverified."
+    },
+    {
+      "document_id": "ai-setup-guide-development-quality",
+      "source_path": "docs/DEVELOPMENT_QUALITY.md",
+      "mode": "reviewed_pointer",
+      "reviewed_date": "2026-10-19",
+      "reviewed_sha256": "3d9d1915cdbe0ebe259ef193fac431f01608f7e5cadf2b57a4b7b86283a535ec",
+      "summary": "Shared development quality is installed locally and integrated into ai_setup's default quality component. Canonical guide: docs/DEVELOPMENT_QUALITY.md; skill: custom/skills/development-quality/SKILL.md; manifest.json pins original providers. Includes Promptfoo 0.124.1 and upstream evaluation/provider skills, Vercel React performance/composition skills, ast-grep 0.51.0, Schemathesis 4.32.1, Chrome DevTools CLI 1.11.0 and RTK OSS 1.0.1. App-owned Playwright/axe/visual templates and a Storybook MCP 10.6.2 activation recipe are available, not globally started servers. Six synthetic evaluation cases use existing Claude/Codex CLIs, independent artifact graders and an explicit model-run opt-in. No comparative model benchmark or measured productivity gain is claimed. Installers target macOS/Linux x64/ARM64 and native Windows x64. macOS and Ubuntu 24.04 ARM64 install/rerun and real positive/negative CLI checks passed; Windows and separate Debian execution remain unverified. Preserve raw failures, app ownership, private data and existing instructions. Fixes: expand existing sparse checkout selections at the same revision; explicitly include pinned Promptfoo SQLite platform binding; use Schemathesis console callable. No automatic scans, RTK hooks, extra browser MCP, model runs or cross-machine rollout. New quality guidance/examples install independently of the pre-existing edited aggregate docs bundle. Local uncommitted changes at base 50cd10a002b7eb7e5479f4f500ca19d7b350b5c2; guide SHA256 3d9d1915cdbe0ebe259ef193fac431f01608f7e5cadf2b57a4b7b86283a535ec; reviewed 2026-10-19. Other machines need publication and their own install --only quality,docs.",
+      "probe": "Which shared tools should projects use for coding-agent evaluations, React performance, API/AST and browser quality, and what was actually verified?",
+      "evidence_limit": "Unpublished working tree at base 50cd10a002b7eb7e5479f4f500ca19d7b350b5c2; macOS/Ubuntu CLI checks; no measured model improvement or Windows/Debian execution."
+    },
+    {
+      "document_id": "ai-setup-guide-antislop",
+      "source_path": "docs/ANTISLOP.md",
+      "mode": "reviewed_pointer",
+      "reviewed_date": "2026-10-19",
+      "reviewed_sha256": "273ce84f6995673ee09fdadc8a0d235f42a0d21a20ef0d09cec37897279b8e4b",
+      "summary": "Anti Slop adds six upstream skills from miqdadbadjuber/anti-slop at 439a2ef5b9dd0ebe74e8113ff43f5928d0fe2a6a. Read docs/ANTISLOP.md and config/ANTISLOP.md. Both installers fetch the original provider and add global Claude/Codex routing. Skip the upstream project-install wizard and local copies; use during as the integration default while respecting saved/session preferences and read-only scope. Select modules for UI, copy, accessibility, responsive layouts or requested comment review, preserving app branding and factual claims. No extra MCP/CLI/service is required. macOS and Ubuntu ARM64 install/rerun, provider integrity, licenses, routing and contrast checks passed. Native Windows and separate Debian execution remain untested. Pre-existing global rules/docs drift remains preserved. Existing/new projects can use installed skills; other machines require publication and their own authorized update. This is guidance and bounded installer evidence, not a UI-quality benchmark or automatic app improvement.",
+      "probe": "How should projects use Anti Slop for UI, copy and mobile quality without duplicating local skill rules?",
+      "evidence_limit": "Local unpublished changes at base 50cd10a002b7eb7e5479f4f500ca19d7b350b5c2; macOS/Ubuntu checks, Windows and separate Debian untested."
+    },
+    {
+      "document_id": "ai-setup-guide-context-mode",
+      "source_path": "docs/CONTEXT_MODE.md",
+      "mode": "reviewed_pointer",
+      "reviewed_date": "2026-10-19",
+      "reviewed_sha256": "98619dcfcb4bd79d95094ed4744aa3293062832526f84a7142f8823f111ec354",
+      "summary": "Context Mode is a default local stdio MCP for Claude and Codex, pinned to npm 1.0.169. Read docs/CONTEXT_MODE.md for installation, scope and checks; read docs/FRONTEND_DEVELOPMENT.md for the companion upstream logo-design skill. Use Context Mode for bounded large-output processing and authorized document retrieval, Logo Design for original SVG concepts/audits/variants. Keep Codebase Memory first for structure, Context7 for library docs, Hindsight/Agent Wiki for reviewed shared knowledge, and application assets/docs with their owner. No provider routing hooks, automatic transcript capture, compaction recovery, inference account or cross-machine index synchronization is enabled. The project-cwd launcher prevents stale PWD or another window's transcript from choosing the project: the original direct-server test leaked a synthetic entry into the second project's search, and the corrected two-project regression passed. Local macOS ARM64 and Ubuntu ARM64 checks passed both MCP configurations, large-file reduction, index/search, isolation and SVG tools; native Windows code/CI is prepared but not executed here. Existing whole-home rules/docs drift remains preserved. Other machines require publication and installation. This is local working-tree evidence, not a released revision or measured model/design-quality improvement.",
+      "probe": "When should projects use Context Mode and Logo Design, how do we avoid cross-project context leakage, and which machines were actually tested?",
+      "evidence_limit": "Working-tree addition at base 50cd10a002b7eb7e5479f4f500ca19d7b350b5c2; macOS and Ubuntu live checks only; Windows and separate Debian execution pending."
+    },
+    {
+      "document_id": "ai-setup-guide-frontend-design",
+      "source_path": "docs/FRONTEND_DEVELOPMENT.md",
+      "mode": "reviewed_pointer",
+      "reviewed_date": "2026-10-17",
+      "reviewed_sha256": "8a832d6e5e1d7869ad11cc289f76401c05cd0e0c19821350074db35923c82ded",
+      "summary": "Frontend design from day one: read docs/FRONTEND_DEVELOPMENT.md and custom/skills/build-usable-apps/SKILL.md, then references/frontend-design-workflow.md and frontend-reference-catalog.md inside that skill. For new frontends or substantial UI redesigns, inspect the product, choose relevant references, record adopt/adapt/reject decisions, establish or preserve design tokens and shared controls, prove one representative screen before expansion, add purposeful reduced-motion-aware animation and verify the rendered user journey. Landing pages, business dashboards and video editors need different layouts, density and motion. The catalog links Scrolltide, Navbar Gallery, Footer Design, CTA Gallery, Supahero, 3dicons, Refero, UI UX Pro Max, 21st.dev and Motion to their original providers. Paid research and additional provider installs are optional; no copied provider payloads, automatic app changes or measured quality gains are implied. The existing custom/rules/docs components distribute the guidance to Claude/Codex on macOS, Ubuntu/Debian and native Windows. App-specific design contracts and browser evidence stay with the app. Git is canonical; memory is a reviewed discovery pointer, not installation or guaranteed recall. This review covers new working-tree guidance, not an already published Git release.",
+      "probe": "How should a new frontend, business dashboard or video editor use design references, UI skills, components and animation for better UI from day one?",
+      "evidence_limit": "Reference and workflow review; no comparative UI benchmark or application implementation. New files are uncommitted until separately published."
+    },
     {
       "document_id": "ai-setup-reviewed-lesson-execution-host-provenance",
       "source_path": "docs/case-studies/bulkbuyer-data-provenance.md",
@@ -81,9 +141,11 @@
       "document_id": "ai-setup-guide-project-catalog",
       "source_path": "docs/PROJECT_CATALOG.md",
       "mode": "reviewed_pointer",
-      "summary": "Current project architecture, cron and worker ownership, CI/CD, deployment and operational documentation are located through docs/PROJECT_CATALOG.md. Resolve the named owner's repository and owner-relative path within authorized access. Panyora uses panyora-docs and panyora-ops. Servinoza uses servinoza-docs for the current migration record, servinoza-ops for container CI/runtime and servinoza-db-ops for database operations; the former Servinoza_in parent is retired historical source rather than a current runtime dependency. The catalog also points to Elvique, NarrateAI, bulkBuyer, DelX and card-savvy docs. Reopen current owner files, check revision and running-state evidence; dated baselines and successful image promotion do not certify later releases, provider money movement or every workflow. Do not automatically clone private sources or assume sibling access. Central refresh does not refresh app checkouts.",
+      "summary": "Current project architecture, cron and worker ownership, CI/CD, deployment and operational documentation are located through docs/PROJECT_CATALOG.md. Resolve the named owner's repository and owner-relative path within authorized access. Panyora uses panyora-docs and panyora-ops. Servinoza uses servinoza-docs for the current migration record, servinoza-ops for container CI/runtime and servinoza-db-ops for database operations; the former Servinoza_in parent is retired historical source rather than a current runtime dependency. The catalog also points to Elvique, NarrateAI, bulkBuyer, DelX and card-savvy docs. Reopen current owner files, check revision and running-state evidence; dated baselines and successful image promotion do not certify later releases, provider money movement or every workflow. Do not automatically clone private sources or assume sibling access. Central refresh does not refresh app checkouts. Owner decisions now route to servinoza-docs/DECISIONS.md, DESIGN_OWNERSHIP.md, DESIGN_MIGRATION_EVIDENCE.md, PRODUCTION_RELEASE_POLICY.md and reviews/README.md; native developer detail is in servinoza-mobile/docs/architecture.md. Reopen these owner sources; a new register does not certify completed migration.",
       "probe": "Where do I find existing projects' current architecture, cron ownership, CI/CD and operational documentation?",
-      "reviewed_sha256": "fd917d17b04d06bf2f6c226091a6cb99a4f260be8b4cd40f15a35a5382e7bcae"
+      "reviewed_sha256": "d85e71f25f4918c1f287959eeea49df430e1ee22a05a9347af602281bdcfb440",
+      "reviewed_date": "2026-10-07",
+      "servinoza_update": "Owner decisions now route to servinoza-docs/DECISIONS.md, DESIGN_OWNERSHIP.md, DESIGN_MIGRATION_EVIDENCE.md, PRODUCTION_RELEASE_POLICY.md and reviews/README.md; native developer detail is in servinoza-mobile/docs/architecture.md. Reopen these owner sources; a new register does not certify completed migration."
     },
     {
       "document_id": "ai-setup-guide-engineering-playbook",
@@ -105,9 +167,20 @@
       "document_id": "ai-setup-guide-hindsight",
       "source_path": "docs/HINDSIGHT.md",
       "mode": "reviewed_pointer",
-      "summary": "Use docs/HINDSIGHT.md for the shared Hindsight MCP setup and verification workflow. Hindsight is a semantic discovery layer over reviewed central files; Git remains canonical and client models perform reasoning. Use the shared-project-learnings bank through the configured MCP, preserve the chunks-only profile, and avoid reflect, generated pages, direct REST calls and model-provider credentials. For Codex, bearer_token_env_var must be the environment-variable name LLM_GATEWAY_KEY, with the value available in the newly started client process. Retain only reviewed sanitized entries with stable document IDs, source paths, hashes, revisions, dates and evidence limits; replace changed entries deliberately, read them back and test recall. There is no background synchronization, automatic transcript ingestion or guaranteed recall.",
+      "summary": "Use docs/HINDSIGHT.md for the shared Hindsight MCP setup and verification workflow. Hindsight is a semantic discovery layer over reviewed central files; Git remains canonical and client models perform reasoning. Use the shared-project-learnings bank through the configured MCP, preserve the chunks-only profile, and avoid reflect, generated pages, direct REST calls and model-provider credentials. Codex loads LLM_GATEWAY_KEY through the managed http_headers_helper from the permission-restricted user file ~/.config/ai-setup/secrets.env, so desktop and terminal launches do not need a global process environment value; Claude still uses its launch environment. Retain only reviewed sanitized entries with stable document IDs, source paths, hashes, revisions, dates and evidence limits; replace changed entries deliberately, read them back and test recall. There is no background synchronization, automatic transcript ingestion or guaranteed recall.",
       "probe": "How should Claude or Codex configure, verify and safely maintain our shared Hindsight memory without a server-side model key?",
-      "reviewed_sha256": "23541808ac57121a4fe819688de29ac7b99697d4e8eb2fd4a5b9d6d334ba7ab0"
+      "reviewed_sha256": "de7c8ef03b18acb7be2d3e1ff72fa956f518ee5612f7c322964250793f564305"
+    },
+    {
+      "document_id": "ai-setup-servinoza-design-delivery-decisions",
+      "source_path": "docs/case-studies/servinoza-workflow-recovery.md",
+      "source_section": "7 October decision consolidation: native, design, delivery and evidence",
+      "mode": "reviewed_pointer",
+      "reviewed_date": "2026-10-07",
+      "reviewed_sha256": "842c31015a2aeab4d6d35e75e6c8f374eaa691e07a0a3c926977157a73b4af03",
+      "summary": "Servinoza decisions reviewed 7 October 2026: approved native target is React Native CLI with native screens, no Expo and no WebView application UI, not a Kotlin/Swift rewrite. CX and PX remain separate installed apps in the mobile owner repo; shared gateway routing never replaces server authorization or permits cross-role login. Wrong-role login must not disclose another account role. Three design owners are servinoza-design-brand (artwork/guidance), servinoza-design-web (web presentation) and servinoza-design-native (native presentation). Web/native semantic tokens may differ permanently; brand adoption is explicit, not automatic synchronization. Sessions, APIs, navigation, device lifecycle and business rules stay outside design libraries. Preserve immutable releases, exact consumer pins and npm identities on repo renames; compatibility packages persist until explicit upgrades. Production policy is merge approved work to main, pin clean SHA, build and promote immutable artifacts, then verify public behavior. VM-based build/push/deploy is the owner-selected delivery direction; browser suites were removed from the deployment critical path, not from product acceptance. Record approval-to-deployed separately from stage timing. Department and environment scores require independent evidence; screenshot presence alone cannot prove backend, financial, security or latency claims. Installed-device acceptance is separate from mobile web. PASS is bounded to tested assertions; BLOCKED includes unfinished work with exact reason, execution state, owner and retest condition. Keep current public reports per flow and local scratch ignored. One-time scripts stay project-local and ignored; maintained tools/migrations stay versioned. This is a decision/source review, not proof of completed native migration, consumer adoption, universal main-branch guards or new live tests. Detailed private decisions stay in servinoza-docs/DECISIONS.md and its owner links. This later review supersedes inconsistent earlier proposals and dated release-path guidance; preserve historical evidence without treating it as current instruction. Canonical reusable source: docs/case-studies/servinoza-workflow-recovery.md, 7 October decision-consolidation section. Newly captured changes are working-tree content until published; no automatic sync, model training or guaranteed recall.",
+      "probe": "What did Servinoza decide about React Native versus Expo/WebViews, brand/web/native ownership, token sharing, main-only releases and separate department test evidence?",
+      "evidence_limit": "Bounded new-section pointer; does not re-review or resynchronize the entire older case document. Private business rules and transcripts are excluded."
     },
     {
       "document_id": "ai-setup-guide-global-skills",
