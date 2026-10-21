@@ -92,12 +92,29 @@ and disk capacity. Do not raise production safety limits just to pass a test.
 Keep synthetic records distinguishable from customer activity. A collector smoke
 test does not establish that an unrestarted application emits instrumentation.
 
+Assign one intentional owner and destination for each host metric, log and trace
+stream. Do not leave a cloud agent exporting the same signals as a self-hosted
+Prometheus/log/trace stack without an explicit requirement, cost decision,
+retention policy and verified IAM. A misconfigured duplicate exporter can drop
+everything while generating enough retry logs to consume the host disk. When
+retiring it, stop and disable it first, verify the retained telemetry path, then
+remove the package and its own residual files; do not infer retained coverage
+from the replacement collectors merely being ready.
+
 Make application telemetry opt-in where the deployment contract requires it.
 Preserve operator settings and separate monitoring provisioning from app rollout.
 Validate effective in-container configuration after updates: atomic file replacement
 can leave a single-file bind mount pointing at an old inode. For mutable config,
 consider a directory mount or explicit container recreation; confirm ownership and
 readability under the actual container UID. Keep secret access least-privileged.
+
+Treat monitoring configuration rollout as a convergence check. Validate syntax,
+reload the intended running process, then query the effective loaded rules and
+targets until they match the reviewed configuration or a bounded timeout expires.
+A successful reload response alone is insufficient. Test alert evaluation separately
+from notification delivery. Provision writable metrics directories and other runtime
+inputs before the producer starts, and verify one nonsecret sample through the real
+collector query path.
 
 For containerized system-journal readers, mounted files and a healthy component
 do not prove ingestion. Check a labelled synthetic host journal entry, the reader's
@@ -109,6 +126,31 @@ an explicit directory produced correlated logs and traces. This does not establi
 the right path for every host: verify persistent versus volatile journal storage
 and retain exact unit/identifier filters. Do not collect the whole system journal
 or grant applications extra permissions to compensate for a collector mistake.
+
+## Remote Diagnostic Endpoint Acceptance
+
+Treat a remote diagnostic or MCP connection as four separate gates: the active
+ingress route, the public adapter's enablement/credential/expiry policy, matching
+read authority on every downstream owner, and the client's credential lookup.
+Inspect the running proxy process arguments before selecting a configuration path;
+validating a retired checkout or the proxy's default path creates false evidence.
+
+For clients that accept a `bearer_token_env_var` setting, supply the environment
+variable's **name**, not the token value. Keep the value in the platform's secret
+store and effective process environment. Registration success and `tools/list`
+still do not prove useful diagnostics: call one adapter-local tool and at least one
+tool from each downstream owner family. The same sanitized error fingerprint across
+otherwise unrelated owner tools is evidence of a shared boundary failure such as
+disabled owner policy, stale authority URL or credential mismatch. Align and rotate
+the bounded read credential together, verify every real tool call, then remove
+temporary transfer files. A successful diagnostic read is operational evidence,
+not proof that the observed business or provider workflow succeeds.
+
+Model an intentionally disabled component as `disabled`, not missing, stale or
+unhealthy. Preserve that distinction in diagnostic projections and alerts so an
+operator choice does not create a false incident. Emit one actionable sanitized
+error with a stable type or fingerprint; test against duplicate empty events that
+can obscure the causal record.
 
 ## Safe Correlation And Failure Behavior
 
@@ -129,3 +171,25 @@ or grant applications extra permissions to compensate for a collector mistake.
   keep safe error events separately and avoid links to traces never exported.
 - Check environment parsing against the installed SDK and effective process.
   A configuration-shaped unit test is not evidence of runtime enablement.
+
+## Hosted payment failures
+
+A provider-hosted failure screen proves that checkout reached the provider; it
+does not identify who caused the failure or whether money ultimately settled.
+Correlate the application's order/link with every provider payment attempt and
+the webhook history. Re-fetch final state before advising another payment because
+a failed or delayed event can be followed by capture.
+
+Retain only bounded support categories from the provider's structured attribution
+fields, such as customer timeout, issuer bank, merchant integration, gateway,
+provider or unknown. Do not expose raw descriptions, request objects, payment
+identifiers, bank references or customer data in ordinary UI or telemetry. Keep
+the link lifecycle separate from the attempt lifecycle: one active link may have
+several failed attempts and a later successful one. A failed attempt must not be
+shown simultaneously as “confirmation pending.” Test both the correct recovery
+message and absence of contradictory status copy.
+
+Separate these conclusions in the incident record: application request health,
+provider attribution, captured/refunded state, customer-reported debit and bank
+reversal. `captured=false` is not merchant receipt; a reported debit still needs
+secure UTR/RRN reconciliation before a merchant refund is promised or initiated.

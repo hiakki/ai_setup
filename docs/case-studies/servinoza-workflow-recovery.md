@@ -298,6 +298,36 @@ Search `ai-setup search "servinoza recovery"`. For the target, record which
 lesson to adopt, adapt or reject and the test that would establish the outcome.
 Keep the target's decisions in its own repository.
 
+## 2 October follow-up: hosted checkout failure attribution
+
+**Problem and observed result.** A hosted checkout displayed a generic temporary
+failure after multiple attempts. Application, edge, webhook and worker telemetry
+were healthy, but the application retained only link-level state and a generic
+failed-attempt flag. A read-only provider query showed separate customer-timeout
+and issuer-bank failures, all uncaptured. The screenshot alone could not establish
+that attribution, and healthy application requests did not make the provider
+attempt successful.
+
+**Replacement and status.** Reconciliation now selects the latest failed attempt
+and stores only a bounded safe category. The customer UI gives category-specific
+recovery guidance and suppresses pending-confirmation copy for a failed attempt,
+while leaving the active link reusable for a later successful attempt. Raw provider
+descriptions, customer data and payment identifiers stay outside normal responses.
+This was implemented and verified locally; deployment and a customer-controlled
+successful authorization remain separate owner evidence.
+
+**Verification and reuse.** Provider fixtures cover multiple failures, latest
+attempt selection, safe output, failure followed by capture and terminal expiry.
+A production-built browser fixture checks issuer-bank guidance and the absence of
+contradictory pending copy. The live diagnosis used the provider's structured
+source/step/reason plus webhook and reconciliation history; it did not prove why
+the customer authentication timed out or that a reported bank debit reversed.
+For hosted payments, separate link lifecycle from attempt lifecycle and classify
+only from provider records after checking final capture/refund state.
+
+Sanitized source reviewed 2 October 2026. Detailed timestamps, identifiers and
+customer support evidence remain in the application's incident record.
+
 ## Extracted-service test dependency follow-up
 
 A later mail-integration guide requires an explicitly selected, versioned service
@@ -1044,6 +1074,119 @@ production service is independent. Retarget such client paths within explicit
 authorization and report pending edits. Do not declare the entire host
 container-only when ingress, SMTP or runners remain host services. Original
 archive and relocation evidence stay with the owner Docs migration record.
+
+### Test-account cohort versus approval state, 1 October 2026
+
+A production administrator flow exposed a cross-owner invariant gap: converting a
+pending account into a nonfinancial QA cohort changed its cohort flag but preserved
+the pending approval state. The directory therefore showed both QA and Pending,
+kept review actions visible, and allowed verification owners to return it to review
+queues. Hiding one badge alone would have left the contradictory backend state.
+
+The correction treats cohort conversion as one canonical transition. Entering QA
+sets operational approval unless an explicit safety hold exists, excludes the
+account from account/document review queues, suppresses review controls, and keeps
+real collections and payouts blocked. Removing a QA hold restores QA access; leaving
+QA resets a non-held account to the ordinary onboarding state. Existing records are
+reconciled through supported commands rather than direct database edits.
+
+Reuse this pattern when demo, sandbox or training cohorts bypass normal onboarding:
+define the state transition once, enforce it in every owner projection, and test the
+directory, detail page, bulk actions and review queues together. Preserve independent
+payment restrictions and audit history.
+
+### Provider-attempt truth and transient owner reads, 2 October 2026
+
+A failed provider payment attempt was presented as “confirmation pending” because
+the application retained the active retryable payment link but did not project the
+latest validated attempt outcome. The replacement keeps link lifecycle and attempt
+lifecycle separate: an active link can remain reusable while the latest attempt is
+failed. A rendered regression asserts one failure message, a retry action, no
+contradictory pending copy, and eventual capture after retry. This does not prove
+why the provider rejected the real attempt or that a later live payment succeeded.
+
+The first verification ran that Chromium journey manually, so it could not prevent
+a later release from omitting the same check. A follow-up bound the targeted
+production-build journey to the normal Web image build before publication and added
+a platform contract test that fails if the gate is removed. Treat a regression as
+release protection only when the ordinary release path invokes it and propagates
+its failure; a passing local browser run is separate evidence. The targeted journey
+and platform tests passed locally and the workflow change passed hosted contract
+checks. No Web image release had exercised the new hosted browser step at this
+capture, and the provider outcome remained simulated.
+
+The same investigation correlated a rendered page failure with a release window in
+which the sole owner container was explicitly stopped before replacement. Direct
+health later passed, but the Web owner client had made one read attempt and exposed
+the brief disconnect as a full-page error. The bounded replacement retries only
+network-level failures for idempotent reads; mutations and authoritative HTTP
+responses remain single-attempt. Unit tests cover recovery plus both non-retry
+boundaries. Container revisions, production diagnostics and release evidence stay
+with the application; this case records the reusable state and deployment lessons.
+
+### Observability exposed deployment drift, 1–2 October 2026
+
+The remote diagnostic adapter and the actual Prometheus, Loki and Tempo paths made
+several previously hidden failures distinguishable. A healthy endpoint or MCP tool
+catalog had not proved that alert rules were loaded, targets had converged after a
+reload, owner tools could read their downstream services, logs and traces were
+ingested, or backup jobs could publish metrics. One projection also represented an
+intentionally disabled worker as missing or stale, creating a false incident. Error
+instrumentation emitted a second empty event that hid the useful sanitized type and
+fingerprint needed to correlate the real failure.
+
+The corrections verify the effective system rather than the configuration file:
+monitoring reload waits for rules and healthy targets, diagnostic tests call the
+adapter and owner families, disabled is a distinct state, one actionable sanitized
+error is retained, and backup setup creates its metrics directory before the job
+writes an atomic nonsecret textfile. Deployment checks also cover bind-mount inputs,
+canonical public origins, worker runtime origin and removal of build-only packages
+from runtime images. Each correction added a focused contract or regression test;
+the failed-payment browser journey additionally runs in the ordinary Web image
+publication path.
+
+These findings were reviewed from the current owner records and remote revisions:
+Ops `7439a75`, `48247a9`, `ee96b4e`, `3795480`, `ce34ae5`, `7674ac7` and `8fb8629`;
+Web `89ed1ec`, `5767f78`, `561f2ad` and `24305ab`; Payments `109073d`; DB Ops
+`e4a17fc` and `dc4c2a2`. Their source and tests establish implemented controls, not
+that every hosted workflow ran after every change. MCP read success does not prove a
+provider payment, alert delivery or backup restore; those remain separate acceptance
+checks with application-owned evidence.
+
+### Reviewable release cycles for production defects, 2 October 2026
+
+A production privacy defect showed that passing suites and a successful deployment
+could coexist with a missing actor-specific regression. The operator therefore
+required every defect spanning one or more application owners to become a single
+reviewable release candidate before any CI/CD activity. Scattered pull requests,
+version previews and screenshots are insufficient because they do not describe one
+immutable system change or make the original coverage gap visible.
+
+The adopted Servinoza convention is an ops-owned
+`release-cycles/RC-YYYYMMDD-NNN/` directory. Its JSON or YAML manifest is the
+authority and its presentable HTML page is generated from that manifest. The
+manifest records every app's actually deployed production version and digest, the
+affected apps and their calculated next versions, each owner repository's
+`CHANGELOG.md` path, exact proposed revisions, and bounded paths to reproduction
+screenshots, the regression test's before-fix failing output and an explanation of
+what prior tests missed. Implementation and regression tests stay in their owner
+repositories; Ops stores only coordination, proof and references.
+
+The candidate remains `draft` until the operator reviews the generated HTML and
+gives an explicit green flag. For this product that single approval authorizes the
+approved bundle's merges, CI/CD and production deployment. Any change to source,
+version calculation, evidence, configuration or manifest content invalidates the
+approval. The pipeline must reject unapproved or incomplete candidates and verify
+that the HTML was generated from the approved manifest. Final checks and deployment
+outcomes are appended without deleting the original failing evidence.
+
+Status at capture: this is the reviewed release-control decision, not evidence that
+the Ops manifest schema, renderer or enforcement pipeline has been implemented.
+Current application versions, customer evidence, release identifiers and rollout
+results remain in Servinoza's private owner repositories. Reuse the generic
+[release versioning and hotfix guidance](../../custom/skills/reliable-web-app-operations/references/release-versioning-and-hotfixes.md)
+and verify the target actually blocks CI/CD before approval and invalidates stale
+approval before calling the gate operational.
 
 ### Strict internal contracts and live schema capability, 2 October 2026
 

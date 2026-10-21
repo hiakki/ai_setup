@@ -28,6 +28,13 @@ documented interfaces and must not import sibling application source. It should
 not contain Dockerfiles, deployment manifests, proxy installers or business-rule
 implementations.
 
+Verify that this is an executed gate rather than an ownership diagram. Record the
+candidate revisions and image digests, QA revision, selected environment and
+result together; invalidate the evidence when any of them changes. A repository
+with discoverable browser tests is still manual QA when no promotion workflow
+runs it. Keep source checks, isolated integration, provider sandbox, deployed
+public-path checks and real financial outcomes as distinct evidence levels.
+
 Avoid solving an Ops dump by moving every leftover check into Gateway. Retire
 one-time proxy mutation and cutover scripts only after verifying they are no
 longer referenced by the live release path; preserve dated evidence and Git

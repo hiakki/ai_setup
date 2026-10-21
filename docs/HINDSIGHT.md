@@ -278,6 +278,30 @@ prove that every query will retrieve the right passage. The verification record
 must still compare bank metadata and readback content with this index and exercise
 the changed probes.
 
+### Servinoza reviewed resynchronization — 2 October 2026
+
+The existing `ai-setup-case-servinoza` document was replaced in place from merged
+central revision `03e1b66c65d2a2f5d1b0d387fe7937f354ad3439`; no second Servinoza
+document was created. Before retention, the bank was reset to the chunks-only
+profile described above. MCP `sync_retain` produced 55 memory units. MCP
+`get_document` then matched the submitted source bytes, SHA-256
+`3ac0fadad94367e1393a6dc6d0ce36ca89caea95a6a9a027d27a0871ae7e1d7a` and source
+metadata. A new query about a failed retryable payment and its release-blocking
+test recalled the payment-state and hosted-gate lesson. This verifies one reviewed
+document update and query, not the freshness of every indexed document or a real
+provider payment.
+
+The same stable document was reviewed again after central revision
+`5189e0ff40984394ba7942eefba86bec3d4bda03` added the observability-led deployment
+corrections. Its reviewed source SHA-256 is
+`05d789b3c81828a5a0ab3f9749e5a65de570e6c73a53b9db1bbf1b2bb3f9eb1a`. The new
+material distinguishes configuration from effective rule/target convergence,
+disabled components from missing telemetry, and MCP diagnostics from provider,
+alert-delivery and restore evidence. The existing bank document was replaced in
+place; a byte-for-byte readback matched the reviewed source and a query about
+observability exposing deployment drift recalled the new convergence and release
+gate material. No second Servinoza memory entry was created.
+
 #### Maintain the reviewed index through MCP
 
 The JSON index ships with the normal cross-platform `docs` component. It contains
