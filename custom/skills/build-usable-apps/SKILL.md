@@ -92,6 +92,11 @@ pattern. Do not introduce those features merely because this skill mentions them
 
 ## Build a small shared design system
 
+For every UI change, including a small control repair, follow
+[shared-design-ownership.md](references/shared-design-ownership.md). Identify the
+existing owner before editing and use its controls instead of inventing a local
+visual variant. This is a small ownership check, not a mandatory redesign.
+
 - Centralize semantic colors, text styles, spacing, control sizes, radius and
   focus behavior. Use shared button/link, field, status, dialog, disclosure and
   table-sort controls where those patterns repeat. Extend a shared variant for

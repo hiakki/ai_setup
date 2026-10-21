@@ -129,6 +129,12 @@ user's comparison/approval gate before broad redesign work.
 
 ## Finish against observable acceptance criteria
 
+For recurring control inconsistencies, apply the
+[shared-control visual review](acceptance.md#shared-control-visual-review): trace
+the owner and consumer version, compare relevant backgrounds and interaction
+states, and distinguish intentional platform semantics from styling drift. Fixing
+one screenshot does not establish that the shared control is correct elsewhere.
+
 - Reconcile each route's audience with the latest approved brief. A formerly useful
   audience tab or cross-sell can become incorrect after an explicit correction;
   verify direct links and legacy query parameters too. When comparing prepaid

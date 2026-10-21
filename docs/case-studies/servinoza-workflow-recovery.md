@@ -4389,3 +4389,115 @@ checks and isolated/source tests. Physical visits, Play-installed delivery,
 complete WORK, nonzero refunds and LIVE settlement remain unverified. Original
 private artifacts remain app-owned. This sanitized lesson is a local addition;
 central Git publication and memory ingestion are not claimed.
+
+### Shared controls need rendered state review — 21 October 2026
+
+A follow-up UI audit found that identical consumer package pins did not ensure
+consistent presentation. A marketing-only elevation override produced an opaque
+pale lower edge on a primary button; a narrow local selector clipped its selected
+label despite no document overflow. An isolated class-merging reproduction also
+showed a shared selector losing its intended surface class. A synthetic doubled-
+text check exposed fixed-height clipping, while an existing local workaround
+preserved the label. These are bounded observations, not a whole-app score.
+
+Existing persistent Frontend, UI/UX and Native specialists were reused. The
+existing Build Usable Apps acceptance guide was amended to trace owner, package
+pin and local wrapper; compare relevant surfaces/states; distinguish decoration
+from keyboard focus; and inspect selected-value fit. Independent visual review
+rejected a suspected native chevron defect after the original images showed
+complete arrows. Preserve rejected findings rather than manufacturing defects
+to justify the review. Native wrapper feedback/disabled-state differences were
+confirmed in source, but fresh device verification was blocked by emulator disk
+headroom. Historical resting images did not establish current interaction states.
+
+Initial audit status: review guidance and an undeployed control proposal, not an
+application repair. Local global reference copies were refreshed; no model
+training, automatic enforcement, central Git publication or other-machine sync
+is claimed. No new provider or runtime dependency was needed. Reuse this check
+for recurring control inconsistency; retain purposeful platform semantics and
+test the actual consuming artifact before sign-off.
+
+Provenance: `servinoza-docs/reviews/cx-px/control-consistency.md`, local review
+branch based on `d6a33e7ac03e2edd4e0eb184ae6087bb0e7f6b7d`; Frontend source
+`e8a66f10f3270b9ef1a3a1495916e8cab8043bf2`, Mobile source
+`fa1aa0b860a0ccee54e60275c2a4edf2f500ec30`. Original screenshots, source hashes,
+failed harness attempts and proposal checks stay in the app's ignored evidence.
+The actual Web/Admin state review, isolated class composition reproduction and
+source audit do not prove full accessibility, financial flows or native readiness.
+
+Implementation checkpoint, later on 21 October 2026: the approved repairs moved
+into the shared owners and explicitly pinned consumers. Web/Admin were deployed
+from Frontend `ac85caeb972ba598d2c7164d8d32c008daca4aaf` and checked on their public
+routes with independent review of matched controls. The surface, pale-edge,
+language-width and vertical text-fit defects were repaired; long selected values
+can still truncate horizontally with enlarged text. Native source was merged as
+Mobile `eb25946ec3fced713b046cf690d61b917178d394`; compilation and installed-state
+review were still in progress at this checkpoint. Removing reviewed inactive
+build outputs and dependencies recovered enough disk space for the existing
+emulator, without removing source, credentials or current/rollback artifacts.
+Generic guidance is published on review branch `docs/shared-control-review`
+(PR15); this does not establish central-main adoption or another machine's sync.
+The app-owned review above remains the current delivery record. Source checks,
+public Web checks and locally test-signed Android evidence are distinct from
+Play-installed delivery and full application readiness.
+
+### Role relevance and visible actions — 21 October 2026
+
+A later user review exposed two gaps outside the previous control audit: a
+deferred recruitment destination remained in ordinary app navigation, and several
+account/address actions had usable hit areas but looked like plain text. Earlier
+navigation tests explicitly expected the irrelevant destination. Passing those
+tests preserved the wrong product scope rather than validating the user's task.
+
+The approved correction hides the deferred destination in both apps and routes
+legacy navigation safely home, without deleting the future backend workflow.
+Account and address actions adopt existing shared controls, preserving destructive
+confirmation and the user's own data-request access. A populated disposable
+address fixture exposes Edit/Delete controls absent from the empty-state review.
+The central acceptance guide now checks role relevance, the complete affected
+screen, visible affordance and populated-state persistence/cleanup. Reuse the
+existing persistent implementation and independent review seats; their agreement
+is not a substitute for examining actual artifacts.
+
+Provenance: Mobile PR179, merged source
+`06996b0729a96d2ec541c00400503d9cd1a125f9`; app-owned `native/DESIGN.md`,
+`docs/d6-ui.md` and `AGENTS.md`. Bounded source review and focused checks passed;
+successor Android build, device review and publication are still pending at this
+checkpoint. Original screenshots and fixture details remain app-owned and private.
+No full UX sign-off, model training or automatic prevention is claimed. This
+guidance is proposed through existing central PR15; central-main adoption and
+cross-machine synchronization remain separate verification steps.
+
+### Preventing independent control styling — 21 October 2026
+
+A whole-app successor audit found that matching shared-package pins still left
+feature wrappers with static pressed/disabled presentation and duplicated action
+styles. The failed assumption was that shared tokens and imports proved uniform
+interaction. Source review also found legitimate local layout and semantic color
+differences; a blanket ban on local styles would create false positives.
+
+The adopted central correction is global rule 20 plus the existing Build Usable
+Apps skill's `references/shared-design-ownership.md`: identify the owner chain
+before every UI edit, reuse semantic controls, repair repeated behavior at its
+owner, record exceptions and verify consumer adoption. Known recurring faults
+need precise app-owned checks with failing and valid examples. The existing
+library-placement Git guard is not a UI checker. No universal style scanner or
+application pipeline was added.
+
+An independent persistent frontend reviewer applied the new guidance to four
+scenarios: missing wrapper state and unapproved consumer drift were rejected;
+intentional status colors and local grid composition were accepted. This was a
+manual policy exercise, not an executable UI regression or proof of agent
+obedience. Installer regression coverage checks both clients' full rule/reference
+delivery, repeat updates and preservation of personal edits. macOS focused suites
+passed (35 tests, 2 platform skips); the focused Ubuntu delivery check passed
+using existing Python dependencies. Native Windows remains unverified: prior
+shared-content CI failed with permission errors during updates. No provider,
+dependency, CI change or automatic synchronization was added.
+
+Source: `servinoza-docs/reviews/cx-px/android-design-audit.md` at
+`00b102fc5bdcb5bc0907004c01f5324e272cdf44`; Mobile source
+`06996b0729a96d2ec541c00400503d9cd1a125f9`. App-specific findings and screenshots
+remain with their owner. This correction changes central guidance before app
+repairs, not the apps themselves. Publication, local installation, other-machine
+updates and runtime acceptance must continue to be reported separately.
