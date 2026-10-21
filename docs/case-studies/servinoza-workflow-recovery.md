@@ -4389,3 +4389,38 @@ checks and isolated/source tests. Physical visits, Play-installed delivery,
 complete WORK, nonzero refunds and LIVE settlement remain unverified. Original
 private artifacts remain app-owned. This sanitized lesson is a local addition;
 central Git publication and memory ingestion are not claimed.
+
+### Shared controls need rendered state review — 21 October 2026
+
+A follow-up UI audit found that identical consumer package pins did not ensure
+consistent presentation. A marketing-only elevation override produced an opaque
+pale lower edge on a primary button; a narrow local selector clipped its selected
+label despite no document overflow. An isolated class-merging reproduction also
+showed a shared selector losing its intended surface class. A synthetic doubled-
+text check exposed fixed-height clipping, while an existing local workaround
+preserved the label. These are bounded observations, not a whole-app score.
+
+Existing persistent Frontend, UI/UX and Native specialists were reused. The
+existing Build Usable Apps acceptance guide was amended to trace owner, package
+pin and local wrapper; compare relevant surfaces/states; distinguish decoration
+from keyboard focus; and inspect selected-value fit. Independent visual review
+rejected a suspected native chevron defect after the original images showed
+complete arrows. Preserve rejected findings rather than manufacturing defects
+to justify the review. Native wrapper feedback/disabled-state differences were
+confirmed in source, but fresh device verification was blocked by emulator disk
+headroom. Historical resting images did not establish current interaction states.
+
+Replacement status: review guidance and an undeployed control proposal, not an
+application repair. Local global reference copies were refreshed; no model
+training, automatic enforcement, central Git publication or other-machine sync
+is claimed. No new provider or runtime dependency was needed. Reuse this check
+for recurring control inconsistency; retain purposeful platform semantics and
+test the actual consuming artifact before sign-off.
+
+Provenance: `servinoza-docs/reviews/cx-px/control-consistency.md`, local review
+branch based on `d6a33e7ac03e2edd4e0eb184ae6087bb0e7f6b7d`; Frontend source
+`e8a66f10f3270b9ef1a3a1495916e8cab8043bf2`, Mobile source
+`fa1aa0b860a0ccee54e60275c2a4edf2f500ec30`. Original screenshots, source hashes,
+failed harness attempts and proposal checks stay in the app's ignored evidence.
+The actual Web/Admin state review, isolated class composition reproduction and
+source audit do not prove full accessibility, financial flows or native readiness.

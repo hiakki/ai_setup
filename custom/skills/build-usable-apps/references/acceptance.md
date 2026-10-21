@@ -29,6 +29,41 @@ of any changed shared component.
 
 ## Browser measurements
 
+### Shared-control visual review
+
+For a reported control inconsistency, trace the rendered result through its shared
+component, semantic tokens, consumer package/version, wrapper and local overrides.
+Record that owner chain with the finding. A shared import does not prove a shared
+appearance, and a package release does not prove consumer adoption.
+
+Compare the affected control on its actual light, dark and image-backed surfaces
+where used. Inspect rest, hover where supported, pressed, keyboard focus,
+disabled/loading and open states relevant to the defect. Distinguish a decorative
+lower edge from a focus ring using computed styles and state captures; do not
+remove keyboard feedback to fix an unwanted shadow. Verify contrast against the
+adjacent surface and check icon/label alignment, hit area and long-label wrapping.
+Inspect the selected value itself: a narrow native select can clip its label even
+when the page has no overflow. Use actual pixels where browser-native text is not
+reliably measurable; do not treat an empty computed font shorthand as text-fit proof.
+
+Similar-looking controls can have different semantics: a value selector and an
+account action menu may share height, radius, spacing and chevron treatment while
+retaining their own selection, keyboard and focus behavior. Preserve native
+platform interaction conventions rather than replacing everything with one widget.
+
+Centralize a repeated presentation rule at its owning component/token and adopt
+it in every in-scope consumer. Keep intentional exceptions explicit. Count copied
+wrappers and local overrides as audit candidates, not automatically as defects;
+confirm the actual mismatch before proposing removal. Test neighboring consumers
+when a shared change is approved, not only the original screenshot's button.
+
+An independent reviewer should inspect the real state captures and the user's
+brief before receiving the implementer's expected verdict. Record rendered
+defects, source-only risks, deliberate differences and untested states separately.
+At least one representative issue must be caught through the updated review
+process before claiming the guidance was useful. This improves an agent's working
+instructions; it is not model training or a guarantee of future visual quality.
+
 Use actual rendered text bounds (for example a DOM Range), not just enclosing
 cell rectangles. A padded header button can misalign text while every table
 column rectangle is perfect. Choose a small documented tolerance appropriate to
