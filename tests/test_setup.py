@@ -118,6 +118,37 @@ class InstallerTests(unittest.TestCase):
         self.run_setup('install', '--only', 'rules', ok=False)
         self.assertEqual(path.read_text(), content)
 
+    def test_shared_design_guidance_reaches_both_clients_and_survives_update(self):
+        for relative in ('.codex/AGENTS.md', '.claude/CLAUDE.md'):
+            path = self.home / relative
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text('Keep my personal instruction.\n')
+        self.run_setup('install', '--only', 'custom,rules')
+        reference = 'references/shared-design-ownership.md'
+        source = REPO / 'custom/skills/build-usable-apps'
+        installed = self.home / '.agents/skills/build-usable-apps'
+        self.assertEqual((installed / reference).read_text(), (source / reference).read_text())
+        self.assertIn(reference, (installed / 'SKILL.md').read_text())
+        self.assertEqual((self.home / '.claude/skills/build-usable-apps' / reference).read_text(),
+                         (source / reference).read_text())
+        rules = (REPO / 'config/GLOBAL_RULES.md').read_text().replace(
+            '{{REFERENCE}}', str(self.home / '.local/share/ai-setup/reference'))
+        before = {}
+        for relative in ('.codex/AGENTS.md', '.claude/CLAUDE.md'):
+            body = (self.home / relative).read_text()
+            self.assertIn(rules.rstrip(), body)
+            self.assertIn('Keep my personal instruction.', body)
+            before[relative] = body
+        self.run_setup('update', '--only', 'custom,rules')
+        for relative, body in before.items():
+            self.assertEqual((self.home / relative).read_text(), body)
+        self.assertEqual((installed / reference).read_text(), (source / reference).read_text())
+        # Personal changes must block replacement, never be silently discarded.
+        edited = (installed / reference).read_text() + '\nPersonal design exception.\n'
+        (installed / reference).write_text(edited)
+        self.run_setup('update', '--only', 'custom,rules', ok=False)
+        self.assertEqual((installed / reference).read_text(), edited)
+
     @unittest.skipUnless(os.name == 'nt', 'Windows refuses replacing read-only files')
     def test_agent_rerun_preserves_unchanged_read_only_file(self):
         self.run_setup('install', '--only', 'agents')

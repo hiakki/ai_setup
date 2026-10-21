@@ -53,6 +53,11 @@ whole-product acceptance. These instructions reduce recurrence, not eliminate it
 
 ### Shared-control visual review
 
+Start with the owner/adoption record in
+[shared-design-ownership.md](shared-design-ownership.md). A preventive check must
+reject the known violation while accepting intentional layout, platform and
+semantic differences; record whether that check actually runs for this project.
+
 For a reported control inconsistency, trace the rendered result through its shared
 component, semantic tokens, consumer package/version, wrapper and local overrides.
 Record that owner chain with the finding. A shared import does not prove a shared

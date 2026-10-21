@@ -4467,3 +4467,37 @@ checkpoint. Original screenshots and fixture details remain app-owned and privat
 No full UX sign-off, model training or automatic prevention is claimed. This
 guidance is proposed through existing central PR15; central-main adoption and
 cross-machine synchronization remain separate verification steps.
+
+### Preventing independent control styling — 21 October 2026
+
+A whole-app successor audit found that matching shared-package pins still left
+feature wrappers with static pressed/disabled presentation and duplicated action
+styles. The failed assumption was that shared tokens and imports proved uniform
+interaction. Source review also found legitimate local layout and semantic color
+differences; a blanket ban on local styles would create false positives.
+
+The adopted central correction is global rule 20 plus the existing Build Usable
+Apps skill's `references/shared-design-ownership.md`: identify the owner chain
+before every UI edit, reuse semantic controls, repair repeated behavior at its
+owner, record exceptions and verify consumer adoption. Known recurring faults
+need precise app-owned checks with failing and valid examples. The existing
+library-placement Git guard is not a UI checker. No universal style scanner or
+application pipeline was added.
+
+An independent persistent frontend reviewer applied the new guidance to four
+scenarios: missing wrapper state and unapproved consumer drift were rejected;
+intentional status colors and local grid composition were accepted. This was a
+manual policy exercise, not an executable UI regression or proof of agent
+obedience. Installer regression coverage checks both clients' full rule/reference
+delivery, repeat updates and preservation of personal edits. macOS focused suites
+passed (35 tests, 2 platform skips); the focused Ubuntu delivery check passed
+using existing Python dependencies. Native Windows remains unverified: prior
+shared-content CI failed with permission errors during updates. No provider,
+dependency, CI change or automatic synchronization was added.
+
+Source: `servinoza-docs/reviews/cx-px/android-design-audit.md` at
+`00b102fc5bdcb5bc0907004c01f5324e272cdf44`; Mobile source
+`06996b0729a96d2ec541c00400503d9cd1a125f9`. App-specific findings and screenshots
+remain with their owner. This correction changes central guidance before app
+repairs, not the apps themselves. Publication, local installation, other-machine
+updates and runtime acceptance must continue to be reported separately.
