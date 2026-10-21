@@ -29,6 +29,28 @@ of any changed shared component.
 
 ## Browser measurements
 
+### Role relevance and whole-screen actions
+
+Before accepting a screen, check every primary destination against the current
+user role and the product's enabled scope. Existing tests can preserve an obsolete
+requirement; a passing navigation test does not establish that a feature belongs
+in the app. When a destination is deferred, verify restored navigation and entry
+points as well as hiding its tab. Do not remove unrelated backend capabilities.
+
+Inspect the whole affected screen, including lower scroll content, at ordinary
+and enlarged text. Inventory its visible actions: primary tasks, destinations,
+secondary edits and destructive actions need recognizable affordances at rest
+and feedback when pressed. A semantic button or sufficient hit area alone does
+not make plain text visibly tappable. Reuse the shared control appropriate to the
+action; do not turn every setting or destination into a prominent primary CTA.
+
+Record empty and populated states separately when they expose different controls.
+Verify editing, cancellation, persistence and destructive confirmation using an
+authorized disposable fixture, then clean up that fixture through the normal
+flow. Preserve existing user records. Review the actual installed/rendered result;
+a corrected component and a source-level check do not establish whole-screen or
+whole-product acceptance. These instructions reduce recurrence, not eliminate it.
+
 ### Shared-control visual review
 
 For a reported control inconsistency, trace the rendered result through its shared

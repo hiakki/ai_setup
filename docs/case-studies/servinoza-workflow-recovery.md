@@ -4440,3 +4440,30 @@ Generic guidance is published on review branch `docs/shared-control-review`
 The app-owned review above remains the current delivery record. Source checks,
 public Web checks and locally test-signed Android evidence are distinct from
 Play-installed delivery and full application readiness.
+
+### Role relevance and visible actions — 21 October 2026
+
+A later user review exposed two gaps outside the previous control audit: a
+deferred recruitment destination remained in ordinary app navigation, and several
+account/address actions had usable hit areas but looked like plain text. Earlier
+navigation tests explicitly expected the irrelevant destination. Passing those
+tests preserved the wrong product scope rather than validating the user's task.
+
+The approved correction hides the deferred destination in both apps and routes
+legacy navigation safely home, without deleting the future backend workflow.
+Account and address actions adopt existing shared controls, preserving destructive
+confirmation and the user's own data-request access. A populated disposable
+address fixture exposes Edit/Delete controls absent from the empty-state review.
+The central acceptance guide now checks role relevance, the complete affected
+screen, visible affordance and populated-state persistence/cleanup. Reuse the
+existing persistent implementation and independent review seats; their agreement
+is not a substitute for examining actual artifacts.
+
+Provenance: Mobile PR179, merged source
+`06996b0729a96d2ec541c00400503d9cd1a125f9`; app-owned `native/DESIGN.md`,
+`docs/d6-ui.md` and `AGENTS.md`. Bounded source review and focused checks passed;
+successor Android build, device review and publication are still pending at this
+checkpoint. Original screenshots and fixture details remain app-owned and private.
+No full UX sign-off, model training or automatic prevention is claimed. This
+guidance is proposed through existing central PR15; central-main adoption and
+cross-machine synchronization remain separate verification steps.
