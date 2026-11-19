@@ -44,6 +44,12 @@ relevant scope; discovering a source does not authorize deploying it.
 
 ### Servinoza decision refresh — 7 October 2026
 
+For feature-building acceptance, read the current `servinoza-docs/PRODUCT_QUALITY_CONTRACT.md`
+alongside `CX_PX_SERVICE_LIFECYCLE.md`. The contract covers useful user outcomes,
+input/recovery design, same-record actor handoffs and precise completion evidence.
+Repository pointers and executed checks establish adoption separately; central
+skill installation alone does not establish app compliance or release readiness.
+
 Open `servinoza-docs/DECISIONS.md` for the owner-approved decision register;
 `DESIGN_OWNERSHIP.md` and `DESIGN_MIGRATION_EVIDENCE.md` for design boundaries;
 `PRODUCTION_RELEASE_POLICY.md` for main-only production;
