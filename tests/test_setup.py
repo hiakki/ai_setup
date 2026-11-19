@@ -131,6 +131,13 @@ class InstallerTests(unittest.TestCase):
         self.assertIn(reference, (installed / 'SKILL.md').read_text())
         self.assertEqual((self.home / '.claude/skills/build-usable-apps' / reference).read_text(),
                          (source / reference).read_text())
+        # The task/handoff acceptance instructions must travel with the skill,
+        # not exist only in the source checkout or one agent client.
+        acceptance_files = ('SKILL.md', 'references/acceptance.md')
+        for relative in acceptance_files:
+            for client in (installed, self.home / '.claude/skills/build-usable-apps'):
+                self.assertEqual((client / relative).read_bytes(),
+                                 (source / relative).read_bytes())
         rules = (REPO / 'config/GLOBAL_RULES.md').read_text().replace(
             '{{REFERENCE}}', str(self.home / '.local/share/ai-setup/reference'))
         before = {}
@@ -143,6 +150,9 @@ class InstallerTests(unittest.TestCase):
         for relative, body in before.items():
             self.assertEqual((self.home / relative).read_text(), body)
         self.assertEqual((installed / reference).read_text(), (source / reference).read_text())
+        for relative in acceptance_files:
+            self.assertEqual((installed / relative).read_bytes(),
+                             (source / relative).read_bytes())
         # Personal changes must block replacement, never be silently discarded.
         edited = (installed / reference).read_text() + '\nPersonal design exception.\n'
         (installed / reference).write_text(edited)

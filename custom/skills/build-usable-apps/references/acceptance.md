@@ -27,6 +27,41 @@ of any changed shared component.
 | Payments | Real contract plus authorized sandbox/live journey, replay and reconciliation. | Separate collection/refund/payout evidence; no transaction-readiness claim from mocks. |
 | Release | Exact commit/build, actual environment/schema, public URL and signed-in affected flow. | Settings preserved, failure has rollback, local results not misreported as live acceptance. |
 
+## Critical journeys before sign-off
+
+Before implementation, describe the affected user's task, starting state, useful
+outcome and any next actor in the existing project contract. Resolve the input
+and state transitions before polishing the screen. A small change needs only the
+relevant amendment, not a new framework or a whole-product audit.
+
+1. Complete the task in the rebuilt target app with an authorized synthetic
+   record. For a cross-role handoff, use that same record in the receiving app
+   and perform its next action. Check persisted state as well as visible feedback.
+2. Try a realistic input mistake and correct it without instructions from the
+   implementer. Check that the error is reachable with the keyboard open, names
+   the correction, and preserves unrelated valid input. Prefer a control that
+   prevents a predictable formatting mistake over explaining an API format.
+3. Exercise the relevant interruption: delayed response, failed save, retry,
+   app return or stale data. Verify the agreed recovery and lack of duplicate
+   side effects. Select cases by the changed boundary; do not mechanically run
+   every failure combination for every edit.
+4. Give an independent reviewer the user task and business rules before the
+   implementer's verdict. Record what they could and could not complete. To
+   evaluate a new review process, use a safe known-broken fixture with the defect
+   and expected result withheld from that reviewer. Keep the ground truth
+   separately; a reviewer already coached on the defect is not a blind check.
+5. Make demonstrated failures regressions in the project's existing runners.
+   Check that the regression rejects the broken behavior and accepts the fix.
+   Link each check to a user outcome, not merely a component name or test count.
+
+An affected critical task that cannot be completed blocks sign-off for that
+task. Unavailable devices, accounts or providers are explicit verification gaps,
+not passes. A single successful challenge establishes only that case, not an
+agent's reliability or the application's overall readiness. Rules guide work;
+only configured and exercised checks provide automated enforcement. Do not
+change release/CI policy without its required authorization, and never relabel
+suites skipped by a fast release as passed.
+
 ## Browser measurements
 
 ### Role relevance and whole-screen actions
