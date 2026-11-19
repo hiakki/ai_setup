@@ -40,6 +40,8 @@ Read the brief and existing decisions. Resolve routine choices yourself; ask
 only about missing information that materially changes the workflow. Do not
 make the user rediscover requirements they already supplied.
 
+Read the project's existing product-quality and lifecycle contracts first. Amend
+those owners rather than creating a competing checklist for each agent or fix.
 Write a short design contract in the project's own canonical documentation.
 Keep application-specific decisions there; promote only reusable AI guidance to
 a central skill library when configured. Private project facts do not belong in
@@ -113,6 +115,11 @@ visual variant. This is a small ownership check, not a mandatory redesign.
 - Use persistent labels and field-level feedback. Related labels, controls and
   helper text belong on consistent layout tracks. Required fields must match
   server requirements. Do not request data the app can reliably prefill.
+- Prevent predictable input mistakes before adding error messages. Choose the
+  shared, platform-appropriate control for the task: date/time selection,
+  constrained choices and suitable numeric input where appropriate. Users should
+  not need to learn an API's serialization format. Keep server validation and
+  verify correction without losing other valid entries.
 - Keep keyboard focus visible once, not as stacked competing rings. Include
   high-contrast behavior. A native semantic element is a good default, but test
   its actual behavior with the application's CSS and framework.
@@ -169,6 +176,11 @@ Run the rebuilt app and complete the affected journey. Inspect mobile, tablet
 with navigation, desktop, loading/error and open-action states together. Measure
 alignment or geometry when that is the reported defect. Do not stop at DOM
 presence, HTTP 200, no overflow, or a screenshot of a closed control.
+
+For a journey crossing roles or apps, follow the same authorized test record
+through the handoff. Verify that the next person can see the result and complete
+their next action; the initiating screen's success is insufficient. Use the
+critical-journey procedure in [acceptance.md](references/acceptance.md).
 
 When useful and authorized, give an independent reviewer the task, brief and
 rendered evidence, without telling them the expected verdict. Delegate a bounded
